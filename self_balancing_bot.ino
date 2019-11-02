@@ -1,31 +1,24 @@
 #include "Wire.h"
 
 #define MPU_ADDRESS 0x68
+#define ACCEL_START_REG 0x3B
+#define GYRO_START_REG 0x43
+#define TEMP_START_REG 0x41
+
 #define LED 13
 #define UPDATE_RATE 10
 bool blinkState= false;
 
 void setup() {
   // put your setup code here, to run once:
+  Wire.begin();
+
   pinMode(LED, OUTPUT);
   digitalWrite(LED, blinkState);
+
   Serial.begin(115200);
 
-  Wire.beginTransmission(MPU_ADDRESS);
-  Wire.write(0x1C);
-  Wire.write(0x00); //Accelerometer full scale range and selfTest
-  Wire.endTransmission(true);
-
-  Wire.beginTransmission(MPU_ADDRESS);
-  Wire.write(0x1B);
-  Wire.write(0x00); //Gyro full scale range and selfTest
-  Wire.endTransmission(true);
-
-  Wire.begin();
-  Wire.beginTransmission(MPU_ADDRESS);
-  Wire.write(0x6B);
-  Wire.write(0x00); //Sleep mode and CLK source
-  Wire.endTransmission(true);
+  initIMU();
 }
 
 int16_t rawAccX, rawAccY, rawAccZ, rawTemp, rawGyroX, rawGyroY, rawGyroZ= 0;
@@ -33,36 +26,15 @@ float scaledAccX, scaledAccY, scaledAccZ, scaledTemp, scaledGyroX, scaledGyroY, 
 
 void loop() {
   // put your main code here, to run repeatedly
+  getAccel(&rawAccX, &rawAccY, &rawAccZ);
 
-  Wire.beginTransmission(MPU_ADDRESS);
-  Wire.write(0x3B);
-  Wire.endTransmission(false);
-  Wire.requestFrom(MPU_ADDRESS, 6);
+  getGyro(&rawGyroX, &rawGyroY, &rawGyroZ);
 
-  rawAccX= (Wire.read() << 8) | Wire.read();
-  rawAccY= (Wire.read() << 8) | Wire.read();
-  rawAccZ= (Wire.read() << 8) | Wire.read();
-
-  Wire.beginTransmission(MPU_ADDRESS);
-  Wire.write(0x41);
-  Wire.endTransmission(false);
-  Wire.requestFrom(MPU_ADDRESS, 2);
-
-  rawTemp= (Wire.read() << 8) | Wire.read();
-
-  Wire.beginTransmission(MPU_ADDRESS);
-  Wire.write(0x43);
-  Wire.endTransmission(false);
-  Wire.requestFrom(MPU_ADDRESS, 6);
-
-  rawGyroX= (Wire.read() << 8) | Wire.read();
-  rawGyroY= (Wire.read() << 8) | Wire.read();
-  rawGyroZ= (Wire.read() << 8) | Wire.read();
-
+  getTemp(&rawTemp);
   //Scaling of values
-  scaledAccX= rawAccX/-16384.0f;
-  scaledAccY= rawAccY/-16384.0f;
-  scaledAccZ= rawAccZ/-16384.0f;
+  scaledAccX= rawAccX/ -16384.0f;
+  scaledAccY= rawAccY/ -16384.0f;
+  scaledAccZ= rawAccZ/ -16384.0f;
 
   scaledTemp= rawTemp / 340.0f + 36.53f;
 
@@ -92,4 +64,57 @@ void loop() {
   blinkState= !blinkState;
 
   delay(UPDATE_RATE);
+}
+
+
+void initIMU()
+{
+  Wire.beginTransmission(MPU_ADDRESS);
+  Wire.write(0x1C);
+  Wire.write(0x00); //Accelerometer full scale range and selfTest
+  Wire.endTransmission(true);
+
+  Wire.beginTransmission(MPU_ADDRESS);
+  Wire.write(0x1B);
+  Wire.write(0x00); //Gyro full scale range and selfTest
+  Wire.endTransmission(true);
+
+  Wire.beginTransmission(MPU_ADDRESS);
+  Wire.write(0x6B);
+  Wire.write(0x00); //Sleep mode and CLK source
+  Wire.endTransmission(true);
+}
+
+void getAccel(int16_t* x, int16_t* y, int16_t* z)
+{
+  Wire.beginTransmission(MPU_ADDRESS);
+  Wire.write(ACCEL_START_REG);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU_ADDRESS, 6);
+
+  *x= (Wire.read() << 8) | Wire.read();
+  *y= (Wire.read() << 8) | Wire.read();
+  *z= (Wire.read() << 8) | Wire.read();
+}
+
+void getGyro(int16_t* x, int16_t* y, int16_t* z)
+{
+  Wire.beginTransmission(MPU_ADDRESS);
+  Wire.write(GYRO_START_REG);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU_ADDRESS, 6);
+
+  *y= (Wire.read() << 8) | Wire.read();
+  *x= (Wire.read() << 8) | Wire.read();
+  *z= (Wire.read() << 8) | Wire.read();
+}
+
+void getTemp(int16_t* temp)
+{
+  Wire.beginTransmission(MPU_ADDRESS);
+  Wire.write(TEMP_START_REG);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU_ADDRESS, 2);
+
+  *temp= (Wire.read() << 8) | Wire.read();
 }

@@ -27,7 +27,7 @@ void setup() {
   Wire.endTransmission(true);
 }
 
-uint16_t rawAccX, rawAccY, rawAccZ, rawTemp, rawGyroX, rawGyroY, rawGyroZ= 0;
+int16_t rawAccX, rawAccY, rawAccZ, rawTemp, rawGyroX, rawGyroY, rawGyroZ= 0;
 float scaledAccX, scaledAccY, scaledAccZ, scaledTemp, scaledGyroX, scaledGyroY, scaledGyroZ= 0.0f;
 
 void loop() {

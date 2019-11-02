@@ -1,9 +1,6 @@
 #include "IMU.h"
 
-IMU::IMU(uint8_t address)
-{
-	IMU_address= address;
-}
+IMU::IMU(uint8_t address) { IMU_address = address; }
 
 void IMU::init()
 {
@@ -32,9 +29,9 @@ void IMU::getAccel(float* x, float* y, float* z)
 	Wire.endTransmission(false);
 	Wire.requestFrom(IMU_address, 6);
 
-	*x= ((int16_t)(Wire.read() << 8) | Wire.read())/ACCEL_SCALE;
-	*y= ((int16_t)(Wire.read() << 8) | Wire.read())/ACCEL_SCALE;
-	*z= ((int16_t)(Wire.read() << 8) | Wire.read())/ACCEL_SCALE;
+	*x = ((int16_t)(Wire.read() << 8) | Wire.read()) / ACCEL_SCALE;
+	*y = ((int16_t)(Wire.read() << 8) | Wire.read()) / ACCEL_SCALE;
+	*z = ((int16_t)(Wire.read() << 8) | Wire.read()) / ACCEL_SCALE;
 }
 
 void IMU::getGyro(float* x, float* y, float* z)
@@ -44,9 +41,9 @@ void IMU::getGyro(float* x, float* y, float* z)
 	Wire.endTransmission(false);
 	Wire.requestFrom(IMU_address, 6);
 
-	*y= ((int16_t)(Wire.read() << 8) | Wire.read())/GYRO_SCALE;
-	*x= ((int16_t)(Wire.read() << 8) | Wire.read())/GYRO_SCALE;
-	*z= ((int16_t)(Wire.read() << 8) | Wire.read())/GYRO_SCALE;
+	*y = ((int16_t)(Wire.read() << 8) | Wire.read()) / GYRO_SCALE;
+	*x = ((int16_t)(Wire.read() << 8) | Wire.read()) / GYRO_SCALE;
+	*z = ((int16_t)(Wire.read() << 8) | Wire.read()) / GYRO_SCALE;
 }
 
 void IMU::getTemp(float* temp)
@@ -56,5 +53,5 @@ void IMU::getTemp(float* temp)
 	Wire.endTransmission(false);
 	Wire.requestFrom(IMU_address, 2);
 
-	*temp= ((int16_t)(Wire.read() << 8) | Wire.read())/TEMP_SCALE + TEMP_OFFSET;
+	*temp = ((int16_t)(Wire.read() << 8) | Wire.read()) / TEMP_SCALE + TEMP_OFFSET;
 }

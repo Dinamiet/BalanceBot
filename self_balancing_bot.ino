@@ -1,9 +1,9 @@
 #include "IMU.h"
 
 #define MPU_ADDRESS 0x68
-#define LED 13
+#define LED			13
 #define UPDATE_RATE 10
-bool blinkState= false;
+bool blinkState = false;
 
 IMU imu(MPU_ADDRESS);
 
@@ -16,7 +16,7 @@ void setup()
 	Serial.begin(115200);
 }
 
-float AccX, AccY, AccZ, Temp, GyroX, GyroY, GyroZ= 0.0f;
+float AccX, AccY, AccZ, Temp, GyroX, GyroY, GyroZ = 0.0f;
 
 void loop()
 {
@@ -45,7 +45,7 @@ void loop()
 	Serial.println();
 
 	digitalWrite(LED, blinkState);
-	blinkState= !blinkState;
+	blinkState = !blinkState;
 
 	delay(UPDATE_RATE);
 }

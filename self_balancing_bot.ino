@@ -2,6 +2,7 @@
 
 #define MPU_ADDRESS 0x68
 #define LED 13
+#define UPDATE_RATE 10
 bool blinkState= false;
 
 void setup() {
@@ -59,11 +60,11 @@ void loop() {
   rawGyroZ= (Wire.read() << 8) | Wire.read();
 
   //Scaling of values
-  scaledAccX= rawAccX/16384.0f;
-  scaledAccY= rawAccY/16384.0f;
-  scaledAccZ= rawAccZ/16384.0f;
+  scaledAccX= rawAccX/-16384.0f;
+  scaledAccY= rawAccY/-16384.0f;
+  scaledAccZ= rawAccZ/-16384.0f;
 
-  scaledTemp= rawTemp / 340.0f + 36.53;
+  scaledTemp= rawTemp / 340.0f + 36.53f;
 
   scaledGyroX= rawGyroX / 131.0f;
   scaledGyroY= rawGyroY / 131.0f;
@@ -84,7 +85,11 @@ void loop() {
   Serial.print("\t");
   Serial.print(scaledGyroZ);
   Serial.print("\t");
-  Serial.println(scaledTemp);
+  Serial.print(scaledTemp);
+  Serial.println();
 
-  delay(100);
+  digitalWrite(LED, blinkState);
+  blinkState= !blinkState;
+
+  delay(UPDATE_RATE);
 }

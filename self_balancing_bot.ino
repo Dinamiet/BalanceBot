@@ -13,6 +13,8 @@ void setup()
 	pinMode(LED, OUTPUT);
 	digitalWrite(LED, blinkState);
 
+	imu.init();
+
 	Serial.begin(115200);
 }
 
@@ -22,9 +24,7 @@ void loop()
 {
 	// put your main code here, to run repeatedly
 	imu.getAccel(&AccX, &AccY, &AccZ);
-
 	imu.getGyro(&GyroX, &GyroY, &GyroZ);
-
 	imu.getTemp(&Temp);
 	//Remove offsets
 

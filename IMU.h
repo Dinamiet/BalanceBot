@@ -10,10 +10,14 @@
 #define ACCEL_START_REG 0x3B
 #define GYRO_START_REG	0x43
 #define TEMP_START_REG	0x41
+#define INT_ENABLE_REG	0x38
+#define SAMPLE_RATE_REG	0x19
 
 #define IMU_CLK_VAL		0x00
 #define ACCEL_SETUP_VAL 0x00
 #define GYRO_SETUP_VAL	0x00
+#define INT_ENABLE_VAL	0x01
+#define SAMPLE_RATE_VAL	0xFF
 
 #define ACCEL_SCALE -16384.0f
 #define GYRO_SCALE	131.0f
@@ -24,11 +28,13 @@ class IMU
 {
 	private:
 	int		IMU_address;
-	TwoWire Wire;
-	void	init();
+	TwoWire Wire;	
 
 	public:
 	IMU(uint8_t address);
+	void	init();
+	void enableINT();
+	void setSampleRate();
 	void getAccel(float* x, float* y, float* z);
 	void getGyro(float* x, float* y, float* z);
 	void getTemp(float* temp);

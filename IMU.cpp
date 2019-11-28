@@ -55,3 +55,19 @@ void IMU::getTemp(float* temp)
 
 	*temp = ((int16_t)(Wire.read() << 8) | Wire.read()) / TEMP_SCALE + TEMP_OFFSET;
 }
+
+void IMU::enableINT()
+{
+	Wire.beginTransmission(IMU_address);
+	Wire.write(INT_ENABLE_REG);
+	Wire.write(INT_ENABLE_VAL);
+	Wire.endTransmission(true);
+}
+
+void IMU::setSampleRate()
+{
+	Wire.beginTransmission(IMU_address);
+	Wire.write(SAMPLE_RATE_REG);
+	Wire.write(SAMPLE_RATE_VAL);
+	Wire.endTransmission(true);
+}

@@ -13,7 +13,7 @@
 #define INT_ENABLE_REG	0x38
 #define SAMPLE_RATE_REG	0x19
 
-#define IMU_CLK_VAL		0x00
+#define IMU_CLK_VAL		0x01
 #define ACCEL_SETUP_VAL 0x00
 #define GYRO_SETUP_VAL	0x00
 #define INT_ENABLE_VAL	0x01

@@ -4,7 +4,14 @@ IMU::IMU(uint8_t address) { IMU_address = address; }
 
 void IMU::init()
 {
+	initIMU();
+	initDMP();
+}
+
+void IMU::initIMU()
+{
 	Wire.begin();
+	Wire.setClock(400000);
 
 	Wire.beginTransmission(IMU_address);
 	Wire.write(ACCEL_SETUP_REG);
@@ -20,6 +27,11 @@ void IMU::init()
 	Wire.write(IMU_CLK_REG);
 	Wire.write(IMU_CLK_VAL);
 	Wire.endTransmission(true);
+}
+
+void IMU::initDMP()
+{
+
 }
 
 void IMU::getAccel(float* x, float* y, float* z)

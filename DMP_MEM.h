@@ -1,7 +1,10 @@
 #ifndef DMP_MEM_H
 #define DMP_MEM_H
 
+#include <avr/pgmspace.h>
+
 #define DMP_MEM_SIZE       3062
+#define DMP_CHUNK_SIZE		   16
 
 /* ================================================================ *
  | Default MotionApps v6.12 28-byte FIFO packet structure:           |

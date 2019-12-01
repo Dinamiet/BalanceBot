@@ -1,6 +1,7 @@
 #ifndef IMU_H
 #define IMU_H
 
+#include "DMP_MEM.h"
 #include "Wire.h"
 
 #define RAW_ACCEL_REG 0x3B
@@ -18,6 +19,7 @@ class IMU
 	int		IMU_address;
 	TwoWire Wire;
 	void	writeRegister(uint8_t reg, uint8_t value);
+	void	writeBytes(uint8_t reg, uint8_t* data, uint8_t len);
 	void	writeDMPMem();
 
 	public:

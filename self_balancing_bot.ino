@@ -3,17 +3,24 @@
 #define MPU_ADDRESS 0x68
 #define LED			13
 #define UPDATE_RATE 10
+#define INT_PIN		2
 bool blinkState = false;
 
 IMU imu(MPU_ADDRESS);
+
+void dmpDataReady() { Serial.println("INT"); }
 
 void setup()
 {
 	// put your setup code here, to run once:
 	pinMode(LED, OUTPUT);
+	pinMode(INT_PIN, INPUT);
 	digitalWrite(LED, blinkState);
 
 	imu.initIMU();
+	imu.initDMP();
+
+	attachInterrupt(digitalPinToInterrupt(INT_PIN), dmpDataReady, RISING);
 
 	Serial.begin(115200);
 }

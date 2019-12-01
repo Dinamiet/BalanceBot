@@ -16,10 +16,12 @@
 class IMU
 {
 	private:
-	int		IMU_address;
+	uint8_t IMU_address;
 	TwoWire Wire;
 	void	writeRegister(uint8_t reg, uint8_t value);
 	void	writeBytes(uint8_t reg, uint8_t* data, uint8_t len);
+	uint8_t readRegister(uint8_t reg);
+	void	readBytes(uint8_t reg, uint8_t* data, uint8_t len);
 	void	writeDMPMem();
 
 	public:

@@ -18,6 +18,24 @@ void IMU::writeBytes(uint8_t reg, uint8_t* data, uint8_t len)
 	Wire.endTransmission(true);
 }
 
+uint8_t IMU::readRegister(uint8_t reg)
+{
+	Wire.beginTransmission(IMU_address);
+	Wire.write(reg);
+	Wire.endTransmission(false);
+	Wire.requestFrom(IMU_address, 1U);
+	return Wire.read();
+}
+
+void IMU::readBytes(uint8_t reg, uint8_t* data, uint8_t len)
+{
+	Wire.beginTransmission(IMU_address);
+	Wire.write(reg);
+	Wire.endTransmission(false);
+	Wire.requestFrom(IMU_address, len);
+	for (uint8_t i = 0; i < len; i++) { data[i] = Wire.read(); }
+}
+
 void IMU::writeDMPMem()
 {
 	uint8_t buff[DMP_CHUNK_SIZE];
@@ -90,34 +108,31 @@ void IMU::initDMP()
 
 void IMU::getAccel(float* x, float* y, float* z)
 {
-	Wire.beginTransmission(IMU_address);
-	Wire.write(RAW_ACCEL_REG);
-	Wire.endTransmission(false);
-	Wire.requestFrom(IMU_address, 6);
+	uint8_t data[6];
 
-	*x = ((int16_t)(Wire.read() << 8) | Wire.read()) / ACCEL_SCALE;
-	*y = ((int16_t)(Wire.read() << 8) | Wire.read()) / ACCEL_SCALE;
-	*z = ((int16_t)(Wire.read() << 8) | Wire.read()) / ACCEL_SCALE;
+	readBytes(RAW_ACCEL_REG, data, 6);
+
+	*x = (int16_t)((data[0] << 8) | data[1]) / ACCEL_SCALE;
+	*y = (int16_t)((data[2] << 8) | data[3]) / ACCEL_SCALE;
+	*z = (int16_t)((data[4] << 8) | data[5]) / ACCEL_SCALE;
 }
 
 void IMU::getGyro(float* x, float* y, float* z)
 {
-	Wire.beginTransmission(IMU_address);
-	Wire.write(RAW_GYRO_REG);
-	Wire.endTransmission(false);
-	Wire.requestFrom(IMU_address, 6);
+	uint8_t data[6];
 
-	*y = ((int16_t)(Wire.read() << 8) | Wire.read()) / GYRO_SCALE;
-	*x = ((int16_t)(Wire.read() << 8) | Wire.read()) / GYRO_SCALE;
-	*z = ((int16_t)(Wire.read() << 8) | Wire.read()) / GYRO_SCALE;
+	readBytes(RAW_GYRO_REG, data, 6);
+
+	*x = (int16_t)((data[0] << 8) | data[1]) / GYRO_SCALE;
+	*y = (int16_t)((data[2] << 8) | data[3]) / GYRO_SCALE;
+	*z = (int16_t)((data[4] << 8) | data[5]) / GYRO_SCALE;
 }
 
 void IMU::getTemp(float* temp)
 {
-	Wire.beginTransmission(IMU_address);
-	Wire.write(RAW_TEMP_REG);
-	Wire.endTransmission(false);
-	Wire.requestFrom(IMU_address, 2);
+	uint8_t data[2];
 
-	*temp = ((int16_t)(Wire.read() << 8) | Wire.read()) / TEMP_SCALE + TEMP_OFFSET;
+	readBytes(RAW_TEMP_REG, data, 2);
+
+	*temp = (int16_t)((data[0] << 8) | data[1]) / TEMP_SCALE + TEMP_OFFSET;
 }

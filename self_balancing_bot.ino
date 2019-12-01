@@ -18,7 +18,7 @@ void setup()
 	digitalWrite(LED, blinkState);
 
 	imu.initIMU();
-	imu.initDMP();
+	// imu.initDMP();
 
 	attachInterrupt(digitalPinToInterrupt(INT_PIN), dmpDataReady, RISING);
 
@@ -36,19 +36,19 @@ void loop()
 	//Remove offsets
 
 	//Print values
-	// Serial.print(AccX);
-	// Serial.print("\t");
-	// Serial.print(AccY);
-	// Serial.print("\t");
-	// Serial.print(AccZ);
-	// Serial.print("\t");
+	Serial.print(AccX);
+	Serial.print("\t");
+	Serial.print(AccY);
+	Serial.print("\t");
+	Serial.print(AccZ);
+	Serial.print("\t");
 	Serial.print(GyroX);
 	Serial.print("\t");
 	Serial.print(GyroY);
 	Serial.print("\t");
 	Serial.print(GyroZ);
-	// Serial.print("\t");
-	// Serial.print(Temp);
+	Serial.print("\t");
+	Serial.print(Temp);
 	Serial.println();
 
 	digitalWrite(LED, blinkState);

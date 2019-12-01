@@ -3,9 +3,9 @@
 
 #include "Wire.h"
 
-#define ACCEL_START_REG 0x3B
-#define GYRO_START_REG	0x43
-#define TEMP_START_REG	0x41
+#define RAW_ACCEL_REG 0x3B
+#define RAW_GYRO_REG  0x43
+#define RAW_TEMP_REG  0x41
 
 #define ACCEL_SCALE -16384.0f
 #define GYRO_SCALE	16.4f
@@ -22,9 +22,8 @@ class IMU
 
 	public:
 	IMU(uint8_t address);
-	void init();
-	void enableINT();
-	void setSampleRate();
+	void initIMU();
+	void initDMP();
 	void getAccel(float* x, float* y, float* z);
 	void getGyro(float* x, float* y, float* z);
 	void getTemp(float* temp);

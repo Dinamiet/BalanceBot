@@ -13,7 +13,7 @@ void setup()
 	pinMode(LED, OUTPUT);
 	digitalWrite(LED, blinkState);
 
-	imu.init();
+	imu.initIMU();
 
 	Serial.begin(115200);
 }
@@ -29,19 +29,19 @@ void loop()
 	//Remove offsets
 
 	//Print values
-	Serial.print(AccX);
-	Serial.print("\t");
-	Serial.print(AccY);
-	Serial.print("\t");
-	Serial.print(AccZ);
-	Serial.print("\t");
+	// Serial.print(AccX);
+	// Serial.print("\t");
+	// Serial.print(AccY);
+	// Serial.print("\t");
+	// Serial.print(AccZ);
+	// Serial.print("\t");
 	Serial.print(GyroX);
 	Serial.print("\t");
 	Serial.print(GyroY);
 	Serial.print("\t");
 	Serial.print(GyroZ);
-	Serial.print("\t");
-	Serial.print(Temp);
+	// Serial.print("\t");
+	// Serial.print(Temp);
 	Serial.println();
 
 	digitalWrite(LED, blinkState);

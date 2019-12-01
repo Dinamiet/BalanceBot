@@ -12,12 +12,6 @@ void IMU::writeRegister(uint8_t reg, uint8_t value)
 
 void IMU::writeDMPMem() {}
 
-void IMU::init()
-{
-	initIMU();
-	// initDMP();
-}
-
 void IMU::initIMU()
 {
 	Wire.begin();
@@ -47,7 +41,7 @@ void IMU::initDMP()
 void IMU::getAccel(float* x, float* y, float* z)
 {
 	Wire.beginTransmission(IMU_address);
-	Wire.write(ACCEL_START_REG);
+	Wire.write(RAW_ACCEL_REG);
 	Wire.endTransmission(false);
 	Wire.requestFrom(IMU_address, 6);
 
@@ -59,7 +53,7 @@ void IMU::getAccel(float* x, float* y, float* z)
 void IMU::getGyro(float* x, float* y, float* z)
 {
 	Wire.beginTransmission(IMU_address);
-	Wire.write(GYRO_START_REG);
+	Wire.write(RAW_GYRO_REG);
 	Wire.endTransmission(false);
 	Wire.requestFrom(IMU_address, 6);
 
@@ -76,20 +70,4 @@ void IMU::getTemp(float* temp)
 	Wire.requestFrom(IMU_address, 2);
 
 	*temp = ((int16_t)(Wire.read() << 8) | Wire.read()) / TEMP_SCALE + TEMP_OFFSET;
-}
-
-void IMU::enableINT()
-{
-	Wire.beginTransmission(IMU_address);
-	Wire.write(INT_ENABLE_REG);
-	Wire.write(INT_ENABLE_VAL);
-	Wire.endTransmission(true);
-}
-
-void IMU::setSampleRate()
-{
-	Wire.beginTransmission(IMU_address);
-	Wire.write(SAMPLE_RATE_REG);
-	Wire.write(SAMPLE_RATE_VAL);
-	Wire.endTransmission(true);
 }

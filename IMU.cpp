@@ -136,3 +136,12 @@ void IMU::getTemp(float* temp)
 
 	*temp = (int16_t)((data[0] << 8) | data[1]) / TEMP_SCALE + TEMP_OFFSET;
 }
+
+uint16_t IMU::getFIFOCount()
+{
+	uint8_t data[2];
+	readBytes(0x72, data, 2);
+	return (data[0] << 8) | data[1];
+}
+
+uint8_t IMU::INT_status() { return readRegister(0x3A); }

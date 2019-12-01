@@ -26,11 +26,13 @@ class IMU
 
 	public:
 	IMU(uint8_t address);
-	void initIMU();
-	void initDMP();
-	void getAccel(float* x, float* y, float* z);
-	void getGyro(float* x, float* y, float* z);
-	void getTemp(float* temp);
+	void	 initIMU();
+	void	 initDMP();
+	void	 getAccel(float* x, float* y, float* z);
+	void	 getGyro(float* x, float* y, float* z);
+	void	 getTemp(float* temp);
+	uint16_t getFIFOCount();
+	uint8_t	 INT_status();
 };
 
 #endif

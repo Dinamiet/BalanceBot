@@ -110,26 +110,26 @@ void MPU6050::initDMP()
 	writeRegister(0x6A, 0xC4); //Enable DMP & FIFO and reset FIFO.
 }
 
-void MPU6050::getAccel(float* x, float* y, float* z)
+void MPU6050::getRawAccel(float* x, float* y, float* z)
 {
 	uint8_t data[6];
 
 	readBytes(0x3B, data, 6);
 
-	*x = (int16_t)((data[0] << 8) | data[1]) / ACCEL_SCALE;
-	*y = (int16_t)((data[2] << 8) | data[3]) / ACCEL_SCALE;
-	*z = (int16_t)((data[4] << 8) | data[5]) / ACCEL_SCALE;
+	*x = (int16_t)((data[0] << 8) | data[1]);
+	*y = (int16_t)((data[2] << 8) | data[3]);
+	*z = (int16_t)((data[4] << 8) | data[5]);
 }
 
-void MPU6050::getGyro(float* x, float* y, float* z)
+void MPU6050::getRawGyro(float* x, float* y, float* z)
 {
 	uint8_t data[6];
 
 	readBytes(0x43, data, 6);
 
-	*x = (int16_t)((data[0] << 8) | data[1]) / GYRO_SCALE;
-	*y = (int16_t)((data[2] << 8) | data[3]) / GYRO_SCALE;
-	*z = (int16_t)((data[4] << 8) | data[5]) / GYRO_SCALE;
+	*x = (int16_t)((data[0] << 8) | data[1]);
+	*y = (int16_t)((data[2] << 8) | data[3]);
+	*z = (int16_t)((data[4] << 8) | data[5]);
 }
 
 void MPU6050::getTemp(float* temp)
@@ -138,7 +138,7 @@ void MPU6050::getTemp(float* temp)
 
 	readBytes(0x41, data, 2);
 
-	*temp = (int16_t)((data[0] << 8) | data[1]) / TEMP_SCALE + TEMP_OFFSET;
+	*temp = (int16_t)((data[0] << 8) | data[1]) / 340.0f + 36.53f;
 }
 
 uint16_t MPU6050::getFIFOCount()
@@ -154,13 +154,29 @@ void MPU6050::getFIFOBytes(uint8_t* data, uint8_t len) { readBytes(0x74, data, l
 
 void MPU6050::setGyroOffset(int16_t x, int16_t y, int16_t z)
 {
-	uint8_t offsets[6] = {(x >> 8) & 0xFF, x & 0xFF, (y >> 8) & 0xFF, y & 0xFF, (z >> 8) & 0xFF, z & 0xFF};
+	uint8_t offsets[6] = {
+			(x >> 8) & 0xFF, // X High byte
+			x & 0xFF,		 // X Low byte
+			(y >> 8) & 0xFF, // Y High byte
+			y & 0xFF,		 // Y Low Byte
+			(z >> 8) & 0xFF, // Z High byte
+			z & 0xFF		 // Z Low byte
+	};
+
 	writeBytes(0x13, offsets, 6);
 }
 
 void MPU6050::setAccelOffset(int16_t x, int16_t y, int16_t z)
 {
-	uint8_t offsets[6] = {(x >> 8) & 0xFF, x & 0xFF, (y >> 8) & 0xFF, y & 0xFF, (z >> 8) & 0xFF, z & 0xFF};
+	uint8_t offsets[6] = {
+			(x >> 8) & 0xFF, // X High byte
+			x & 0xFF,		 // X Low byte
+			(y >> 8) & 0xFF, // Y High byte
+			y & 0xFF,		 // Y Low Byte
+			(z >> 8) & 0xFF, // Z High byte
+			z & 0xFF		 // Z Low byte
+	};
+
 	writeBytes(0x06, offsets, 6);
 }
 
@@ -200,4 +216,34 @@ void MPU6050::getYawPitchRoll(float* yaw, float* pitch, float* roll)
 			*pitch = -PI - *pitch;
 		}
 	}
+}
+
+void MPU6050::getAccel(float* x, float* y, float* z)
+{
+	uint8_t data[DMP_PACKET_SIZE];
+	getFIFOBytes(data, DMP_PACKET_SIZE);
+
+	Vector Accel = {
+			(int16_t)((data[22] << 8) | data[23]) / 16384.0f, // X
+			(int16_t)((data[24] << 8) | data[25]) / 16384.0f, // Y
+			(int16_t)((data[26] << 8) | data[27]) / 16384.0f  // Z
+	};
+	*x = Accel.x;
+	*y = Accel.y;
+	*z = Accel.z;
+}
+
+void MPU6050::getGyro(float* x, float* y, float* z)
+{
+	uint8_t data[DMP_PACKET_SIZE];
+	getFIFOBytes(data, DMP_PACKET_SIZE);
+
+	Vector Gyro = {
+			(int16_t)((data[16] << 8) | data[17]) / 16.4f, // X
+			(int16_t)((data[18] << 8) | data[19]) / 16.4f, // Y
+			(int16_t)((data[20] << 8) | data[21]) / 16.4f  // Z
+	};
+	*x = Gyro.x;
+	*y = Gyro.y;
+	*z = Gyro.z;
 }

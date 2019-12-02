@@ -6,12 +6,6 @@
 #include "Wire.h"
 #include "structures.h"
 
-#define ACCEL_SCALE -16384.0f
-#define GYRO_SCALE	16.4f
-#define TEMP_SCALE	340.0f
-#define TEMP_OFFSET 36.53f
-//ToDo: List all registers used here as defines
-
 class MPU6050
 {
 	private:
@@ -27,6 +21,8 @@ class MPU6050
 	MPU6050(uint8_t address);
 	void	 initIMU();
 	void	 initDMP();
+	void	 getRawAccel(float* x, float* y, float* z);
+	void	 getRawGyro(float* x, float* y, float* z);
 	void	 getAccel(float* x, float* y, float* z);
 	void	 getGyro(float* x, float* y, float* z);
 	void	 getTemp(float* temp);

@@ -1,4 +1,4 @@
-#include "IMU.h"
+#include "MPU6050.h"
 #include "helper_3dmath.h"
 
 #define MPU_ADDRESS 0x68
@@ -6,7 +6,7 @@
 #define INT_PIN		2
 bool blinkState = false;
 
-IMU			imu(MPU_ADDRESS);
+MPU6050		imu(MPU_ADDRESS);
 Quaternion	q;
 VectorFloat gravity;
 float		ypr[3];

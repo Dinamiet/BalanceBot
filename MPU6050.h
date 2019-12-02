@@ -4,6 +4,7 @@
 #include "Arduino.h"
 #include "DMP_program.h"
 #include "Wire.h"
+#include "structures.h"
 
 #define ACCEL_SCALE -16384.0f
 #define GYRO_SCALE	16.4f
@@ -34,6 +35,7 @@ class MPU6050
 	void	 getFIFOBytes(uint8_t* data, uint8_t len);
 	void	 setGyroOffset(int16_t x, int16_t y, int16_t z);
 	void	 setAccelOffset(int16_t x, int16_t y, int16_t z);
+	void	 getYawPitchRoll(float* yaw, float* pitch, float* roll);
 };
 
 #endif

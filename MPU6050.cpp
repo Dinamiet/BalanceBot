@@ -163,3 +163,41 @@ void MPU6050::setAccelOffset(int16_t x, int16_t y, int16_t z)
 	uint8_t offsets[6] = {(x >> 8) & 0xFF, x & 0xFF, (y >> 8) & 0xFF, y & 0xFF, (z >> 8) & 0xFF, z & 0xFF};
 	writeBytes(0x06, offsets, 6);
 }
+
+void MPU6050::getYawPitchRoll(float* yaw, float* pitch, float* roll)
+{
+	uint8_t data[DMP_PACKET_SIZE];
+	getFIFOBytes(data, DMP_PACKET_SIZE);
+	Quaternion q = {
+			(int16_t)((data[0] << 8) | data[1]) / 16384.0f,	 // W
+			(int16_t)((data[4] << 8) | data[5]) / 16384.0f,	 // X
+			(int16_t)((data[8] << 8) | data[9]) / 16384.0f,	 // Y
+			(int16_t)((data[12] << 8) | data[13]) / 16384.0f // Z
+	};
+	Vector g = {
+			2 * (q.x * q.z - q.w * q.y),				  // X
+			2 * (q.w * q.x - q.y * q.z),				  // Y
+			q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z // Z
+	};
+
+	//YAW: (about Z axis)
+	*yaw = atan2(2 * q.x * q.y - 2 * q.w * q.z, 2 * q.w * q.w + 2 * q.x * q.x - 1);
+
+	//PITCH (about Y axis)
+	*pitch = atan2(g.x, sqrt(g.y * g.y + g.z * g.z));
+
+	//ROLL (about X axis)
+	*roll = atan2(g.y, g.z);
+
+	if (g.z < 0)
+	{
+		if (*pitch > 0)
+		{
+			*pitch = PI - *pitch;
+		}
+		else
+		{
+			*pitch = -PI - *pitch;
+		}
+	}
+}

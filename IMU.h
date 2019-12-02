@@ -35,6 +35,8 @@ class IMU
 	uint16_t getFIFOCount();
 	uint8_t	 INT_status();
 	void	 getFIFOBytes(uint8_t* data, uint8_t len);
+	void	 setGyroOffset(int16_t x, int16_t y, int16_t z);
+	void	 setAccelOffset(int16_t x, int16_t y, int16_t z);
 };
 
 #endif

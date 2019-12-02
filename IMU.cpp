@@ -151,3 +151,15 @@ uint16_t IMU::getFIFOCount()
 uint8_t IMU::INT_status() { return readRegister(0x3A); }
 
 void IMU::getFIFOBytes(uint8_t* data, uint8_t len) { readBytes(0x74, data, len); }
+
+void IMU::setGyroOffset(int16_t x, int16_t y, int16_t z)
+{
+	uint8_t offsets[6] = {(x >> 8) & 0xFF, x & 0xFF, (y >> 8) & 0xFF, y & 0xFF, (z >> 8) & 0xFF, z & 0xFF};
+	writeBytes(0x13, offsets, 6);
+}
+
+void IMU::setAccelOffset(int16_t x, int16_t y, int16_t z)
+{
+	uint8_t offsets[6] = {(x >> 8) & 0xFF, x & 0xFF, (y >> 8) & 0xFF, y & 0xFF, (z >> 8) & 0xFF, z & 0xFF};
+	writeBytes(0x06, offsets, 6);
+}

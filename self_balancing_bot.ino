@@ -46,7 +46,7 @@ void loop()
 	if (dataReady)
 	{
 		uint16_t packetCount = imu.numAvailablePackets();
-		if (packetCount >= DMP_PACKET_SIZE)
+		if (packetCount)
 		{
 			float yaw, pitch, roll;
 			imu.getYawPitchRoll(&yaw, &pitch, &roll);

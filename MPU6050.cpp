@@ -145,7 +145,8 @@ uint16_t MPU6050::numAvailablePackets()
 {
 	uint8_t data[2];
 	readBytes(0x72, data, 2);
-	return (data[0] << 8) | data[1];
+	uint16_t bytesAvailable = (data[0] << 8) | data[1];
+	return bytesAvailable / DMP_PACKET_SIZE;
 }
 
 uint8_t MPU6050::INT_status() { return readRegister(0x3A); }

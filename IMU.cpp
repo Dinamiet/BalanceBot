@@ -39,12 +39,12 @@ void IMU::readBytes(uint8_t reg, uint8_t* data, uint8_t len)
 void IMU::writeDMPMem()
 {
 	uint8_t buff[DMP_CHUNK_SIZE];
-	uint8_t bank	  = 0x1F;
+	uint8_t bank	  = 0;
 	uint8_t address	  = 0x00;
 	uint8_t chunkSize = DMP_CHUNK_SIZE;
 
 	//Set memory bank
-	writeRegister(0x6D, bank);
+	writeRegister(0x6D, bank & 0x1F);
 	//Set memory address
 	writeRegister(0x6E, address);
 
@@ -72,7 +72,7 @@ void IMU::writeDMPMem()
 			{
 				bank++;
 				//Set memory bank
-				writeRegister(0x6D, bank);
+				writeRegister(0x6D, bank & 0x1F);
 				//Set memory address
 				writeRegister(0x6E, address);
 			}
@@ -84,6 +84,9 @@ void IMU::initIMU()
 {
 	Wire.begin();
 	Wire.setClock(400000);
+
+	writeRegister(0x6B, 0x80); //Reset IMU
+	delay(100);
 
 	writeRegister(0x6B, 0x01); //Setup clock source
 	writeRegister(0x23, 0x00); //No FIFO
@@ -99,10 +102,11 @@ void IMU::initDMP()
 {
 	writeDMPMem();
 
-	writeRegister(0x70, 0x04); //Program start Address
-	writeRegister(0x71, 0x00); //Program start Address
+	//Program Start address
+	uint8_t startAddress[] = {0x04, 0x00};
+	writeBytes(0x70, startAddress, 2);
 
-	writeRegister(0x38, 0x02); //Enable INT
+	writeRegister(0x38, 0x02); //Enable DMP INT
 	writeRegister(0x6A, 0xC4); //Enable DMP & FIFO and reset FIFO.
 }
 
@@ -145,3 +149,5 @@ uint16_t IMU::getFIFOCount()
 }
 
 uint8_t IMU::INT_status() { return readRegister(0x3A); }
+
+void IMU::getFIFOBytes(uint8_t* data, uint8_t len) { readBytes(0x74, data, len); }

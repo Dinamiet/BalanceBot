@@ -1,6 +1,7 @@
 #ifndef IMU_H
 #define IMU_H
 
+#include "Arduino.h"
 #include "DMP_MEM.h"
 #include "Wire.h"
 
@@ -33,6 +34,7 @@ class IMU
 	void	 getTemp(float* temp);
 	uint16_t getFIFOCount();
 	uint8_t	 INT_status();
+	void	 getFIFOBytes(uint8_t* data, uint8_t len);
 };
 
 #endif

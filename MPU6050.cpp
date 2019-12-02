@@ -24,7 +24,9 @@ uint8_t MPU6050::readRegister(uint8_t reg)
 	Wire.write(reg);
 	Wire.endTransmission(false);
 	Wire.requestFrom(IMU_address, 1U);
-	return Wire.read();
+	uint8_t data = Wire.read();
+	Wire.endTransmission(true);
+	return data;
 }
 
 void MPU6050::readBytes(uint8_t reg, uint8_t* data, uint8_t len)
@@ -34,6 +36,7 @@ void MPU6050::readBytes(uint8_t reg, uint8_t* data, uint8_t len)
 	Wire.endTransmission(false);
 	Wire.requestFrom(IMU_address, len);
 	for (uint8_t i = 0; i < len; i++) { data[i] = Wire.read(); }
+	Wire.endTransmission(true);
 }
 
 void MPU6050::writeDMP_Program()

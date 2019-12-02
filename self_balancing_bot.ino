@@ -9,11 +9,7 @@ MPU6050 imu(MPU_ADDRESS);
 
 volatile bool dataReady = false;
 
-void dmpDataReady()
-{
-	dataReady = true;
-	// Serial.println("INT");
-}
+void dmpDataReady() { dataReady = true; }
 
 void setup()
 {
@@ -49,15 +45,14 @@ void loop()
 	// put your main code here, to run repeatedly
 	if (dataReady)
 	{
-		uint16_t fifoCount = imu.getFIFOCount();
-		float	 yaw, pitch, roll;
-		if (fifoCount >= DMP_PACKET_SIZE)
+		uint16_t packetCount = imu.numAvailablePackets();
+		if (packetCount >= DMP_PACKET_SIZE)
 		{
-			//Do this math in MPU class
+			float yaw, pitch, roll;
 			imu.getYawPitchRoll(&yaw, &pitch, &roll);
 			Serial.print("ypr\t");
-			// Serial.print(fifoCount);
-			// Serial.print("\t");
+			Serial.print(packetCount);
+			Serial.print("\t");
 			Serial.print(yaw * 180 / M_PI);
 			Serial.print("\t");
 			Serial.print(pitch * 180 / M_PI);
@@ -65,9 +60,9 @@ void loop()
 			Serial.print(roll * 180 / M_PI);
 			Serial.println();
 			dataReady = false;
+			digitalWrite(LED, blinkState);
+			blinkState = !blinkState;
 		}
-		digitalWrite(LED, blinkState);
-		blinkState = !blinkState;
 	}
 
 	//Handle FIFO overflow

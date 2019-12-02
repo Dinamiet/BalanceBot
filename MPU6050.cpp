@@ -36,7 +36,7 @@ void MPU6050::readBytes(uint8_t reg, uint8_t* data, uint8_t len)
 	for (uint8_t i = 0; i < len; i++) { data[i] = Wire.read(); }
 }
 
-void MPU6050::writeDMPMem()
+void MPU6050::writeDMP_Program()
 {
 	uint8_t buff[DMP_CHUNK_SIZE];
 	uint8_t bank	  = 0;
@@ -100,7 +100,7 @@ void MPU6050::initIMU()
 
 void MPU6050::initDMP()
 {
-	writeDMPMem();
+	writeDMP_Program();
 
 	//Program Start address
 	uint8_t startAddress[] = {0x04, 0x00};
@@ -141,7 +141,7 @@ void MPU6050::getTemp(float* temp)
 	*temp = (int16_t)((data[0] << 8) | data[1]) / 340.0f + 36.53f;
 }
 
-uint16_t MPU6050::getFIFOCount()
+uint16_t MPU6050::numAvailablePackets()
 {
 	uint8_t data[2];
 	readBytes(0x72, data, 2);
@@ -150,7 +150,7 @@ uint16_t MPU6050::getFIFOCount()
 
 uint8_t MPU6050::INT_status() { return readRegister(0x3A); }
 
-void MPU6050::getFIFOBytes(uint8_t* data, uint8_t len) { readBytes(0x74, data, len); }
+void MPU6050::getPacket(uint8_t* data, uint8_t len) { readBytes(0x74, data, len); }
 
 void MPU6050::setGyroOffset(int16_t x, int16_t y, int16_t z)
 {
@@ -183,7 +183,7 @@ void MPU6050::setAccelOffset(int16_t x, int16_t y, int16_t z)
 void MPU6050::getYawPitchRoll(float* yaw, float* pitch, float* roll)
 {
 	uint8_t data[DMP_PACKET_SIZE];
-	getFIFOBytes(data, DMP_PACKET_SIZE);
+	getPacket(data, DMP_PACKET_SIZE);
 	Quaternion q = {
 			(int16_t)((data[0] << 8) | data[1]) / 16384.0f,	 // W
 			(int16_t)((data[4] << 8) | data[5]) / 16384.0f,	 // X
@@ -221,7 +221,7 @@ void MPU6050::getYawPitchRoll(float* yaw, float* pitch, float* roll)
 void MPU6050::getAccel(float* x, float* y, float* z)
 {
 	uint8_t data[DMP_PACKET_SIZE];
-	getFIFOBytes(data, DMP_PACKET_SIZE);
+	getPacket(data, DMP_PACKET_SIZE);
 
 	Vector Accel = {
 			(int16_t)((data[22] << 8) | data[23]) / 16384.0f, // X
@@ -236,7 +236,7 @@ void MPU6050::getAccel(float* x, float* y, float* z)
 void MPU6050::getGyro(float* x, float* y, float* z)
 {
 	uint8_t data[DMP_PACKET_SIZE];
-	getFIFOBytes(data, DMP_PACKET_SIZE);
+	getPacket(data, DMP_PACKET_SIZE);
 
 	Vector Gyro = {
 			(int16_t)((data[16] << 8) | data[17]) / 16.4f, // X

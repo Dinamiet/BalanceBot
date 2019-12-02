@@ -2,7 +2,7 @@
 #define IMU_H
 
 #include "Arduino.h"
-#include "DMP_MEM.h"
+#include "DMP_program.h"
 #include "Wire.h"
 
 #define RAW_ACCEL_REG 0x3B

@@ -57,7 +57,7 @@ void IMU::writeDMPMem()
 			chunkSize = 256 - address;
 
 		//Read values from FLASH to RAM
-		for (uint8_t j = 0; j < chunkSize; j++) { buff[j] = pgm_read_byte(&(dmpMemory[i + j])); }
+		for (uint8_t j = 0; j < chunkSize; j++) { buff[j] = pgm_read_byte(&(DMP_Program[i + j])); }
 
 		//Write to IMU
 		writeBytes(0x6F, buff, chunkSize);

@@ -5,6 +5,7 @@
 
 #define DMP_MEM_SIZE       3062
 #define DMP_CHUNK_SIZE		   16
+#define DMP_PACKET_SIZE	28
 
 /* ================================================================ *
  | Default MotionApps v6.12 28-byte FIFO packet structure:           |
@@ -17,7 +18,7 @@
  * ================================================================ */
 
 // *** DMP Firmware V6.1.2
-const unsigned char dmpMemory[DMP_MEM_SIZE] PROGMEM = {
+const unsigned char DMP_Program[DMP_MEM_SIZE] PROGMEM = {
 /* bank # 0 */
 0x00, 0xF8, 0xF6, 0x2A, 0x3F, 0x68, 0xF5, 0x7A, 0x00, 0x06, 0xFF, 0xFE, 0x00, 0x03, 0x00, 0x00,
 0x00, 0x65, 0x00, 0x54, 0xFF, 0xEF, 0x00, 0x00, 0xFA, 0x80, 0x00, 0x0B, 0x12, 0x82, 0x00, 0x01,

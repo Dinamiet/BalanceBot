@@ -20,21 +20,36 @@ void setup()
 	pinMode(INT_PIN, INPUT);
 	digitalWrite(LED, blinkState);
 
-	Serial.println("Initializing IMU...");
+	Serial.println(F("Initializing IMU..."));
 	imu.initIMU();
 
-	// Calibration Code
+	int16_t x, y, z;
+	Serial.println(F("Calibrating Accelerometer..."));
+	imu.CalibrateAccel(100, 25, 2);
+	imu.getAccelOffset(&x, &y, &z);
+	Serial.print(F("Accel offsets:\t"));
+	Serial.print(x);
+	Serial.print(F("\t"));
+	Serial.print(y);
+	Serial.print(F("\t"));
+	Serial.println(z);
 
-	Serial.println("Initializing DMP...");
+	Serial.println(F("Calibrating Gyro..."));
+	imu.CalibrateGyro(100, 3);
+	imu.getGyroOffset(&x, &y, &z);
+	Serial.print(F("Gyro offsets:\t"));
+	Serial.print(x);
+	Serial.print(F("\t"));
+	Serial.print(y);
+	Serial.print(F("\t"));
+	Serial.println(z);
+
+	Serial.println(F("Initializing DMP..."));
 	imu.initDMP();
-
-	Serial.println("Setting offesets...");
-	imu.setGyroOffset(-48, -57, 36);
-	imu.setAccelOffset(-6556, 4883, 8444);
 
 	attachInterrupt(digitalPinToInterrupt(INT_PIN), dmpDataReady, RISING);
 
-	Serial.println("Initialization Done!");
+	Serial.println(F("Initialization Done!"));
 	imu.INT_status();
 }
 
@@ -50,13 +65,13 @@ void loop()
 		{
 			float yaw, pitch, roll;
 			imu.getYawPitchRoll(&yaw, &pitch, &roll);
-			Serial.print("ypr\t");
+			Serial.print(F("ypr\t"));
 			Serial.print(packetCount);
-			Serial.print("\t");
+			Serial.print(F("\t"));
 			Serial.print(yaw * 180 / M_PI);
-			Serial.print("\t");
+			Serial.print(F("\t"));
 			Serial.print(pitch * 180 / M_PI);
-			Serial.print("\t");
+			Serial.print(F("\t"));
 			Serial.print(roll * 180 / M_PI);
 			Serial.println();
 			dataReady = false;

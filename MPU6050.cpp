@@ -170,6 +170,17 @@ void MPU6050::setGyroOffset(int16_t x, int16_t y, int16_t z)
 	writeBytes(0x13, offsets, 6);
 }
 
+void MPU6050::getGyroOffset(int16_t* x, int16_t* y, int16_t* z)
+{
+	uint8_t data[6];
+
+	readBytes(0x13, data, 6);
+
+	*x = (int16_t)((data[0] << 8) | data[1]);
+	*y = (int16_t)((data[2] << 8) | data[3]);
+	*z = (int16_t)((data[4] << 8) | data[5]);
+}
+
 void MPU6050::setAccelOffset(int16_t x, int16_t y, int16_t z)
 {
 	uint8_t offsets[6] = {
@@ -182,6 +193,17 @@ void MPU6050::setAccelOffset(int16_t x, int16_t y, int16_t z)
 	};
 
 	writeBytes(0x06, offsets, 6);
+}
+
+void MPU6050::getAccelOffset(int16_t* x, int16_t* y, int16_t* z)
+{
+	uint8_t data[6];
+
+	readBytes(0x06, data, 6);
+
+	*x = (int16_t)((data[0] << 8) | data[1]);
+	*y = (int16_t)((data[2] << 8) | data[3]);
+	*z = (int16_t)((data[4] << 8) | data[5]);
 }
 
 void MPU6050::getYawPitchRoll(float* yaw, float* pitch, float* roll)
@@ -250,4 +272,102 @@ void MPU6050::getGyro(float* x, float* y, float* z)
 	*x = Gyro.x;
 	*y = Gyro.y;
 	*z = Gyro.z;
+}
+
+void MPU6050::CalibrateAccel(uint8_t minItt, uint8_t maxErr, uint8_t G)
+{
+	float x, y, z;
+	float Kp, Ki;
+	Kp = 0.1f;
+	Ki = 10.0f;
+	PID	  pidX(Kp, Ki, 0);
+	PID	  pidY(Kp, Ki, 0);
+	PID	  pidZ(Kp, Ki, 0);
+	float errorSum;
+
+	pidX.setPoint((G == 0) ? 16384 : 0);
+	pidY.setPoint((G == 1) ? 16384 : 0);
+	pidZ.setPoint((G == 2) ? 16384 : 0);
+	Serial.print(F("["));
+	for (uint8_t i = 0; i < 6; i++)
+	{
+		for (uint8_t j = 0; j < minItt || errorSum > maxErr; j++)
+		{
+			errorSum = 0;
+			getRawAccel(&x, &y, &z);
+			float outputX = pidX.Output(x, 0.001);
+			float outputY = pidY.Output(y, 0.001);
+			float outputZ = pidZ.Output(z, 0.001);
+
+			setAccelOffset(outputX, outputY, outputZ);
+
+			errorSum += abs(pidX.getLastError());
+			errorSum += abs(pidY.getLastError());
+			errorSum += abs(pidZ.getLastError());
+
+			if (!(j % (minItt / 2)))
+				Serial.print(F("="));
+
+			delay(1);
+		}
+		Kp *= 0.75;
+		Ki *= 0.75;
+		pidX.setKp(Kp);
+		pidX.setKi(Ki);
+		pidY.setKp(Kp);
+		pidY.setKi(Ki);
+		pidZ.setKp(Kp);
+		pidZ.setKi(Ki);
+		Serial.print(F("*"));
+	}
+	Serial.println(F("]"));
+}
+
+void MPU6050::CalibrateGyro(uint8_t minItt, uint8_t maxErr)
+{
+	float x, y, z;
+	float Kp, Ki;
+	Kp = 0.1f;
+	Ki = 45.0f;
+	PID	  pidX(Kp, Ki, 0);
+	PID	  pidY(Kp, Ki, 0);
+	PID	  pidZ(Kp, Ki, 0);
+	float errorSum;
+
+	pidX.setPoint(0);
+	pidY.setPoint(0);
+	pidZ.setPoint(0);
+	Serial.print(F("["));
+	for (uint8_t i = 0; i < 6; i++)
+	{
+		for (uint8_t j = 0; j < minItt || errorSum > maxErr; j++)
+		{
+			errorSum = 0;
+			getRawGyro(&x, &y, &z);
+			float outputX = pidX.Output(x, 0.001);
+			float outputY = pidY.Output(y, 0.001);
+			float outputZ = pidZ.Output(z, 0.001);
+
+			setGyroOffset(outputX, outputY, outputZ);
+
+			errorSum += abs(pidX.getLastError());
+			errorSum += abs(pidY.getLastError());
+			errorSum += abs(pidZ.getLastError());
+
+			if (!(j % (minItt / 2)))
+				Serial.print(F("="));
+
+			delay(1);
+		}
+		Kp *= 0.75;
+		Ki *= 0.75;
+		pidX.setKp(Kp);
+		pidX.setKi(Ki);
+		pidY.setKp(Kp);
+		pidY.setKi(Ki);
+		pidZ.setKp(Kp);
+		pidZ.setKi(Ki);
+		Serial.print(F("*"));
+	}
+	Serial.println(F("]"));
 }

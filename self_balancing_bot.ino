@@ -1,4 +1,5 @@
 #include "MPU6050.h"
+#include "Stepper.h"
 
 #define MPU_ADDRESS 0x68
 #define LED			13
@@ -6,6 +7,8 @@
 bool blinkState = false;
 
 MPU6050 imu(MPU_ADDRESS);
+Stepper leftWheel(1, 2, 3, 4);
+Stepper rightWheel(5, 6, 7, 8);
 
 volatile bool dataReady = false;
 
@@ -51,6 +54,9 @@ void setup()
 
 	Serial.println(F("Initialization Done!"));
 	imu.INT_status();
+
+	leftWheel.init();
+	rightWheel.init();
 }
 
 float AccX, AccY, AccZ, Temp, GyroX, GyroY, GyroZ = 0.0f;

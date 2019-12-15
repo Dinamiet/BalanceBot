@@ -1,18 +1,25 @@
 #include "MPU6050.h"
 #include "Stepper.h"
 
+#include <TimerOne.h>
+
 #define MPU_ADDRESS 0x68
 #define LED			13
 #define INT_PIN		2
+#define STEPSPEED	10000
+
 bool blinkState = false;
 
 MPU6050 imu(MPU_ADDRESS);
 Stepper leftWheel(1, 2, 3, 4);
 Stepper rightWheel(5, 6, 7, 8);
 
-volatile bool dataReady = false;
+volatile bool dataReady	 = false;
+volatile bool stepMotors = false;
 
 void dmpDataReady() { dataReady = true; }
+
+void stepMotorsCallback() { stepMotors = true; }
 
 void setup()
 {
@@ -52,14 +59,18 @@ void setup()
 
 	attachInterrupt(digitalPinToInterrupt(INT_PIN), dmpDataReady, RISING);
 
-	Serial.println(F("Initialization Done!"));
-	imu.INT_status();
-
+	Serial.println(F("Initializing motors"));
 	leftWheel.init();
 	rightWheel.init();
+
+	Timer1.initialize(STEPSPEED);
+	Timer1.attachInterrupt(stepMotorsCallback);
+
+	Serial.println(F("Initialization Done!"));
+	imu.INT_status();
 }
 
-float AccX, AccY, AccZ, Temp, GyroX, GyroY, GyroZ = 0.0f;
+int prevTime = 0;
 
 void loop()
 {
@@ -84,6 +95,17 @@ void loop()
 			digitalWrite(LED, blinkState);
 			blinkState = !blinkState;
 		}
+	}
+
+	if (stepMotors)
+	{
+		leftWheel.step();
+		rightWheel.step();
+		stepMotors	 = false;
+		int currTime = micros(); //4 us res
+		Serial.print("Step spacing: ");
+		Serial.println((currTime - prevTime) / 1000.0);
+		prevTime = currTime;
 	}
 
 	//Handle FIFO overflow

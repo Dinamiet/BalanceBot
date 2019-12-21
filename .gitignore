@@ -1,2 +1,6 @@
 *.log
 *.raw
+*.gbr
+*.txt
+*.xln
+*.gbrjob

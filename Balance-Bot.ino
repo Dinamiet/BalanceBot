@@ -8,11 +8,13 @@
 #define INT_PIN		2
 #define STEPSPEED	10000
 
+#define BAUD_RATE 25 //running at 57600
+
 bool blinkState = false;
 
 MPU6050 imu(MPU_ADDRESS);
-Stepper leftWheel(1, 2, 3, 4);
-Stepper rightWheel(5, 6, 7, 8);
+//Stepper leftWheel(1, 2, 3, 4);
+//Stepper rightWheel(5, 6, 7, 8);
 
 volatile bool dataReady	 = false;
 volatile bool stepMotors = false;
@@ -25,6 +27,8 @@ void setup()
 {
 	// put your setup code here, to run once:
 	Serial.begin(115200);
+  UBRR0H = BAUD_RATE >> 8;
+  UBRR0L = BAUD_RATE;
 
 	pinMode(LED, OUTPUT);
 	pinMode(INT_PIN, INPUT);

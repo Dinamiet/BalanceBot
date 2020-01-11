@@ -13,8 +13,8 @@
 bool blinkState = false;
 
 MPU6050 imu(MPU_ADDRESS);
-//Stepper leftWheel(1, 2, 3, 4);
-//Stepper rightWheel(5, 6, 7, 8);
+Stepper leftWheel(4, 3, 7, 8);
+Stepper rightWheel(A0, A1, A2, A3);
 
 volatile bool dataReady	 = false;
 volatile bool stepMotors = false;

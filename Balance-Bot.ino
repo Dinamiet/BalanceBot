@@ -4,59 +4,85 @@
 #include <TimerOne.h>
 
 #define MPU_ADDRESS 0x68
-#define LED			13
-#define INT_PIN		2
-#define STEPSPEED	10000
+
+#define INT_PIN		 2
+#define STEPSPEED	 750
+#define HOLDING_TIME 10
 
 #define BAUD_RATE 25 //running at 57600
 
-bool blinkState = false;
-
 MPU6050 imu(MPU_ADDRESS);
-Stepper leftWheel(4, 3, 7, 8);
+Stepper leftWheel(4, 5, 6, 7);
 Stepper rightWheel(A0, A1, A2, A3);
 
 volatile bool dataReady	 = false;
 volatile bool stepMotors = false;
 
+uint8_t leftWaiting	 = 0;
+uint8_t rightWaiting = 0;
+
 void dmpDataReady() { dataReady = true; }
 
-void stepMotorsCallback() { stepMotors = true; }
+void stepMotorsCallback()
+{
+	leftWheel.step();
+	rightWheel.step();
+
+	if (leftWheel.isMoving())
+	{
+		leftWaiting = 0;
+	}
+	else if (leftWaiting++ > HOLDING_TIME)
+	{
+		leftWheel.disable();
+	}
+
+	if (rightWheel.isMoving())
+	{
+		rightWaiting = 0;
+	}
+	else if (rightWaiting++ > HOLDING_TIME)
+	{
+		rightWheel.disable();
+	}
+}
 
 void setup()
 {
 	// put your setup code here, to run once:
 	Serial.begin(115200);
-  UBRR0H = BAUD_RATE >> 8;
-  UBRR0L = BAUD_RATE;
+	UBRR0H = BAUD_RATE >> 8;
+	UBRR0L = BAUD_RATE;
 
-	pinMode(LED, OUTPUT);
 	pinMode(INT_PIN, INPUT);
-	digitalWrite(LED, blinkState);
 
 	Serial.println(F("Initializing IMU..."));
 	imu.initIMU();
 
-	int16_t x, y, z;
-	Serial.println(F("Calibrating Accelerometer..."));
-	imu.CalibrateAccel(100, 25, 2);
-	imu.getAccelOffset(&x, &y, &z);
-	Serial.print(F("Accel offsets:\t"));
-	Serial.print(x);
-	Serial.print(F("\t"));
-	Serial.print(y);
-	Serial.print(F("\t"));
-	Serial.println(z);
+	Serial.println(F("Setting Accel offsets"));
+	imu.setAccelOffset(-6812, 4867, 8436);
+	// int16_t x, y, z;
+	// Serial.println(F("Calibrating Accelerometer..."));
+	// imu.CalibrateAccel(100, 25, 2);
+	// imu.getAccelOffset(&x, &y, &z);
+	// Serial.print(F("Accel offsets:\t"));
+	// Serial.print(x);
+	// Serial.print(F("\t"));
+	// Serial.print(y);
+	// Serial.print(F("\t"));
+	// Serial.println(z);
 
-	Serial.println(F("Calibrating Gyro..."));
-	imu.CalibrateGyro(100, 3);
-	imu.getGyroOffset(&x, &y, &z);
-	Serial.print(F("Gyro offsets:\t"));
-	Serial.print(x);
-	Serial.print(F("\t"));
-	Serial.print(y);
-	Serial.print(F("\t"));
-	Serial.println(z);
+	Serial.println(F("Setting Gyro offsets"));
+	imu.setGyroOffset(-46, -52, 34);
+	// Serial.println(F("Calibrating Gyro..."));
+	// imu.CalibrateGyro(100, 3);
+	// imu.getGyroOffset(&x, &y, &z);
+	// Serial.print(F("Gyro offsets:\t"));
+	// Serial.print(x);
+	// Serial.print(F("\t"));
+	// Serial.print(y);
+	// Serial.print(F("\t"));
+	// Serial.println(z);
 
 	Serial.println(F("Initializing DMP..."));
 	imu.initDMP();
@@ -74,7 +100,8 @@ void setup()
 	imu.INT_status();
 }
 
-int prevTime = 0;
+int	  prevTime = 0;
+float roll;
 
 void loop()
 {
@@ -84,33 +111,34 @@ void loop()
 		uint16_t packetCount = imu.numAvailablePackets();
 		if (packetCount)
 		{
-			float yaw, pitch, roll;
+			float yaw, pitch;
 			imu.getYawPitchRoll(&yaw, &pitch, &roll);
-			Serial.print(F("ypr\t"));
-			Serial.print(packetCount);
-			Serial.print(F("\t"));
-			Serial.print(yaw * 180 / M_PI);
-			Serial.print(F("\t"));
-			Serial.print(pitch * 180 / M_PI);
-			Serial.print(F("\t"));
-			Serial.print(roll * 180 / M_PI);
-			Serial.println();
+
+			roll = roll * 180 / PI; //Convert to degrees
+		}
+		else
+		{
 			dataReady = false;
-			digitalWrite(LED, blinkState);
-			blinkState = !blinkState;
 		}
 	}
 
-	if (stepMotors)
+	//For in case we fall over we stop everything
+	if (fabs(roll) > 30)
 	{
-		leftWheel.step();
-		rightWheel.step();
-		stepMotors	 = false;
-		int currTime = micros(); //4 us res
-		Serial.print("Step spacing: ");
-		Serial.println((currTime - prevTime) / 1000.0);
-		prevTime = currTime;
+		leftWheel.setPos(0);
+		rightWheel.setPos(0);
 	}
-
-	//Handle FIFO overflow
+	else
+	{
+		if (roll > 5)
+		{
+			leftWheel.moveBy(1);
+			rightWheel.moveBy(1);
+		}
+		else if (roll < -5)
+		{
+			leftWheel.moveBy(-1);
+			rightWheel.moveBy(-1);
+		}
+	}
 }

@@ -1,4 +1,5 @@
 #include "MPU6050.h"
+#include "PID.h"
 #include "Stepper.h"
 
 #include <TimerOne.h>
@@ -9,11 +10,16 @@
 #define STEPSPEED	 750
 #define HOLDING_TIME 10
 
+#define KP 0.1
+#define KI 0.001
+#define KD 0
+
 #define BAUD_RATE 25 //running at 57600
 
 MPU6050 imu(MPU_ADDRESS);
 Stepper leftWheel(4, 5, 6, 7);
 Stepper rightWheel(A0, A1, A2, A3);
+PID		balanceController(KP, KI, KD);
 
 volatile bool dataReady	 = false;
 volatile bool stepMotors = false;
@@ -45,6 +51,8 @@ void stepMotorsCallback()
 	{
 		rightWheel.disable();
 	}
+
+	stepMotors = true;
 }
 
 void setup()
@@ -98,10 +106,12 @@ void setup()
 
 	Serial.println(F("Initialization Done!"));
 	imu.INT_status();
+
+	balanceController.setPoint(0);
 }
 
-int	  prevTime = 0;
-float roll;
+uint16_t prevTime = 0;
+float	 roll;
 
 void loop()
 {
@@ -113,8 +123,6 @@ void loop()
 		{
 			float yaw, pitch;
 			imu.getYawPitchRoll(&yaw, &pitch, &roll);
-
-			roll = roll * 180 / PI; //Convert to degrees
 		}
 		else
 		{
@@ -122,23 +130,22 @@ void loop()
 		}
 	}
 
-	//For in case we fall over we stop everything
-	if (fabs(roll) > 30)
+	if (stepMotors)
 	{
-		leftWheel.setPos(0);
-		rightWheel.setPos(0);
-	}
-	else
-	{
-		if (roll > 5)
+		//For in case we fall over we stop everything
+		if (fabs(roll) > (30 * PI / 180))
 		{
-			leftWheel.moveBy(1);
-			rightWheel.moveBy(1);
+			leftWheel.setPos(0);
+			rightWheel.setPos(0);
 		}
-		else if (roll < -5)
+		else
 		{
-			leftWheel.moveBy(-1);
-			rightWheel.moveBy(-1);
+			uint16_t currTime = micros();
+			float	 output	  = balanceController.Output(roll, prevTime - currTime);
+			prevTime		  = currTime;
+
+			leftWheel.goTo(output);
+			rightWheel.goTo(output);
 		}
 	}
 }

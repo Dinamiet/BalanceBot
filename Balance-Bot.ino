@@ -7,11 +7,11 @@
 #define MPU_ADDRESS 0x68
 
 #define INT_PIN		 2
-#define STEPSPEED	 750
+#define STEPSPEED	 1000
 #define HOLDING_TIME 10
 
-#define KP 0.1
-#define KI 0.001
+#define KP 0.005
+#define KI 0.0001
 #define KD 0
 
 #define BAUD_RATE 25 //running at 57600

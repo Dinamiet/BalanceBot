@@ -11,9 +11,9 @@
 #define HOLDING_TIME	 10
 #define SWITCH_OFF_ANGLE 10
 
-#define KP 0.005
-#define KI 0.0001
-#define KD 0
+#define KP 1
+#define KI 0.1
+#define KD 10
 
 #define BAUD_RATE 25 //running at 57600
 

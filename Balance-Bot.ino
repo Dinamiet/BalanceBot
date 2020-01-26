@@ -125,17 +125,8 @@ void loop()
 		{
 			float yaw, pitch;
 			imu.getYawPitchRoll(&yaw, &pitch, &roll);
-		}
-		else
-		{
-			dataReady = false;
-		}
-	}
-
-	if (stepMotors)
-	{
-		//For in case we fall over we stop everything
-		if (fabs(roll) > (SWITCH_OFF_ANGLE * PI / 180))
+			Serial.println(roll * 180 / PI);
+			if (fabs(roll) > SWITCH_OFF_ANGLE * PI / 180)
 		{
 			leftWheel.setPos(0);
 			rightWheel.setPos(0);
@@ -143,17 +134,13 @@ void loop()
 		else
 		{
 			float output = balanceController.Output(roll, 1);
-			Serial.println(output);
-			if (output > 1)
-			{
-				leftWheel.moveBy(1);
-				rightWheel.moveBy(1);
+				leftWheel.moveBy(output);
+				rightWheel.moveBy(output);
 			}
-			else if (output < -1)
-			{
-				leftWheel.moveBy(-1);
-				rightWheel.moveBy(-1);
 			}
+		else
+			{
+			dataReady = false;
 		}
 	}
 }

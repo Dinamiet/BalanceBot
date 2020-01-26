@@ -17,8 +17,8 @@
 #define BAUD_RATE 25 //running at 57600
 
 MPU6050 imu(MPU_ADDRESS);
-Stepper leftWheel(4, 5, 6, 7);
-Stepper rightWheel(A0, A1, A2, A3);
+Stepper leftWheel(6, 7, 4, 5);
+Stepper rightWheel(A2, A3, A0, A1);
 PID		balanceController(KP, KI, KD);
 
 volatile bool dataReady	 = false;

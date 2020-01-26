@@ -6,9 +6,10 @@
 
 #define MPU_ADDRESS 0x68
 
-#define INT_PIN		 2
-#define STEPSPEED	 1000
-#define HOLDING_TIME 10
+#define INT_PIN			 2
+#define STEPSPEED		 1000
+#define HOLDING_TIME	 10
+#define SWITCH_OFF_ANGLE 10
 
 #define KP 0.005
 #define KI 0.0001
@@ -133,7 +134,7 @@ void loop()
 	if (stepMotors)
 	{
 		//For in case we fall over we stop everything
-		if (fabs(roll) > (30 * PI / 180))
+		if (fabs(roll) > (SWITCH_OFF_ANGLE * PI / 180))
 		{
 			leftWheel.setPos(0);
 			rightWheel.setPos(0);

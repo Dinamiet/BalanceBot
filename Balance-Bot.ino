@@ -68,7 +68,7 @@ void setup()
 	imu.initIMU();
 
 	Serial.println(F("Setting Accel offsets"));
-	imu.setAccelOffset(-6812, 4867, 8436);
+	imu.setAccelOffset(-6968, 4939, 8436);
 	// int16_t x, y, z;
 	// Serial.println(F("Calibrating Accelerometer..."));
 	// imu.CalibrateAccel(100, 25, 2);

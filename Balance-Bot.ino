@@ -63,6 +63,8 @@ void setup()
 	UBRR0H = BAUD_RATE >> 8;
 	UBRR0L = BAUD_RATE;
 
+	delay(1000);
+
 	pinMode(INT_PIN, INPUT);
 
 	Serial.println(F("Initializing IMU..."));

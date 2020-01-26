@@ -111,8 +111,7 @@ void setup()
 	balanceController.setPoint(0);
 }
 
-uint16_t prevTime = 0;
-float	 roll;
+float roll;
 
 void loop()
 {
@@ -141,12 +140,18 @@ void loop()
 		}
 		else
 		{
-			uint16_t currTime = micros();
-			float	 output	  = balanceController.Output(roll, prevTime - currTime);
-			prevTime		  = currTime;
-
-			leftWheel.goTo(output);
-			rightWheel.goTo(output);
+			float output = balanceController.Output(roll, 1);
+			Serial.println(output);
+			if (output > 1)
+			{
+				leftWheel.moveBy(1);
+				rightWheel.moveBy(1);
+			}
+			else if (output < -1)
+			{
+				leftWheel.moveBy(-1);
+				rightWheel.moveBy(-1);
+			}
 		}
 	}
 }

@@ -7,13 +7,13 @@
 #define MPU_ADDRESS 0x68
 
 #define INT_PIN			 2
-#define STEPSPEED		 1000
+#define STEPSPEED		 2000
 #define HOLDING_TIME	 10
-#define SWITCH_OFF_ANGLE 10
+#define SWITCH_OFF_ANGLE 45
 
-#define KP 1
-#define KI 0.1
-#define KD 10
+#define KP 30
+#define KI 0
+#define KD 0
 
 #define BAUD_RATE 25 //running at 57600
 
@@ -127,19 +127,19 @@ void loop()
 			imu.getYawPitchRoll(&yaw, &pitch, &roll);
 			Serial.println(roll * 180 / PI);
 			if (fabs(roll) > SWITCH_OFF_ANGLE * PI / 180)
-		{
-			leftWheel.setPos(0);
-			rightWheel.setPos(0);
-		}
-		else
-		{
-			float output = balanceController.Output(roll, 1);
+			{
+				leftWheel.setPos(0);
+				rightWheel.setPos(0);
+			}
+			else
+			{
+				float output = balanceController.Output(roll, 1);
 				leftWheel.moveBy(output);
 				rightWheel.moveBy(output);
 			}
-			}
+		}
 		else
-			{
+		{
 			dataReady = false;
 		}
 	}

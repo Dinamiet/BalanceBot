@@ -8,12 +8,12 @@
 
 #define INT_PIN			 2
 #define STEPSPEED		 2000
-#define HOLDING_TIME	 10
-#define SWITCH_OFF_ANGLE 45
+#define HOLDING_TIME	 250
+#define SWITCH_OFF_ANGLE 15
 
-#define KP 30
-#define KI 0
-#define KD 0
+#define KP 35
+#define KI 1
+#define KD 1
 
 #define BAUD_RATE 25 //running at 57600
 
@@ -27,6 +27,7 @@ volatile bool stepMotors = false;
 
 uint8_t leftWaiting	 = 0;
 uint8_t rightWaiting = 0;
+uint8_t waitForAngle = 0;
 
 void dmpDataReady() { dataReady = true; }
 
@@ -125,13 +126,21 @@ void loop()
 		{
 			float yaw, pitch;
 			imu.getYawPitchRoll(&yaw, &pitch, &roll);
-			Serial.println(roll * 180 / PI);
+			// Serial.println(packetCount);
+			// Serial.println(yaw * 180 / PI);
+			// Serial.println(pitch * 180 / PI);
+			// Serial.println(roll * 180 / PI);
 			if (fabs(roll) > SWITCH_OFF_ANGLE * PI / 180)
 			{
 				leftWheel.setPos(0);
 				rightWheel.setPos(0);
+				balanceController.clearState();
+				waitForAngle = roll > 0 ? 1 : 2;
 			}
-			else
+
+			waitForAngle = ((waitForAngle == 2 && roll > 0) || (waitForAngle == 1 && roll < 0)) ? 0 : waitForAngle;
+
+			if (waitForAngle == 0)
 			{
 				float output = balanceController.Output(roll, 1);
 				leftWheel.moveBy(output);

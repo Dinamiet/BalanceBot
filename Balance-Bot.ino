@@ -4,6 +4,17 @@
 
 #include <TimerOne.h>
 
+#define CALIBRATE 1
+
+#define GYRO_X_OFFSET	-46
+#define GYRO_Y_OFFSET	-52
+#define GYRO_Z_OFFSET	34
+
+#define ACCEL_X_OFFSET	-6968
+#define ACCEL_Y_OFFSET	4939
+#define ACCEL_Z_OFFSET	8436
+
+
 #define MPU_ADDRESS 0x68
 
 #define INT_PIN			 2
@@ -70,31 +81,33 @@ void setup()
 
 	Serial.println(F("Initializing IMU..."));
 	imu.initIMU();
+#if CALIBRATE
+	int16_t x, y, z;
+	Serial.println(F("Calibrating Accelerometer..."));
+	imu.CalibrateAccel(100, 25, 2);
+	imu.getAccelOffset(&x, &y, &z);
+	Serial.print(F("Accel offsets:\t"));
+	Serial.print(x);
+	Serial.print(F("\t"));
+	Serial.print(y);
+	Serial.print(F("\t"));
+	Serial.println(z);
 
-	Serial.println(F("Setting Accel offsets"));
-	imu.setAccelOffset(-6968, 4939, 8436);
-	// int16_t x, y, z;
-	// Serial.println(F("Calibrating Accelerometer..."));
-	// imu.CalibrateAccel(100, 25, 2);
-	// imu.getAccelOffset(&x, &y, &z);
-	// Serial.print(F("Accel offsets:\t"));
-	// Serial.print(x);
-	// Serial.print(F("\t"));
-	// Serial.print(y);
-	// Serial.print(F("\t"));
-	// Serial.println(z);
-
+	Serial.println(F("Calibrating Gyro..."));
+	imu.CalibrateGyro(100, 3);
+	imu.getGyroOffset(&x, &y, &z);
+	Serial.print(F("Gyro offsets:\t"));
+	Serial.print(x);
+	Serial.print(F("\t"));
+	Serial.print(y);
+	Serial.print(F("\t"));
+	Serial.println(z);
+#else
 	Serial.println(F("Setting Gyro offsets"));
-	imu.setGyroOffset(-46, -52, 34);
-	// Serial.println(F("Calibrating Gyro..."));
-	// imu.CalibrateGyro(100, 3);
-	// imu.getGyroOffset(&x, &y, &z);
-	// Serial.print(F("Gyro offsets:\t"));
-	// Serial.print(x);
-	// Serial.print(F("\t"));
-	// Serial.print(y);
-	// Serial.print(F("\t"));
-	// Serial.println(z);
+	imu.setGyroOffset(GYRO_X_OFFSET, GYRO_Y_OFFSET, GYRO_Z_OFFSET);
+	Serial.println(F("Setting Accel offsets"));
+	imu.setAccelOffset(ACCEL_X_OFFSET, ACCEL_Y_OFFSET, ACCEL_Z_OFFSET);
+#endif
 
 	Serial.println(F("Initializing DMP..."));
 	imu.initDMP();
@@ -126,10 +139,6 @@ void loop()
 		{
 			float yaw, pitch;
 			imu.getYawPitchRoll(&yaw, &pitch, &roll);
-			// Serial.println(packetCount);
-			// Serial.println(yaw * 180 / PI);
-			// Serial.println(pitch * 180 / PI);
-			// Serial.println(roll * 180 / PI);
 			if (fabs(roll) > SWITCH_OFF_ANGLE * PI / 180)
 			{
 				leftWheel.setPos(0);

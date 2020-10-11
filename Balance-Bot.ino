@@ -4,15 +4,15 @@
 
 #include <TimerOne.h>
 
-#define CALIBRATE 1
+#define CALIBRATE 0
 
-#define GYRO_X_OFFSET	-46
-#define GYRO_Y_OFFSET	-52
-#define GYRO_Z_OFFSET	34
+#define GYRO_X_OFFSET	-50
+#define GYRO_Y_OFFSET	-56
+#define GYRO_Z_OFFSET	31
 
-#define ACCEL_X_OFFSET	-6968
-#define ACCEL_Y_OFFSET	4939
-#define ACCEL_Z_OFFSET	8436
+#define ACCEL_X_OFFSET	-7006
+#define ACCEL_Y_OFFSET	4917
+#define ACCEL_Z_OFFSET	8432
 
 
 #define MPU_ADDRESS 0x68
@@ -22,8 +22,8 @@
 #define HOLDING_TIME	 250
 #define SWITCH_OFF_ANGLE 15
 
-#define KP 35
-#define KI 1
+#define KP 30
+#define KI 5
 #define KD 1
 
 #define BAUD_RATE 25 //running at 57600

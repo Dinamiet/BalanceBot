@@ -26,3 +26,6 @@ target_sources(
 
 add_subdirectory(./lib/Serial)
 target_link_libraries(${PROJECT_NAME} PRIVATE Serial)
+
+add_subdirectory(./lib/CLI)
+target_link_libraries(${PROJECT_NAME} PRIVATE CLI)

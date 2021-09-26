@@ -1,4 +1,4 @@
 [submodule "Toolchains"]
-	path = Toolchains
+	path = SW/Toolchains
 	url = ../toolchains.git
 	branch = master

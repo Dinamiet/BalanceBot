@@ -1,24 +1,18 @@
-#include "serial.h"
+#include "cli.h"
 #include "setup.h"
 
 #include <avr/interrupt.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include <stdbool.h>
 
-char StringBuffer[64];
+extern CLI cli; // Defined in setup.c
 
 int main()
 {
 	Setup_Serial();
+	Setup_CLI();
 	sei();
 
-	uint8_t data;
-	while (true)
-	{
-		if (Serial_Read(Serial0, &data, 1))
-			Serial_Write(Serial0, &data, 1);
-	}
+	while (true) { CLI_ProcessCommand(&cli, NULL); }
 
 	return 0;
 }

@@ -2,3 +2,11 @@
 	path = SW/Toolchains
 	url = ../toolchains.git
 	branch = master
+[submodule "Schematics/Regulators"]
+	path = Schematics/Regulators
+	url = ../regulators.git
+	branch = master
+[submodule "Schematics/StepperDriver"]
+	path = Schematics/StepperDriver
+	url = ../stepper-driver.git
+	branch = master

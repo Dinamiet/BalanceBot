@@ -14,5 +14,8 @@ avr_upload(${PROJECT_NAME} /dev/ttyACM0 115200)
 target_sources(
 	${PROJECT_NAME}
 	PRIVATE
-		main.c
+		src/main.c
 )
+
+add_subdirectory(./lib/Serial)
+target_link_libraries(${PROJECT_NAME} PRIVATE Serial)

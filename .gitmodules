@@ -10,3 +10,7 @@
 	path = Schematics/StepperDriver
 	url = ../stepper-driver.git
 	branch = master
+[submodule ".SW/lib/Serial"]
+	path = SW/lib/Serial
+	url = ../serial.git
+	branch = master

@@ -1,6 +1,7 @@
 #include "setup.h"
 
 #include "cli.h"
+#include "gpio.h"
 #include "serial.h"
 #include "task_scheduler.h"
 #include "tasks.h"
@@ -48,6 +49,11 @@ void Setup_SystemTime()
 }
 
 /*---------------------------------------------------------------- */
+/* GPIO setup */
+/*---------------------------------------------------------------- */
+void Setup_GPIO() { GPIO_PinMode(GPIOB, 5, GPIO_OUTPUT); }
+
+/*---------------------------------------------------------------- */
 /* CLI Interface setup */
 /*---------------------------------------------------------------- */
 CLI		   cli;
@@ -75,4 +81,8 @@ void Setup_TaskScheduler() { TaskScheduler_Init(&taskList, getSystemTime, taskBu
 /*---------------------------------------------------------------- */
 /* Tasks */
 /*---------------------------------------------------------------- */
-void Create_Tasks() { TaskScheduler_CreateRetriggerTask(&taskList, "CLI", Task_CLI, &cli, CLI_PERIOD); }
+void Create_Tasks()
+{
+	TaskScheduler_CreateRetriggerTask(&taskList, "CLI", Task_CLI, &cli, CLI_PERIOD);
+	TaskScheduler_CreateRetriggerTask(&taskList, "LED", Task_LED, NULL, LED_PERIOD);
+}

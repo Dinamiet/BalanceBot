@@ -26,3 +26,7 @@
 	path = SW/lib/TaskScheduler
 	url = ../taskscheduler.git
 	branch = master
+[submodule "SW/lib/GPIO"]
+	path = SW/lib/GPIO
+	url = ../gpio.git
+	branch = master

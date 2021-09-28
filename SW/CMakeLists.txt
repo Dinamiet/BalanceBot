@@ -28,11 +28,14 @@ target_sources(
 add_subdirectory(./lib/Serial)
 target_link_libraries(${PROJECT_NAME} PRIVATE Serial)
 
-add_subdirectory(./lib/CLI)
-target_link_libraries(${PROJECT_NAME} PRIVATE CLI)
-
 add_subdirectory(./lib/Timer)
 target_link_libraries(${PROJECT_NAME} PRIVATE Timer)
+
+add_subdirectory(./lib/GPIO)
+target_link_libraries(${PROJECT_NAME} PRIVATE GPIO)
+
+add_subdirectory(./lib/CLI)
+target_link_libraries(${PROJECT_NAME} PRIVATE CLI)
 
 add_subdirectory(./lib/TaskScheduler)
 target_link_libraries(${PROJECT_NAME} PRIVATE TaskScheduler)

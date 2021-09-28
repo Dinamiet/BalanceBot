@@ -3,5 +3,6 @@
 
 void Setup_Serial();
 void Setup_CLI();
+void Setup_SystemTime();
 
 #endif

@@ -9,7 +9,9 @@ extern CLI cli; // Defined in setup.c
 int main()
 {
 	Setup_Serial();
+	Setup_SystemTime();
 	Setup_CLI();
+
 	sei();
 
 	while (true) { CLI_ProcessCommand(&cli, NULL); }

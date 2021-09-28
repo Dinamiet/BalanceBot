@@ -2,6 +2,7 @@
 
 #include "cli.h"
 #include "serial.h"
+#include "timer.h"
 
 #include <string.h>
 
@@ -10,7 +11,7 @@
 /*---------------------------------------------------------------- */
 #define SERIAL_BUFFER_SIZE 128
 uint8_t TXBuff_serial[SERIAL_BUFFER_SIZE];
-uint8_t RXBuff_serial[SERIAL_BUFFER_SIZE/4];
+uint8_t RXBuff_serial[SERIAL_BUFFER_SIZE / 4];
 
 #define SERIAL_BAUD 115200
 void Setup_Serial()
@@ -19,6 +20,29 @@ void Setup_Serial()
 	Serial_InitTXBuffer(Serial0, TXBuff_serial, sizeof(TXBuff_serial));
 	Serial_InitRXBuffer(Serial0, RXBuff_serial, sizeof(RXBuff_serial));
 	Serial_Enable(Serial0);
+}
+
+/*---------------------------------------------------------------- */
+/* Timer setup */
+/*---------------------------------------------------------------- */
+#define TIMER_COUNT_TO_MS		 ((1024.0f * 1000.0f) / F_CPU)
+#define TIME_ROLLOVER_CONVERSION (TIMER_COUNT_TO_MS * 256.0f)
+static uint32_t rollOverCount = 0;
+static void		TimerRollover() { rollOverCount += 1; }
+
+uint32_t getSystemTime()
+{
+	float	ms		  = TIME_ROLLOVER_CONVERSION * rollOverCount;
+	uint8_t remainder = Timer_GetValue(Timer2);
+	ms += remainder * TIMER_COUNT_TO_MS;
+	return ms;
+}
+
+void Setup_SystemTime()
+{
+	Timer_Configure(Timer2, TIMER_DIV_1024);
+	Timer_EnableInterrupt(Timer2, TIMER_ROLLOVER_INT, TimerRollover);
+	Timer_Enable(Timer2, TIMER_NORMAL);
 }
 
 /*---------------------------------------------------------------- */

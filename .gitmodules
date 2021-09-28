@@ -18,3 +18,7 @@
 	path = SW/lib/CLI
 	url = ../cli.git
 	branch = master
+[submodule "SW/lib/Timer"]
+	path = SW/lib/Timer
+	url = ../timer.git
+	branch = master

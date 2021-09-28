@@ -22,6 +22,7 @@ target_sources(
 	PRIVATE
 		src/main.c
 		src/setup.c
+		src/tasks.c
 )
 
 add_subdirectory(./lib/Serial)
@@ -32,3 +33,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE CLI)
 
 add_subdirectory(./lib/Timer)
 target_link_libraries(${PROJECT_NAME} PRIVATE Timer)
+
+add_subdirectory(./lib/TaskScheduler)
+target_link_libraries(${PROJECT_NAME} PRIVATE TaskScheduler)

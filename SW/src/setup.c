@@ -2,6 +2,8 @@
 
 #include "cli.h"
 #include "serial.h"
+#include "task_scheduler.h"
+#include "tasks.h"
 #include "timer.h"
 
 #include <string.h>
@@ -60,3 +62,17 @@ void Setup_CLI()
 	CLI_Init(&cli, cli_commands, cli_read, cli_write);
 	CLI_ProcessCommand(&cli, "help");
 }
+
+/*---------------------------------------------------------------- */
+/* Task Scheduler interface setup */
+/*---------------------------------------------------------------- */
+#define MAX_TASKS 4
+TaskList	taskList;
+static Task taskBuffer[MAX_TASKS];
+
+void Setup_TaskScheduler() { TaskScheduler_Init(&taskList, getSystemTime, taskBuffer, MAX_TASKS); }
+
+/*---------------------------------------------------------------- */
+/* Tasks */
+/*---------------------------------------------------------------- */
+void Create_Tasks() { TaskScheduler_CreateRetriggerTask(&taskList, "CLI", Task_CLI, &cli, CLI_PERIOD); }

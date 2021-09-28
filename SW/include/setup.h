@@ -4,5 +4,8 @@
 void Setup_Serial();
 void Setup_CLI();
 void Setup_SystemTime();
+void Setup_TaskScheduler();
+
+void Create_Tasks();
 
 #endif

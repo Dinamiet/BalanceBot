@@ -1,20 +1,23 @@
-#include "cli.h"
 #include "setup.h"
+#include "task_scheduler.h"
 
 #include <avr/interrupt.h>
 #include <stdbool.h>
 
-extern CLI cli; // Defined in setup.c
+extern TaskList taskList; // Defined in setup.c
 
 int main()
 {
 	Setup_Serial();
 	Setup_SystemTime();
 	Setup_CLI();
+	Setup_TaskScheduler();
 
 	sei();
 
-	while (true) { CLI_ProcessCommand(&cli, NULL); }
+	Create_Tasks();
+
+	while (true) { TaskScheduler_RunNextTask(&taskList); }
 
 	return 0;
 }

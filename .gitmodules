@@ -22,3 +22,7 @@
 	path = SW/lib/Timer
 	url = ../timer.git
 	branch = master
+[submodule "SW/lib/TaskScheduler"]
+	path = SW/lib/TaskScheduler
+	url = ../taskscheduler.git
+	branch = master

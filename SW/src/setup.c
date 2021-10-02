@@ -8,7 +8,6 @@
 #include "timer.h"
 
 #include <avr/interrupt.h>
-
 #include <string.h>
 
 /*---------------------------------------------------------------- */
@@ -37,14 +36,8 @@ static void		TimerRollover() { rollOverCount += 1; }
 
 uint32_t getSystemTime()
 {
-	cli();
-	uint32_t cnt	   = rollOverCount;
-	uint8_t	 remainder = Timer_GetValue(Timer2);
-	sei();
-
-	float ms = TIME_ROLLOVER_CONVERSION * cnt;
-	ms += remainder * TIMER_COUNT_TO_MS;
-
+	float ms = TIME_ROLLOVER_CONVERSION * rollOverCount;
+	ms += TIMER_COUNT_TO_MS * Timer_GetValue(Timer2);
 	return ms;
 }
 
@@ -70,11 +63,7 @@ size_t cli_read(char* str, size_t max) { return Serial_Read(Serial0, str, max); 
 
 size_t cli_write(char* str) { return Serial_Write(Serial0, str, strlen(str)); }
 
-void Setup_CLI()
-{
-	CLI_Init(&cli, cli_commands, cli_read, cli_write);
-	CLI_ProcessCommand(&cli, "help");
-}
+void Setup_CLI() { CLI_Init(&cli, cli_commands, cli_read, cli_write); }
 
 /*---------------------------------------------------------------- */
 /* Task Scheduler interface setup */

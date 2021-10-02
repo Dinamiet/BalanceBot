@@ -7,6 +7,8 @@
 #include "tasks.h"
 #include "timer.h"
 
+#include <avr/interrupt.h>
+
 #include <string.h>
 
 /*---------------------------------------------------------------- */
@@ -35,9 +37,14 @@ static void		TimerRollover() { rollOverCount += 1; }
 
 uint32_t getSystemTime()
 {
-	float	ms		  = TIME_ROLLOVER_CONVERSION * rollOverCount;
-	uint8_t remainder = Timer_GetValue(Timer2);
+	cli();
+	uint32_t cnt	   = rollOverCount;
+	uint8_t	 remainder = Timer_GetValue(Timer2);
+	sei();
+
+	float ms = TIME_ROLLOVER_CONVERSION * cnt;
 	ms += remainder * TIMER_COUNT_TO_MS;
+
 	return ms;
 }
 

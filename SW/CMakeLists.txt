@@ -23,6 +23,7 @@ target_sources(
 		src/main.c
 		src/setup.c
 		src/tasks.c
+		src/stepper.c
 )
 
 add_subdirectory(./lib/Serial)

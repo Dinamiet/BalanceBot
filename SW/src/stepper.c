@@ -1,5 +1,15 @@
 #include "stepper.h"
 
+#define HALF_STEP
+
+#ifdef HALF_STEP
+#define STEP_SEQUENCE_LENGTH 8
+const uint8_t step_sequence[STEP_SEQUENCE_LENGTH] = {0b0001, 0b0101, 0b0100, 0b0110, 0b0010, 0b1010, 0b1000, 0b1001};
+#else
+#define STEP_SEQUENCE_LENGTH 4
+const uint8_t step_sequence[STEP_SEQUENCE_LENGTH] = {0b0001, 0b0100, 0b0010, 0b1000};
+#endif
+
 void Steppers_Init(Steppers* steppers, GPIO* left, GPIO* right)
 {
 	steppers->Left.Port	   = left;

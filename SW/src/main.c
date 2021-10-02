@@ -18,7 +18,14 @@ int main()
 
 	Create_Tasks();
 
-	while (true) { TaskScheduler_RunNextTask(&taskList); }
+	Task* activeTask = NULL;
+
+	while (true)
+	{
+		activeTask = TaskScheduler_ReadyTask(&taskList);
+		TaskScheduler_ExecuteTask(activeTask);
+		TaskScheduler_CleanTask(&taskList, activeTask);
+	}
 
 	return 0;
 }

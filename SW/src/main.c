@@ -10,7 +10,9 @@ int main()
 {
 	Setup_Serial();
 	Setup_SystemTime();
-	Setup_GPIO();
+	Setup_LED();
+	Setup_Steppers();
+
 	Setup_CLI();
 	Setup_TaskScheduler();
 

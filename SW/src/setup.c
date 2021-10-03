@@ -1,8 +1,10 @@
 #include "setup.h"
 
 #include "cli.h"
+#include "cmd.h"
 #include "gpio.h"
 #include "serial.h"
+#include "stepper.h"
 #include "task_scheduler.h"
 #include "tasks.h"
 #include "timer.h"
@@ -49,26 +51,41 @@ void Setup_SystemTime()
 }
 
 /*---------------------------------------------------------------- */
+/* Stepper Setup */
+/*---------------------------------------------------------------- */
+Steppers steppers;
+void	 Setup_Steppers() { Steppers_Init(&steppers, GPIOD, GPIOC); }
+
+/*---------------------------------------------------------------- */
 /* GPIO setup */
 /*---------------------------------------------------------------- */
-void Setup_GPIO() { GPIO_PinMode(GPIOB, 5, GPIO_OUTPUT); }
+void Setup_LED() { GPIO_PinMode(GPIOB, 5, GPIO_OUTPUT); }
 
 /*---------------------------------------------------------------- */
 /* CLI Interface setup */
 /*---------------------------------------------------------------- */
+#define CLI_CMD(cmd)                   \
+	{                                  \
+#cmd, Cmd_##cmd, CmdHelp_##cmd \
+	}
+
 CLI		   cli;
-CLICommand cli_commands[] = {{"help", CLI_Cmd, CLI_Help}, {0, 0, 0}};
+CLICommand cli_commands[] = {{"help", CLI_Cmd, CLI_Help}, CLI_CMD(steppers), CLI_CMD(welcome), {0, 0, 0}};
 
 size_t cli_read(char* str, size_t max) { return Serial_Read(Serial0, str, max); }
 
 size_t cli_write(char* str) { return Serial_Write(Serial0, str, strlen(str)); }
 
-void Setup_CLI() { CLI_Init(&cli, cli_commands, cli_read, cli_write); }
+void Setup_CLI()
+{
+	CLI_Init(&cli, cli_commands, cli_read, cli_write);
+	CLI_ProcessCommand(&cli, "welcome");
+}
 
 /*---------------------------------------------------------------- */
 /* Task Scheduler interface setup */
 /*---------------------------------------------------------------- */
-#define MAX_TASKS 4
+#define MAX_TASKS 8
 TaskList	taskList;
 static Task taskBuffer[MAX_TASKS];
 
@@ -81,4 +98,6 @@ void Create_Tasks()
 {
 	TaskScheduler_CreateRetriggerTask(&taskList, "CLI", Task_CLI, &cli, CLI_PERIOD);
 	TaskScheduler_CreateRetriggerTask(&taskList, "LED", Task_LED, NULL, LED_PERIOD);
+	TaskScheduler_CreateRetriggerTask(&taskList, "Stepper Step", Task_Stepper, &steppers, STEP_SPEED);
+	TaskScheduler_CreateRetriggerTask(&taskList, "Stepper Disable", Task_StepperDisable, &steppers, STEPPER_HOLD / 2);
 }

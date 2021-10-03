@@ -5,11 +5,11 @@ project(
 )
 
 include(Toolchains/avr-gcc.cmake)
-avr_configure(atmega328p 16000000UL)
+avr_configure(atmega328p 12000000UL)
 
 add_executable(${PROJECT_NAME})
 
-avr_upload(${PROJECT_NAME} /dev/ttyACM0 115200)
+avr_upload(${PROJECT_NAME} /dev/ttyACM0 19200)
 
 target_include_directories(
 	${PROJECT_NAME}
@@ -24,6 +24,7 @@ target_sources(
 		src/setup.c
 		src/tasks.c
 		src/stepper.c
+		src/cmd.c
 )
 
 add_subdirectory(./lib/Serial)

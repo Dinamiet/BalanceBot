@@ -30,3 +30,15 @@
 	path = SW/lib/GPIO
 	url = ../gpio.git
 	branch = master
+[submodule "SW/lib/PID"]
+	path = SW/lib/PID
+	url = ../pid.git
+	branch = master
+[submodule "SW/lib/IMU"]
+	path = SW/lib/IMU
+	url = ../imu.git
+	branch = master
+[submodule "SW/lib/I2C"]
+	path = SW/lib/I2C
+	url = ../i2c.git
+	branch = master

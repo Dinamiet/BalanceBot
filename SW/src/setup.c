@@ -3,6 +3,8 @@
 #include "cli.h"
 #include "cmd.h"
 #include "gpio.h"
+#include "i2c.h"
+#include "mpu6050.h"
 #include "serial.h"
 #include "stepper.h"
 #include "task_scheduler.h"
@@ -15,7 +17,7 @@
 /*---------------------------------------------------------------- */
 /* Serial Interface setup */
 /*---------------------------------------------------------------- */
-#define SERIAL_BUFFER_SIZE 128
+#define SERIAL_BUFFER_SIZE 64
 uint8_t TXBuff_serial[SERIAL_BUFFER_SIZE];
 uint8_t RXBuff_serial[SERIAL_BUFFER_SIZE / 4];
 
@@ -26,6 +28,24 @@ void Setup_Serial()
 	Serial_InitTXBuffer(Serial0, TXBuff_serial, sizeof(TXBuff_serial));
 	Serial_InitRXBuffer(Serial0, RXBuff_serial, sizeof(RXBuff_serial));
 	Serial_Enable(Serial0);
+}
+
+/*---------------------------------------------------------------- */
+/* I2C setup */
+/*---------------------------------------------------------------- */
+#define I2C_TX_BUFFER_SIZE		   32
+#define I2C_TRANSATION_BUFFER_SIZE 4
+
+uint8_t		   TXBuff_i2c[I2C_TX_BUFFER_SIZE];
+I2CTransaction TransBuff_i2c[I2C_TRANSATION_BUFFER_SIZE];
+
+#define I2C_SPEED 100000 // Hz
+void Setup_I2C()
+{
+	I2C_Configure(I2C0, I2C_SPEED);
+	I2C_InitTXBuffer(I2C0, TXBuff_i2c, sizeof(TXBuff_i2c));
+	I2C_InitTransBuffer(I2C0, TransBuff_i2c, sizeof(TransBuff_i2c));
+	I2C_Enable(I2C0);
 }
 
 /*---------------------------------------------------------------- */
@@ -98,6 +118,21 @@ TaskList	taskList;
 static Task taskBuffer[MAX_TASKS];
 
 void Setup_TaskScheduler() { TaskScheduler_Init(&taskList, getSystemTime, taskBuffer, MAX_TASKS); }
+
+/*---------------------------------------------------------------- */
+/* IMU setup */
+/*---------------------------------------------------------------- */
+MPU6050 imu;
+
+#define IMU_ADDRESS 0x68
+
+void Setup_IMU()
+{
+	GPIO_PinMode(GPIOD, 2, GPIO_INPUT);
+	// GPIO_EnableInterrupt(EXTERNAL_INTERRUPT_0, INTERRUPT_TRIGGER_RISING, IMU_DataReady_ISR);
+	// MPU6050_Init(&imu, I2C0, IMU_ADDRESS);
+	// MPU6050_Enable(&imu);
+}
 
 /*---------------------------------------------------------------- */
 /* Tasks */

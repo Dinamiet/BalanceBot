@@ -30,6 +30,9 @@ target_sources(
 add_subdirectory(./lib/Serial)
 target_link_libraries(${PROJECT_NAME} PRIVATE Serial)
 
+add_subdirectory(./lib/I2C)
+target_link_libraries(${PROJECT_NAME} PRIVATE I2C)
+
 add_subdirectory(./lib/Timer)
 target_link_libraries(${PROJECT_NAME} PRIVATE Timer)
 
@@ -41,3 +44,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE CLI)
 
 add_subdirectory(./lib/TaskScheduler)
 target_link_libraries(${PROJECT_NAME} PRIVATE TaskScheduler)
+
+add_subdirectory(./lib/PID)
+target_link_libraries(${PROJECT_NAME} PRIVATE PID)
+
+add_subdirectory(./lib/IMU)
+target_link_libraries(${PROJECT_NAME} PRIVATE MPU6050)

@@ -96,7 +96,7 @@ char* CmdHelp_led[] = {
 		0,
 };
 
-void Cmd_welcome(CLI* cli, int argc, char* argv[]) { cli->Write("\n---------------------------\n\tBalance Bot\n---------------------------\n"); }
+void Cmd_welcome(CLI* cli, int argc, char* argv[]) { cli->Write("\n-----------\nBalance Bot\n-----------\n"); }
 
 char* CmdHelp_welcome[] = {
 		"Welcomes user with a banner",

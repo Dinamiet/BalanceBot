@@ -11,7 +11,7 @@ int main()
 	Setup_Serial();
 	Setup_SystemTime();
 	Setup_LED();
-	Setup_Steppers();
+	Setup_I2C();
 
 	Setup_CLI();
 	Setup_TaskScheduler();
@@ -20,13 +20,17 @@ int main()
 
 	Create_Tasks();
 
+	Setup_Steppers();
+
+	Setup_IMU();
+
 	Task* activeTask = NULL;
 
 	while (true)
 	{
 		activeTask = TaskScheduler_ReadyTask(&taskList);
 		TaskScheduler_ExecuteTask(activeTask);
-		TaskScheduler_CleanTask(&taskList, activeTask);
+		TaskScheduler_QueueTask(&taskList, activeTask);
 	}
 
 	return 0;

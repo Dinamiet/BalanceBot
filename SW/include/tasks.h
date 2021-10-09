@@ -16,4 +16,6 @@ void Task_LED(void*);
 void Task_Stepper(void*);
 void Task_StepperDisable(void*);
 
+void IMU_DataReady_ISR();
+
 #endif

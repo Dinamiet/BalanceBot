@@ -70,7 +70,12 @@ void Setup_LED() { GPIO_PinMode(GPIOB, 5, GPIO_OUTPUT); }
 	}
 
 CLI		   cli;
-CLICommand cli_commands[] = {{"help", CLI_Cmd, CLI_Help}, CLI_CMD(steppers), CLI_CMD(welcome), {0, 0, 0}};
+CLICommand cli_commands[] = {
+		{"help", CLI_Cmd, CLI_Help},
+		CLI_CMD(steppers),
+		CLI_CMD(welcome),
+		{0, 0, 0},
+};
 
 size_t cli_read(char* str, size_t max) { return Serial_Read(Serial0, str, max); }
 

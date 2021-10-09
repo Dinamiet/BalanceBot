@@ -8,14 +8,20 @@ void Cmd_steppers(CLI* cli, int argc, char* argv[])
 	Steppers_MoveBy(&steppers, value);
 }
 
-void CmdHelp_steppers(CLI* cli) { cli->Write("Move stepper by specifed amount\n"); }
+char* CmdHelp_steppers[]= {
+	"Stepper Interactions/Settings",
+	"Usage: stepper [steps]",
+	"Move stepper by specified steps",
+	0
+	};
 
-void Cmd_welcome(CLI* cli, int argc, char* argv[]) { CmdHelp_welcome(cli); }
-
-void CmdHelp_welcome(CLI* cli)
-{
-	char* welcomeStr = "\n---------------------------\n\tBalance Bot\n---------------------------\n";
-
-	cli->Write(welcomeStr);
-	cli->Write("\n");
+void Cmd_welcome(CLI* cli, int argc, char* argv[]) {
+	cli->Write("\n---------------------------\n\tBalance Bot\n---------------------------\n");
 }
+
+char* CmdHelp_welcome[] =
+{
+	"Welcomes user with a banner",
+	"Usage: welcome",
+	0
+};

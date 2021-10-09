@@ -10,9 +10,9 @@ extern Steppers steppers;
 
 void Cmd_steppers(CLI* cli, int argc, char* argv[]);
 
-void CmdHelp_steppers(CLI* cli);
+extern char* CmdHelp_steppers[];
 
 void Cmd_welcome(CLI* cli, int argc, char* argv[]);
-void CmdHelp_welcome(CLI* cli);
+extern char* CmdHelp_welcome[];
 
 #endif

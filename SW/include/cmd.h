@@ -2,17 +2,15 @@
 #define _CMD_H_
 
 #include "cli.h"
-#include "stepper.h"
 
-#include <stdlib.h>
+#define DEFINE_CMD(cmd) \
+void		 Cmd_##cmd(CLI* cli, int argc, char* argv[]); \
+extern char* CmdHelp_##cmd[]
 
-extern Steppers steppers;
-
-void Cmd_steppers(CLI* cli, int argc, char* argv[]);
-
-extern char* CmdHelp_steppers[];
-
-void Cmd_welcome(CLI* cli, int argc, char* argv[]);
-extern char* CmdHelp_welcome[];
+DEFINE_CMD(move);
+DEFINE_CMD(speed);
+DEFINE_CMD(hold);
+DEFINE_CMD(led);
+DEFINE_CMD(welcome);
 
 #endif

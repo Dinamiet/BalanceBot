@@ -71,9 +71,12 @@ void Setup_LED() { GPIO_PinMode(GPIOB, 5, GPIO_OUTPUT); }
 
 CLI		   cli;
 CLICommand cli_commands[] = {
-		{"help", CLI_Cmd, CLI_Help},
-		CLI_CMD(steppers),
+		CLI_CMD(move),
+		CLI_CMD(speed),
+		CLI_CMD(hold),
+		CLI_CMD(led),
 		CLI_CMD(welcome),
+		{"help", CLI_Cmd, CLI_Help},
 		{0, 0, 0},
 };
 
@@ -101,8 +104,8 @@ void Setup_TaskScheduler() { TaskScheduler_Init(&taskList, getSystemTime, taskBu
 /*---------------------------------------------------------------- */
 void Create_Tasks()
 {
-	TaskScheduler_CreateRetriggerTask(&taskList, "CLI", Task_CLI, &cli, CLI_PERIOD);
-	TaskScheduler_CreateRetriggerTask(&taskList, "LED", Task_LED, NULL, LED_PERIOD);
-	TaskScheduler_CreateRetriggerTask(&taskList, "Stepper Step", Task_Stepper, &steppers, STEP_SPEED);
-	TaskScheduler_CreateRetriggerTask(&taskList, "Stepper Disable", Task_StepperDisable, &steppers, STEPPER_HOLD / 2);
+	TaskScheduler_CreateRetriggerTask(&taskList, CLI_TASK_NAME, Task_CLI, &cli, CLI_PERIOD);
+	TaskScheduler_CreateRetriggerTask(&taskList, LED_TASK_NAME, Task_LED, NULL, LED_PERIOD);
+	TaskScheduler_CreateRetriggerTask(&taskList, STEPPER_TASK_NAME, Task_Stepper, &steppers, STEP_SPEED);
+	TaskScheduler_CreateRetriggerTask(&taskList, STEPPER_HOLD_TASK_NAME, Task_StepperDisable, &steppers, STEPPER_HOLD / 2);
 }

@@ -43,15 +43,3 @@ void Task_StepperDisable(void* _stepper)
 		prevStationary = false;
 	}
 }
-
-extern MPU6050 imu;
-
-void IMU_PacketRead(void* data)
-{
-	DMPPacket* packet= data;
-}
-
-void IMU_DataReady_ISR()
-{
-	MPU6050_RequestPacket(&imu, IMU_PacketRead);
-}

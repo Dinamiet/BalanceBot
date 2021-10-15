@@ -3,6 +3,7 @@
 
 #include "cli.h"
 #include "heartbeat.h"
+#include "imu.h"
 #include "motors.h"
 #include "serial.h"
 #include "task_scheduler.h"
@@ -19,6 +20,9 @@ CLI cli;
 	}
 
 static CLICommand cli_commands[] = {
+		CLI_CMD(imu_req),
+		CLI_CMD(cal_gyro),
+		CLI_CMD(cal_accel),
 		CLI_CMD(move),
 		CLI_CMD(speed),
 		CLI_CMD(hold),
@@ -41,8 +45,7 @@ void Setup_CLI()
 	TaskScheduler_CreateRetriggerTask(&taskList, "CLI", Task_CLI, &cli, CLI_PERIOD);
 }
 
-void Cmd_welcome(CLI* cli, int argc, char* argv[]) {
-	cli->Write("\n-----------\nBalance Bot\n-----------\n"); }
+void Cmd_welcome(CLI* cli, int argc, char* argv[]) { cli->Write("\n-----------\nBalance Bot\n-----------\n"); }
 
 char* CmdHelp_welcome[] = {
 		"Welcomes user with a banner",

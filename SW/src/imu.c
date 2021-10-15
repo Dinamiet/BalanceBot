@@ -31,6 +31,9 @@ static void imu_HandleInterrupt(void* imu)
 	MPU6050_RequestAvailablePackets(imu, imu_available);
 
 	TaskScheduler_DeactivateTask(IMU_Interrupt);
+
+	char* buff = "HandleInterrupt\n";
+	Serial_Write(Serial0, buff, strlen(buff));
 }
 
 static void imu_HandleAvailable(void* imu)
@@ -40,6 +43,10 @@ static void imu_HandleAvailable(void* imu)
 		MPU6050_RequestPacket(imu, imu_packetReady);
 
 	TaskScheduler_DeactivateTask(IMU_Available);
+
+	char buff[64];
+	sprintf(buff, "HandleAvailable: %d\n", availablePackets);
+	Serial_Write(Serial0, buff, strlen(buff));
 }
 
 static void imu_HandlePacket(void* imu)
@@ -54,6 +61,10 @@ static void imu_HandlePacket(void* imu)
 	sprintf(buff, "%.2f\t%.2f\t%.2f\n", (double)(ypr.Yaw * 180.0f / PI), (double)(ypr.Pitch * 180.0f / PI), (double)(ypr.Roll * 180.0f / PI));
 	Serial_Write(Serial0, buff, strlen(buff));
 }
+
+void calibrationProgress(char c) { Serial_Write(Serial0, &c, 1); }
+
+#include <util/delay.h>
 
 static void imu_Configure(void* imu)
 {
@@ -91,3 +102,51 @@ void Setup_IMU()
 
 	TaskScheduler_CreateSingleShotTask(&taskList, "IMU Configure", imu_Configure, &imu, 100);
 }
+
+void Cmd_imu_req(CLI* cli, int argc, char* argv[]) { imu_Interrupt(NULL); }
+
+char* CmdHelp_imu_req[] = {
+		"Issue Available Packet Request to IMU",
+		"Usage: imu_req",
+		0,
+};
+
+void Cmd_cal_gyro(CLI* cli, int argc, char* argv[])
+{
+	MPU6050_CalibrateGyro(&imu, 100, 3, calibrationProgress);
+	MPU6050_RequestGyroOffset(&imu, NULL);
+	while (I2C_IsActive(imu.I2c)) {};
+
+	char buff[64];
+
+	MPU6050_Offset gyroOffset = MPU6050_GyroOffset(&imu);
+
+	sprintf(buff, "\nGyro: %d\t%d\t%d\n", gyroOffset.X, gyroOffset.Y, gyroOffset.Z);
+	cli->Write(buff);
+}
+
+char* CmdHelp_cal_gyro[] = {
+		"Calibrate Gyro",
+		"Usage: cal_gyro",
+		0,
+};
+
+void Cmd_cal_accel(CLI* cli, int argc, char* argv[])
+{
+	MPU6050_CalibrateAccel(&imu, 100, 25, 2, calibrationProgress);
+	MPU6050_RequestAccelOffset(&imu, NULL);
+	while (I2C_IsActive(imu.I2c)) {};
+
+	char buff[64];
+
+	MPU6050_Offset accelOffset = MPU6050_AccelOffset(&imu);
+
+	sprintf(buff, "Accel: %d\t%d\t%d\n", accelOffset.X, accelOffset.Y, accelOffset.Z);
+	Serial_Write(Serial0, buff, strlen(buff));
+}
+
+char* CmdHelp_cal_accel[] = {
+		"Calibrate Accel",
+		"Usage: cal_accel",
+		0,
+};

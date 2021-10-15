@@ -7,6 +7,7 @@
 #include "motors.h"
 #include "serial.h"
 #include "task_scheduler.h"
+#include "control.h"
 
 #include <string.h>
 
@@ -20,6 +21,9 @@ CLI cli;
 	}
 
 static CLICommand cli_commands[] = {
+		CLI_CMD(control_p),
+		CLI_CMD(control_i),
+		CLI_CMD(control_d),
 		CLI_CMD(imu_avail),
 		CLI_CMD(cal_gyro),
 		CLI_CMD(cal_accel),

@@ -33,6 +33,8 @@
 #define KI 5
 #define KD 1
 
+#define SWITCH_OFF_ANGLE 15.0f // degrees
+
 #define IMU_DATA_NOTIFY "IMUData"
 
 #define DEFINE_CMD(cmd)                                       \

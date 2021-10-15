@@ -1,16 +1,14 @@
+#include "database.h"
 #include "gpio.h"
 #include "mpu6050.h"
 #include "serial.h"
 #include "setup.h"
 #include "task_scheduler.h"
 
-#include <math.h>
 #include <stdio.h>
-#include <string.h>
-
-#define PI (float)M_PI
 
 extern TaskList taskList;
+extern Database db;
 
 MPU6050 imu;
 
@@ -52,9 +50,7 @@ static void imu_HandlePacket(void* imu)
 		packetReady		= false;
 		MPU6050_YPR ypr = MPU6050_YawPitchRoll(imu);
 
-		char buff[20];
-		sprintf(buff, "%d\t%d\t%d\n", (int16_t)(ypr.Yaw * 180.0f / PI), (int16_t)(ypr.Pitch * 180.0f / PI), (int16_t)(ypr.Roll * 180.0f / PI));
-		Serial_Write(Serial0, buff, strlen(buff));
+		Database_Notify(&db, IMU_DATA_NOTIFY, &ypr);
 	}
 }
 

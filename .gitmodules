@@ -42,3 +42,7 @@
 	path = SW/lib/I2C
 	url = ../i2c.git
 	branch = master
+[submodule "lib/Database"]
+	path = SW/lib/Database
+	url = ../database.git
+	branch = master

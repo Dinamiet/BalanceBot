@@ -5,5 +5,6 @@ void Setup_Serial();
 void Setup_I2C();
 void Setup_SystemTime();
 void Setup_TaskScheduler();
+void Setup_Database();
 
 #endif

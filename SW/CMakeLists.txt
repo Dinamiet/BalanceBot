@@ -59,6 +59,7 @@ target_sources(
 		src/motors.c
 		src/steppers.c
 		src/system.c
+        src/control.c
 )
 
 add_subdirectory(./lib/Serial)
@@ -78,6 +79,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE CLI)
 
 add_subdirectory(./lib/TaskScheduler)
 target_link_libraries(${PROJECT_NAME} PRIVATE TaskScheduler)
+
+add_subdirectory(./lib/Database)
+target_link_libraries(${PROJECT_NAME} PRIVATE Database)
 
 add_subdirectory(./lib/PID)
 target_link_libraries(${PROJECT_NAME} PRIVATE PID)

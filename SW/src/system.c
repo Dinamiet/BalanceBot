@@ -5,6 +5,7 @@
 #include "setup.h"
 #include "task_scheduler.h"
 #include "timer.h"
+#include "database.h"
 
 /*---------------------------------------------------------------- */
 /* Serial Interface setup */
@@ -63,3 +64,14 @@ TaskList	taskList;
 static Task taskBuffer[MAX_TASKS];
 
 void Setup_TaskScheduler() { TaskScheduler_Init(&taskList, getSystemTime, taskBuffer, MAX_TASKS); }
+
+/*---------------------------------------------------------------- */
+/* Database setup */
+/*---------------------------------------------------------------- */
+static Subscription subBuffer[SUBSCRIPTION_BUFFER_SIZE];
+Database db;
+
+void Setup_Database()
+{
+	Database_Init(&db, subBuffer, SUBSCRIPTION_BUFFER_SIZE);
+}

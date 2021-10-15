@@ -4,6 +4,7 @@
 #include "motors.h"
 #include "system.h"
 #include "task_scheduler.h"
+#include "control.h"
 
 #include <avr/interrupt.h>
 #include <stdbool.h>
@@ -16,14 +17,18 @@ int main()
 	Setup_I2C();
 	Setup_SystemTime();
 	Setup_TaskScheduler();
+	Setup_Database();
 
 	sei();
 
 	Setup_Heartbeat();
 	Setup_CLI();
 
+	Setup_Control();
+
 	Setup_Motors();
 	Setup_IMU();
+
 
 	Task* activeTask = NULL;
 

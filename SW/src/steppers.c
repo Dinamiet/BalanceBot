@@ -1,13 +1,13 @@
-#include "stepper.h"
+#include "steppers.h"
 
-#define HALF_STEP
+#include "setup.h"
 
-#ifdef HALF_STEP
+#if HALF_STEP
 #define STEP_SEQUENCE_LENGTH 8
-const uint8_t step_sequence[STEP_SEQUENCE_LENGTH] = {0b0010, 0b1010, 0b1000, 0b1001, 0b0001, 0b0101, 0b0100, 0b0110};
+const uint8_t step_sequence[STEP_SEQUENCE_LENGTH] = {0x02, 0x0A, 0x08, 0x09, 0x01, 0x05, 0x04, 0x06};
 #else
 #define STEP_SEQUENCE_LENGTH 4
-const uint8_t step_sequence[STEP_SEQUENCE_LENGTH] = {0b0010, 0b1000, 0b0001, 0b0100};
+const uint8_t step_sequence[STEP_SEQUENCE_LENGTH] = {0x02, 0x08, 0x01, 0x04};
 #endif
 
 #define LEFT_MASK  0x0F

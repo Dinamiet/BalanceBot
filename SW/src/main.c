@@ -1,26 +1,29 @@
-#include "setup.h"
+#include "cmdlist.h"
+#include "heartbeat.h"
+#include "imu.h"
+#include "motors.h"
+#include "system.h"
 #include "task_scheduler.h"
 
 #include <avr/interrupt.h>
 #include <stdbool.h>
 
-extern TaskList taskList; // Defined in setup.c
+extern TaskList taskList;
 
 int main()
 {
 	Setup_Serial();
-	Setup_SystemTime();
-	Setup_LED();
 	Setup_I2C();
-
-	Setup_CLI();
+	Setup_SystemTime();
 	Setup_TaskScheduler();
 
 	sei();
 
-	Create_Tasks();
+	Setup_Heartbeat();
 
-	Setup_Steppers();
+	Setup_CLI();
+
+	Setup_Motors();
 
 	Setup_IMU();
 

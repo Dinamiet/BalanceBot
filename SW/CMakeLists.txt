@@ -11,6 +11,38 @@ add_executable(${PROJECT_NAME})
 
 avr_upload(${PROJECT_NAME} /dev/ttyACM0 19200)
 
+target_compile_options(
+    ${PROJECT_NAME}
+    PRIVATE
+        "-Wall" # Enable all common warnings
+        "-Wextra" # Enable more warnings
+        "-Wpedantic" # Warn about non-standard code
+        "-Werror" # Warnings are treated as errors
+        # "-Wshadow" # Warn about shadow variables
+        "-Wdouble-promotion" # Warn when promoting floats to double
+        "-Wformat=2" # printf and scanf warnings
+        "-Wformat-security" # printf and scanf warnings
+        "-Wformat-truncation" # printf and scanf warnings
+        "-Wundef" # Warn when evaluating not defined flags
+        "-fno-common" # Warn about multiple global variables with same name
+        # "-Wconversion" # Warn about implicit conversions
+        "-Wpadded" # Warn about padded structures
+        "-flto" # Link time optimization
+        "-fno-fat-lto-objects" # Link time optimization
+        "-ffunction-sections" # Link time optimization help
+        "-fdata-sections" # Link time optimization help
+        "-Wno-unused-parameter" # Disable unused parameter warning - there are quite a few callbacks where the parameters are not used
+)
+
+target_link_options(
+    ${PROJECT_NAME}
+    PRIVATE
+        "-Wl,--gc-sections" # Remove unwanted sections
+        "-flto" # Link time optimization
+        "-fno-fat-lto-objects" # Link time optimization
+)
+
+
 target_include_directories(
 	${PROJECT_NAME}
 	PRIVATE
@@ -21,10 +53,12 @@ target_sources(
 	${PROJECT_NAME}
 	PRIVATE
 		src/main.c
-		src/setup.c
-		src/tasks.c
-		src/stepper.c
-		src/cmd.c
+		src/cmdlist.c
+		src/heartbeat.c
+		src/imu.c
+		src/motors.c
+		src/steppers.c
+		src/system.c
 )
 
 add_subdirectory(./lib/Serial)

@@ -1,13 +1,43 @@
-#include "cmd.h"
-
-#include "stepper.h"
+#include "setup.h"
+#include "steppers.h"
 #include "task_scheduler.h"
-#include "tasks.h"
 
 #include <stdlib.h>
 
-extern Steppers steppers;
+#define STEPPER_TASK_NAME	   "Stepper Step"
+#define STEPPER_HOLD_TASK_NAME "Stepper Disable"
+
 extern TaskList taskList;
+
+static void Task_Stepper(void* steppers) { Steppers_Step(steppers); }
+
+static void Task_StepperDisable(void* steppers)
+{
+	static bool prevStationary = false;
+
+	if (Steppers_IsEnabled(steppers))
+	{
+		bool stationary = !Steppers_IsMoving(steppers);
+		if (stationary && prevStationary)
+		{
+			Steppers_Disable(steppers);
+		}
+
+		prevStationary = stationary;
+	}
+	else
+	{
+		prevStationary = false;
+	}
+}
+
+Steppers steppers;
+void	 Setup_Motors()
+{
+	Steppers_Init(&steppers, GPIOD, GPIOC);
+	TaskScheduler_CreateRetriggerTask(&taskList, STEPPER_TASK_NAME, Task_Stepper, &steppers, STEP_SPEED);
+	TaskScheduler_CreateRetriggerTask(&taskList, STEPPER_HOLD_TASK_NAME, Task_StepperDisable, &steppers, STEPPER_HOLD / 2);
+}
 
 void Cmd_move(CLI* cli, int argc, char* argv[])
 {
@@ -69,37 +99,5 @@ char* CmdHelp_hold[] = {
 		"Set hold time of stepper motors",
 		"Usage: hold [time]",
 		"time - ms",
-		0,
-};
-
-void Cmd_led(CLI* cli, int argc, char* argv[])
-{
-	uint32_t time	 = atoi(argv[1]);
-	Task*	 ledTask = TaskScheduler_FindTask(&taskList, LED_TASK_NAME);
-	if (ledTask)
-	{
-		cli->Write("Setting LED period: ");
-		cli->Write(argv[1]);
-		cli->Write(" ms\n");
-		TaskScheduler_ChangeTaskPeriod(ledTask, time);
-	}
-	else
-	{
-		cli->Write("Error occured\n");
-	}
-}
-
-char* CmdHelp_led[] = {
-		"Set LED flash period",
-		"Usage: led [time]",
-		"time - ms",
-		0,
-};
-
-void Cmd_welcome(CLI* cli, int argc, char* argv[]) { cli->Write("\n-----------\nBalance Bot\n-----------\n"); }
-
-char* CmdHelp_welcome[] = {
-		"Welcomes user with a banner",
-		"Usage: welcome",
 		0,
 };

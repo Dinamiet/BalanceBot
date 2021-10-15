@@ -102,9 +102,8 @@ void Cmd_imu_avail(CLI* cli, int argc, char* argv[])
 }
 
 char* CmdHelp_imu_avail[] = {
-char* CmdHelp_imu_req[] = {
-		"Issue Available Packet Request to IMU",
-		"Usage: imu_req",
+		// "Issue Available Packet Request to IMU",
+		// "Usage: imu_req",
 		0,
 };
 
@@ -126,8 +125,8 @@ void Cmd_cal_gyro(CLI* cli, int argc, char* argv[])
 }
 
 char* CmdHelp_cal_gyro[] = {
-		"Calibrate Gyro",
-		"Usage: cal_gyro",
+		// "Calibrate Gyro",
+		// "Usage: cal_gyro",
 		0,
 };
 
@@ -149,7 +148,7 @@ void Cmd_cal_accel(CLI* cli, int argc, char* argv[])
 }
 
 char* CmdHelp_cal_accel[] = {
-		"Calibrate Accel",
-		"Usage: cal_accel",
+		// "Calibrate Accel",
+		// "Usage: cal_accel",
 		0,
 };

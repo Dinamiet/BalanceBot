@@ -20,11 +20,9 @@ int main()
 	sei();
 
 	Setup_Heartbeat();
-
 	Setup_CLI();
 
 	Setup_Motors();
-
 	Setup_IMU();
 
 	Task* activeTask = NULL;

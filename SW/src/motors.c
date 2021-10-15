@@ -49,8 +49,8 @@ void Cmd_move(CLI* cli, int argc, char* argv[])
 }
 
 char* CmdHelp_move[] = {
-		"Move Stepper motors",
-		"Usage: move [steps]",
+		// "Move Stepper motors",
+		// "Usage: move [steps]",
 		0,
 };
 
@@ -72,9 +72,9 @@ void Cmd_speed(CLI* cli, int argc, char* argv[])
 }
 
 char* CmdHelp_speed[] = {
-		"Set speed of stepper motors",
-		"Usage: speed [time]",
-		"time - ms/step",
+		// "Set speed of stepper motors",
+		// "Usage: speed [time]",
+		// "time - ms/step",
 		0,
 };
 
@@ -96,8 +96,8 @@ void Cmd_hold(CLI* cli, int argc, char* argv[])
 }
 
 char* CmdHelp_hold[] = {
-		"Set hold time of stepper motors",
-		"Usage: hold [time]",
-		"time - ms",
+		// "Set hold time of stepper motors",
+		// "Usage: hold [time]",
+		// "time - ms",
 		0,
 };

@@ -41,8 +41,8 @@ void Cmd_heartbeat(CLI* cli, int argc, char* argv[])
 }
 
 char* CmdHelp_heartbeat[] = {
-		"Set Heartbeat flash period",
-		"Usage: heartbeat [time]",
-		"time - ms",
+		// "Set Heartbeat flash period",
+		// "Usage: heartbeat [time]",
+		// "time - ms",
 		0,
 };

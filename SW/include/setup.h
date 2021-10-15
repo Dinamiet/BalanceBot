@@ -11,6 +11,7 @@
 #define I2C_SPEED				   100000 // Hz
 
 #define MAX_TASKS 12
+#define SUBSCRIPTION_BUFFER_SIZE 4
 
 #define HALF_STEP 1
 
@@ -27,6 +28,12 @@
 #define ACCEL_OFFSET_X -6999
 #define ACCEL_OFFSET_Y 4933
 #define ACCEL_OFFSET_Z 8439
+
+#define KP 30
+#define KI 5
+#define KD 1
+
+#define IMU_DATA_NOTIFY "IMUData"
 
 #define DEFINE_CMD(cmd)                                       \
 	void		 Cmd_##cmd(CLI* cli, int argc, char* argv[]); \

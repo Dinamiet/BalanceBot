@@ -34,7 +34,11 @@ static CLICommand cli_commands[] = {
 
 static size_t cli_read(char* str, size_t max) { return Serial_Read(Serial0, str, max); }
 
-static size_t cli_write(char* str) { return Serial_Write(Serial0, str, strlen(str)); }
+static size_t cli_write(char* str)
+{
+	while (Serial_IsActive(Serial0)) {};
+	return Serial_Write(Serial0, str, strlen(str));
+}
 
 static void Task_CLI(void* cli) { CLI_ProcessCommand(cli, NULL); }
 
@@ -48,7 +52,7 @@ void Setup_CLI()
 void Cmd_welcome(CLI* cli, int argc, char* argv[]) { cli->Write("\n-----------\nBalance Bot\n-----------\n"); }
 
 char* CmdHelp_welcome[] = {
-		"Welcomes user with a banner",
-		"Usage: welcome",
+		// "Welcomes user with a banner",
+		// "Usage: welcome",
 		0,
 };

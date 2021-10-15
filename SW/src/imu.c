@@ -14,57 +14,51 @@ extern TaskList taskList;
 
 MPU6050 imu;
 
-Task* IMU_Available;
-Task* IMU_Interrupt;
-Task* IMU_PacketReady;
+static volatile bool	packetReady;
+static volatile bool	availableReady;
+static volatile bool	interruptReady;
+static volatile uint8_t availablePackets;
 
-static uint8_t availablePackets;
+static void imu_packetReady(void* _) { packetReady = true; }
 
-static void imu_packetReady(void* _) { TaskScheduler_ActivateTask(IMU_PacketReady); }
+static void imu_available(void* _) { availableReady = true; }
 
-static void imu_available(void* _) { TaskScheduler_ActivateTask(IMU_Available); }
-
-static void imu_Interrupt(void* _) { TaskScheduler_ActivateTask(IMU_Interrupt); }
+static void imu_Interrupt(void* _) { interruptReady = true; }
 
 static void imu_HandleInterrupt(void* imu)
 {
-	MPU6050_RequestAvailablePackets(imu, imu_available);
-
-	TaskScheduler_DeactivateTask(IMU_Interrupt);
-
-	char* buff = "HandleInterrupt\n";
-	Serial_Write(Serial0, buff, strlen(buff));
+	if (interruptReady)
+	{
+		interruptReady = false;
+		MPU6050_RequestAvailablePackets(imu, imu_available);
+	}
 }
 
 static void imu_HandleAvailable(void* imu)
 {
-	availablePackets = MPU6050_AvailablePackets(imu);
-	if (availablePackets)
-		MPU6050_RequestPacket(imu, imu_packetReady);
-
-	TaskScheduler_DeactivateTask(IMU_Available);
-
-	char buff[64];
-	sprintf(buff, "HandleAvailable: %d\n", availablePackets);
-	Serial_Write(Serial0, buff, strlen(buff));
+	if (availableReady)
+	{
+		availableReady	 = false;
+		availablePackets = MPU6050_AvailablePackets(imu);
+		if (availablePackets)
+			MPU6050_RequestPacket(imu, imu_packetReady);
+	}
 }
 
 static void imu_HandlePacket(void* imu)
 {
-	MPU6050_YPR ypr = MPU6050_YawPitchRoll(imu);
-	if (availablePackets--)
-		MPU6050_RequestPacket(imu, imu_packetReady);
+	if (packetReady)
+	{
+		packetReady		= false;
+		MPU6050_YPR ypr = MPU6050_YawPitchRoll(imu);
 
-	TaskScheduler_DeactivateTask(IMU_PacketReady);
-
-	char buff[64];
-	sprintf(buff, "%.2f\t%.2f\t%.2f\n", (double)(ypr.Yaw * 180.0f / PI), (double)(ypr.Pitch * 180.0f / PI), (double)(ypr.Roll * 180.0f / PI));
-	Serial_Write(Serial0, buff, strlen(buff));
+		char buff[20];
+		sprintf(buff, "%d\t%d\t%d\n", (int16_t)(ypr.Yaw * 180.0f / PI), (int16_t)(ypr.Pitch * 180.0f / PI), (int16_t)(ypr.Roll * 180.0f / PI));
+		Serial_Write(Serial0, buff, strlen(buff));
+	}
 }
 
 void calibrationProgress(char c) { Serial_Write(Serial0, &c, 1); }
-
-#include <util/delay.h>
 
 static void imu_Configure(void* imu)
 {
@@ -92,19 +86,22 @@ void Setup_IMU()
 {
 	MPU6050_Init(&imu, I2C0, IMU_ADDRESS);
 
-	IMU_Interrupt	= TaskScheduler_CreateSingleShotTask(&taskList, "IMU Interrupt Handler", imu_HandleInterrupt, &imu, 0);
-	IMU_Available	= TaskScheduler_CreateSingleShotTask(&taskList, "IMU Available Handler", imu_HandleAvailable, &imu, 0);
-	IMU_PacketReady = TaskScheduler_CreateSingleShotTask(&taskList, "IMU Packet Handler", imu_HandlePacket, &imu, 0);
-
-	TaskScheduler_DeactivateTask(IMU_Interrupt);
-	TaskScheduler_DeactivateTask(IMU_Available);
-	TaskScheduler_DeactivateTask(IMU_PacketReady);
+	TaskScheduler_CreateRetriggerTask(&taskList, "IMU Interrupt Handler", imu_HandleInterrupt, &imu, 0);
+	TaskScheduler_CreateRetriggerTask(&taskList, "IMU Available Handler", imu_HandleAvailable, &imu, 0);
+	TaskScheduler_CreateRetriggerTask(&taskList, "IMU Packet Handler", imu_HandlePacket, &imu, 0);
 
 	TaskScheduler_CreateSingleShotTask(&taskList, "IMU Configure", imu_Configure, &imu, 100);
 }
 
-void Cmd_imu_req(CLI* cli, int argc, char* argv[]) { imu_Interrupt(NULL); }
+void Cmd_imu_avail(CLI* cli, int argc, char* argv[])
+{
+	char buff[5];
+	sprintf(buff, "%d\n", availablePackets);
+	cli->Write("Available packets: ");
+	cli->Write(buff);
+}
 
+char* CmdHelp_imu_avail[] = {
 char* CmdHelp_imu_req[] = {
 		"Issue Available Packet Request to IMU",
 		"Usage: imu_req",
@@ -113,6 +110,7 @@ char* CmdHelp_imu_req[] = {
 
 void Cmd_cal_gyro(CLI* cli, int argc, char* argv[])
 {
+	MPU6050_Disable(&imu);
 	MPU6050_CalibrateGyro(&imu, 100, 3, calibrationProgress);
 	MPU6050_RequestGyroOffset(&imu, NULL);
 	while (I2C_IsActive(imu.I2c)) {};
@@ -123,6 +121,8 @@ void Cmd_cal_gyro(CLI* cli, int argc, char* argv[])
 
 	sprintf(buff, "\nGyro: %d\t%d\t%d\n", gyroOffset.X, gyroOffset.Y, gyroOffset.Z);
 	cli->Write(buff);
+
+	MPU6050_Enable(&imu);
 }
 
 char* CmdHelp_cal_gyro[] = {
@@ -133,6 +133,7 @@ char* CmdHelp_cal_gyro[] = {
 
 void Cmd_cal_accel(CLI* cli, int argc, char* argv[])
 {
+	MPU6050_Disable(&imu);
 	MPU6050_CalibrateAccel(&imu, 100, 25, 2, calibrationProgress);
 	MPU6050_RequestAccelOffset(&imu, NULL);
 	while (I2C_IsActive(imu.I2c)) {};
@@ -141,8 +142,10 @@ void Cmd_cal_accel(CLI* cli, int argc, char* argv[])
 
 	MPU6050_Offset accelOffset = MPU6050_AccelOffset(&imu);
 
-	sprintf(buff, "Accel: %d\t%d\t%d\n", accelOffset.X, accelOffset.Y, accelOffset.Z);
-	Serial_Write(Serial0, buff, strlen(buff));
+	sprintf(buff, "\nAccel: %d\t%d\t%d\n", accelOffset.X, accelOffset.Y, accelOffset.Z);
+	cli->Write(buff);
+
+	MPU6050_Enable(&imu);
 }
 
 char* CmdHelp_cal_accel[] = {

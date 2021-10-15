@@ -5,7 +5,7 @@
 
 void Setup_IMU();
 
-DEFINE_CMD(imu_req);
+DEFINE_CMD(imu_avail);
 DEFINE_CMD(cal_gyro);
 DEFINE_CMD(cal_accel);
 

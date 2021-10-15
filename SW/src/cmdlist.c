@@ -20,7 +20,7 @@ CLI cli;
 	}
 
 static CLICommand cli_commands[] = {
-		CLI_CMD(imu_req),
+		CLI_CMD(imu_avail),
 		CLI_CMD(cal_gyro),
 		CLI_CMD(cal_accel),
 		CLI_CMD(move),

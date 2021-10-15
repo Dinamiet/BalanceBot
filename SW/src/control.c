@@ -8,8 +8,8 @@
 
 #include <math.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define PI (float)M_PI
 
@@ -79,5 +79,30 @@ void Cmd_control_d(CLI* cli, int argc, char* argv[])
 }
 
 char* CmdHelp_control_d[] = {
+		0,
+};
+
+void AngleSubscriptionCallback(void* data)
+{
+	MPU6050_YPR* ypr = data;
+	char		 buff[5];
+	sprintf(buff, "%d\n", (int16_t)(ypr->Roll * 180.0f / PI));
+	Serial_Write(Serial0, buff, strlen(buff));
+}
+
+void Cmd_sub(CLI* cli, int argc, char* argv[]) { Database_Subscribe(&db, IMU_DATA_NOTIFY, "IMU_Print", AngleSubscriptionCallback); }
+
+char* CmdHelp_sub[] = {
+		0,
+};
+
+void Cmd_unsub(CLI* cli, int argc, char* argv[])
+{
+	Subscription* sub = Database_FindSubscription(&db, "IMU_Print");
+	if (sub)
+		Database_Unsubscribe(&db, sub);
+}
+
+char* CmdHelp_unsub[] = {
 		0,
 };

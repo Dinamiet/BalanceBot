@@ -2,12 +2,12 @@
 #include "cmdlist.h"
 
 #include "cli.h"
+#include "control.h"
 #include "heartbeat.h"
 #include "imu.h"
 #include "motors.h"
 #include "serial.h"
 #include "task_scheduler.h"
-#include "control.h"
 
 #include <string.h>
 
@@ -21,6 +21,8 @@ CLI cli;
 	}
 
 static CLICommand cli_commands[] = {
+		CLI_CMD(sub),
+		CLI_CMD(unsub),
 		CLI_CMD(control_p),
 		CLI_CMD(control_i),
 		CLI_CMD(control_d),

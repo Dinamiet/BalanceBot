@@ -23,6 +23,7 @@ CLI cli;
 static CLICommand cli_commands[] = {
 		CLI_CMD(sub),
 		CLI_CMD(unsub),
+		CLI_CMD(angle),
 		CLI_CMD(control_p),
 		CLI_CMD(control_i),
 		CLI_CMD(control_d),
@@ -52,7 +53,7 @@ void Setup_CLI()
 {
 	CLI_Init(&cli, cli_commands, cli_read, cli_write);
 	CLI_ProcessCommand(&cli, "welcome");
-	TaskScheduler_CreateRetriggerTask(&taskList, "CLI", Task_CLI, &cli, CLI_PERIOD);
+	TaskScheduler_CreateRetriggerTask(&taskList, NULL, Task_CLI, &cli, CLI_PERIOD);
 }
 
 void Cmd_welcome(CLI* cli, int argc, char* argv[]) { cli->Write("\n-----------\nBalance Bot\n-----------\n"); }

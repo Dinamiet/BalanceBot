@@ -4,8 +4,8 @@
 
 #include <stdlib.h>
 
-#define STEPPER_TASK_NAME	   "Stepper Step"
-#define STEPPER_HOLD_TASK_NAME "Stepper Disable"
+#define STEPPER_TASK_NAME	   "Step"
+#define STEPPER_HOLD_TASK_NAME "Disable"
 
 extern TaskList taskList;
 
@@ -41,7 +41,7 @@ void	 Setup_Motors()
 
 void Cmd_move(CLI* cli, int argc, char* argv[])
 {
-	cli->Write("Move steppers: ");
+	cli->Write("Move: ");
 	cli->Write(argv[1]);
 	cli->Write(" steps\n");
 	int16_t value = atoi(argv[1]);
@@ -60,14 +60,10 @@ void Cmd_speed(CLI* cli, int argc, char* argv[])
 	Task*	 stepperTask = TaskScheduler_FindTask(&taskList, STEPPER_TASK_NAME);
 	if (stepperTask)
 	{
-		cli->Write("Setting time between steps: ");
+		cli->Write("Time: ");
 		cli->Write(argv[1]);
 		cli->Write(" ms\n");
 		TaskScheduler_ChangeTaskPeriod(stepperTask, time);
-	}
-	else
-	{
-		cli->Write("Error occured\n");
 	}
 }
 
@@ -84,14 +80,10 @@ void Cmd_hold(CLI* cli, int argc, char* argv[])
 	Task*	 holdTask = TaskScheduler_FindTask(&taskList, STEPPER_HOLD_TASK_NAME);
 	if (holdTask)
 	{
-		cli->Write("Setting hold time: ");
+		cli->Write("Time: ");
 		cli->Write(argv[1]);
 		cli->Write(" ms\n");
 		TaskScheduler_ChangeTaskPeriod(holdTask, time / 2);
-	}
-	else
-	{
-		cli->Write("Error occured\n");
 	}
 }
 

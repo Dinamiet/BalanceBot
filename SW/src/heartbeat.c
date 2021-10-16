@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 
-#define HEARTBEAT_TASK_NAME "Heartbeat"
+#define HEARTBEAT_TASK_NAME "H"
 
 extern TaskList taskList;
 
@@ -29,7 +29,7 @@ void Cmd_heartbeat(CLI* cli, int argc, char* argv[])
 	Task* ledTask = TaskScheduler_FindTask(&taskList, HEARTBEAT_TASK_NAME);
 	if (ledTask)
 	{
-		cli->Write("Setting LED period: ");
+		cli->Write("Period: ");
 		cli->Write(argv[1]);
 		cli->Write(" ms\n");
 		TaskScheduler_ChangeTaskPeriod(ledTask, time);

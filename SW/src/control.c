@@ -43,7 +43,7 @@ static void ControlData(void* data)
 void Setup_Control()
 {
 	PID_Init(&balanceControl, KP, KI, KD);
-	Database_Subscribe(&db, IMU_DATA_NOTIFY, "IC", ControlData);
+	Database_Subscribe(&db, IMU_DATA_NOTIFY, NULL, ControlData);
 }
 
 void Cmd_control_p(CLI* cli, int argc, char* argv[])
@@ -90,7 +90,7 @@ void AngleSubscriptionCallback(void* data)
 	Serial_Write(Serial0, buff, strlen(buff));
 }
 
-void Cmd_sub(CLI* cli, int argc, char* argv[]) { Database_Subscribe(&db, IMU_DATA_NOTIFY, "IMU_Print", AngleSubscriptionCallback); }
+void Cmd_sub(CLI* cli, int argc, char* argv[]) { Database_Subscribe(&db, IMU_DATA_NOTIFY, "Print", AngleSubscriptionCallback); }
 
 char* CmdHelp_sub[] = {
 		0,
@@ -98,11 +98,25 @@ char* CmdHelp_sub[] = {
 
 void Cmd_unsub(CLI* cli, int argc, char* argv[])
 {
-	Subscription* sub = Database_FindSubscription(&db, "IMU_Print");
+	Subscription* sub = Database_FindSubscription(&db, "Print");
 	if (sub)
 		Database_Unsubscribe(&db, sub);
 }
 
 char* CmdHelp_unsub[] = {
+		0,
+};
+
+void Cmd_angle(CLI* cli, int argc, char* argv[])
+{
+	float angle = atof(argv[1]);
+	PID_Target(&balanceControl, angle * PI / 180.0f);
+
+	cli->Write("Angle: ");
+	cli->Write(argv[1]);
+	cli->Write("\n");
+}
+
+char* CmdHelp_angle[] = {
 		0,
 };

@@ -82,18 +82,18 @@ void Setup_IMU()
 {
 	MPU6050_Init(&imu, I2C0, IMU_ADDRESS);
 
-	TaskScheduler_CreateRetriggerTask(&taskList, "IMU Interrupt Handler", imu_HandleInterrupt, &imu, 0);
-	TaskScheduler_CreateRetriggerTask(&taskList, "IMU Available Handler", imu_HandleAvailable, &imu, 0);
-	TaskScheduler_CreateRetriggerTask(&taskList, "IMU Packet Handler", imu_HandlePacket, &imu, 0);
+	TaskScheduler_CreateRetriggerTask(&taskList, NULL, imu_HandleInterrupt, &imu, 0);
+	TaskScheduler_CreateRetriggerTask(&taskList, NULL, imu_HandleAvailable, &imu, 0);
+	TaskScheduler_CreateRetriggerTask(&taskList, NULL, imu_HandlePacket, &imu, 0);
 
-	TaskScheduler_CreateSingleShotTask(&taskList, "IMU Configure", imu_Configure, &imu, 100);
+	TaskScheduler_CreateSingleShotTask(&taskList, NULL, imu_Configure, &imu, 100);
 }
 
 void Cmd_imu_avail(CLI* cli, int argc, char* argv[])
 {
 	char buff[5];
 	sprintf(buff, "%d\n", availablePackets);
-	cli->Write("Available packets: ");
+	cli->Write("Available: ");
 	cli->Write(buff);
 }
 

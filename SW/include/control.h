@@ -10,5 +10,6 @@ DEFINE_CMD(control_i);
 DEFINE_CMD(control_d);
 DEFINE_CMD(sub);
 DEFINE_CMD(unsub);
+DEFINE_CMD(angle);
 
 #endif

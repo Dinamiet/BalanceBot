@@ -51,6 +51,7 @@ void Cmd_control_p(CLI* cli, int argc, char* argv[])
 	float p = atof(argv[1]);
 	cli->Write("Control P: ");
 	cli->Write(argv[1]);
+	cli->Write("\n");
 	PID_ChangeP(&balanceControl, p);
 }
 
@@ -63,6 +64,7 @@ void Cmd_control_i(CLI* cli, int argc, char* argv[])
 	float i = atof(argv[1]);
 	cli->Write("Control I: ");
 	cli->Write(argv[1]);
+	cli->Write("\n");
 	PID_ChangeI(&balanceControl, i);
 }
 
@@ -75,6 +77,7 @@ void Cmd_control_d(CLI* cli, int argc, char* argv[])
 	float d = atof(argv[1]);
 	cli->Write("Control D: ");
 	cli->Write(argv[1]);
+	cli->Write("\n");
 	PID_ChangeD(&balanceControl, d);
 }
 

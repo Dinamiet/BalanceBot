@@ -20,18 +20,18 @@
 #define CLI_PERIOD		 50	 // ms
 #define HEARTBEAT_PERIOD 500 // ms
 #define STEP_SPEED		 2	 // ms
-#define STEPPER_HOLD	 250 // ms
+#define STEPPER_HOLD	 500 // ms
 
 #define GYRO_OFFSET_X  -45
 #define GYRO_OFFSET_Y  -54
 #define GYRO_OFFSET_Z  28
-#define ACCEL_OFFSET_X -6999
-#define ACCEL_OFFSET_Y 4933
+#define ACCEL_OFFSET_X -6982
+#define ACCEL_OFFSET_Y 4885
 #define ACCEL_OFFSET_Z 8439
 
-#define KP 30
-#define KI 5
-#define KD 1
+#define KP 45
+#define KI 15
+#define KD 5
 
 #define SWITCH_OFF_ANGLE 15.0f // degrees
 

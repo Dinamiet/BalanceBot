@@ -13,8 +13,6 @@
 #define MAX_TASKS 12
 #define SUBSCRIPTION_BUFFER_SIZE 4
 
-#define HALF_STEP 1
-
 #define IMU_ADDRESS 0x68
 
 #define CLI_PERIOD		 50	 // ms

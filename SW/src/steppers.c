@@ -2,13 +2,10 @@
 
 #include "setup.h"
 
-#if HALF_STEP
+#include <stdlib.h>
+
 #define STEP_SEQUENCE_LENGTH 8
 const uint8_t step_sequence[STEP_SEQUENCE_LENGTH] = {0x02, 0x0A, 0x08, 0x09, 0x01, 0x05, 0x04, 0x06};
-#else
-#define STEP_SEQUENCE_LENGTH 4
-const uint8_t step_sequence[STEP_SEQUENCE_LENGTH] = {0x02, 0x08, 0x01, 0x04};
-#endif
 
 #define LEFT_MASK  0x0F
 #define RIGHT_MASK 0xF0
@@ -92,24 +89,34 @@ void Steppers_Disable(Steppers* steppers)
 void Steppers_Step(Steppers* steppers)
 {
 	bool shouldUpdate = false;
+	int16_t diff= abs(steppers->Left.Pos - steppers->Left.Desired);
 	if (steppers->Left.Pos > steppers->Left.Desired)
 	{
+		if (diff > 1 && (steppers->Left.Pos &  0x01) == 0)
+			--steppers->Left.Pos;
 		--steppers->Left.Pos;
 		shouldUpdate = true;
 	}
 	else if (steppers->Left.Pos < steppers->Left.Desired)
 	{
+		if (diff > 1 && (steppers->Left.Pos & 0x01) == 0)
+			++steppers->Left.Pos;
 		++steppers->Left.Pos;
 		shouldUpdate = true;
 	}
 
+	diff= abs(steppers->Right.Pos - steppers->Right.Desired);
 	if (steppers->Right.Pos > steppers->Right.Desired)
 	{
+		if (diff > 1 && (steppers->Right.Pos & 0x01) == 0)
+			--steppers->Right.Pos;
 		--steppers->Right.Pos;
 		shouldUpdate = true;
 	}
 	else if (steppers->Right.Pos < steppers->Right.Desired)
 	{
+		if (diff > 1 && (steppers->Right.Pos & 0x01) == 0)
+			++steppers->Right.Pos;
 		++steppers->Right.Pos;
 		shouldUpdate = true;
 	}

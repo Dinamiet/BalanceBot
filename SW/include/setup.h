@@ -29,7 +29,7 @@
 #define ACCEL_OFFSET_Y 4885
 #define ACCEL_OFFSET_Z 8439
 
-#define KP 45
+#define KP 90
 #define KI 15
 #define KD 5
 

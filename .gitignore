@@ -1,6 +1,6 @@
-*.log
-*.raw
-*.gbr
-*.txt
-*.xln
-*.gbrjob
+Schematics/**/*.log
+Schematics/**/*.raw
+Schematics/**/*.gbr
+Schematics/**/*.txt
+Schematics/**/*.xln
+Schematics/**/*.gbrjob

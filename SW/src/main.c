@@ -7,6 +7,7 @@
 
 int main()
 {
+	Setup_SystemTime();
 	Setup_UART();
 
 	sei();

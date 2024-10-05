@@ -86,6 +86,7 @@ target_link_libraries(
 	${PROJECT_NAME}
 	PRIVATE
 		UART
+		Timer
 		CLI
 )
 

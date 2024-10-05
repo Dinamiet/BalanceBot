@@ -1,3 +1,4 @@
+#include "cmds.h"
 #include "drivers.h"
 #include "utilities.h"
 
@@ -6,11 +7,14 @@
 #define PROMPT            "=>"
 #define FORMATED_OUT_SIZE 32
 
+#define CMD(x) {#x, Cmd_##x, CmdHelp_##x}
+
 CLI* cli;
 
 static CLI cmdLine;
 
 static CLICommand commands[] = {
+		CMD(uptime),
 		{"?", CLI_Cmd, CLI_Help},
 		{  0,       0,        0}
 };

@@ -14,6 +14,16 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
+	Scheduler
+	GIT_REPOSITORY
+		git@bitbucket.org:dinamiet/scheduler.git
+	GIT_TAG
+		development
+	SOURCE_DIR
+		${CMAKE_SOURCE_DIR}/lib/Scheduler
+)
+
+FetchContent_Declare(
 	CLI
 	GIT_REPOSITORY
 		git@bitbucket.org:dinamiet/cli.git
@@ -25,5 +35,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(
 	ATmega328P
+	Scheduler
 	CLI
 )

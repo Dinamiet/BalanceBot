@@ -2,9 +2,12 @@
 #define _UTILITIES_H_
 
 #include "cli.h"
+#include "scheduler.h"
 
 extern CLI* cli;
+extern Scheduler* taskScheduler;
 
+void Setup_Scheduler();
 void Setup_CLI();
 
 #endif

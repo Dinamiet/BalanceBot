@@ -12,9 +12,16 @@ int main()
 
 	sei();
 
+	Setup_Scheduler();
 	Setup_CLI();
 
-	while (true) { CLI_Process(cli); }
+	SchedulerTask* task = NULL;
+	while (true)
+	{
+		task = Scheduler_NextReady(taskScheduler);
+		Scheduler_Execute(task);
+		Scheduler_Queue(taskScheduler, task);
+	}
 
 	return 0;
 }

@@ -1,5 +1,6 @@
 #include "cmds.h"
 #include "drivers.h"
+#include "tasks.h"
 #include "utilities.h"
 
 #include <stdio.h>
@@ -11,7 +12,8 @@
 
 CLI* cli;
 
-static CLI cmdLine;
+static CLI           cmdLine;
+static SchedulerTask cliTask;
 
 static CLICommand commands[] = {
 		CMD(uptime),
@@ -37,4 +39,6 @@ void Setup_CLI()
 {
 	cli = &cmdLine;
 	CLI_Init(cli, PROMPT, commands, cliRead, cliWrite);
+
+	Scheduler_CreateRecurringTask(taskScheduler, &cliTask, CLI_TASK_ID, (Scheduler_TaskFunction)CLI_Process, cli, CLI_TASK_PERIOD);
 }

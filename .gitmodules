@@ -46,3 +46,6 @@
 	path = SW/lib/Database
 	url = ../database.git
 	branch = master
+[submodule "SW/Toolchain"]
+	path = SW/Toolchain
+	url = git@bitbucket.org:dinamiet/avrchain.git

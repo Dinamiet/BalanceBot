@@ -1,4 +1,5 @@
 #include "drivers.h"
+#include "utilities.h"
 
 #include <avr/interrupt.h>
 #include <stdbool.h>
@@ -10,12 +11,9 @@ int main()
 
 	sei();
 
-	char msg[] = "Hello World\n\r";
-	while (true)
-	{
-		UART_Write(uart, msg, sizeof(msg));
-		while (UART_IsBusy(uart));
-	}
+	Setup_CLI();
+
+	while (true) { CLI_Process(cli); }
 
 	return 0;
 }

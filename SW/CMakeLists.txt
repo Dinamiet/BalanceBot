@@ -86,6 +86,7 @@ target_link_libraries(
 	${PROJECT_NAME}
 	PRIVATE
 		UART
+		CLI
 )
 
 avr_upload_target(${PROJECT_NAME} atmega328p)

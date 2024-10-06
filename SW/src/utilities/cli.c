@@ -17,6 +17,7 @@ static SchedulerTask cliTask;
 
 static CLICommand commands[] = {
 		CMD(uptime),
+		CMD(scan),
 		{"?", CLI_Cmd, CLI_Help},
 		{  0,       0,        0}
 };

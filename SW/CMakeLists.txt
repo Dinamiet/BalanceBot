@@ -87,6 +87,7 @@ target_link_libraries(
 	PRIVATE
 		UART
 		Timer
+		I2C
 		Scheduler
 		CLI
 )

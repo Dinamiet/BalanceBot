@@ -9,6 +9,7 @@ int main()
 {
 	Setup_SystemTime();
 	Setup_UART();
+	Setup_I2C();
 
 	sei();
 

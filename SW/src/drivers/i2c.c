@@ -1,7 +1,7 @@
 #include "drivers.h"
 
-#define I2C_BUFFER_SIZE      32
-#define I2C_MAX_TRANSACTIONS 3
+#define I2C_BUFFER_SIZE      48
+#define I2C_MAX_TRANSACTIONS 2
 
 I2C* i2c;
 
@@ -16,5 +16,5 @@ void Setup_I2C()
 	I2C_AssignTransactionBuffer(i2c, i2cTransBuff, sizeof(i2cTransBuff));
 	I2C_AssignReadBuffer(i2c, i2cReadBuff, sizeof(i2cReadBuff));
 	I2C_AssignWriteBuffer(i2c, i2cWriteBuff, sizeof(i2cWriteBuff));
-	I2C_SetBaud(i2c, 100000);
+	I2C_SetBaud(i2c, 400000);
 }

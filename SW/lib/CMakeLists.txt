@@ -33,8 +33,19 @@ FetchContent_Declare(
 		${CMAKE_SOURCE_DIR}/lib/CLI
 )
 
+FetchContent_Declare(
+	MPU6050
+	GIT_REPOSITORY
+		git@bitbucket.org:dinamiet/mpu6050.git
+	GIT_TAG
+		development
+	SOURCE_DIR
+		${CMAKE_SOURCE_DIR}/lib/MPU6050
+)
+
 FetchContent_MakeAvailable(
 	ATmega328P
 	Scheduler
 	CLI
+	MPU6050
 )

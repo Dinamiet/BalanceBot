@@ -90,6 +90,7 @@ target_link_libraries(
 		I2C
 		Scheduler
 		CLI
+		MPU6050
 )
 
 avr_upload_target(${PROJECT_NAME} atmega328p)

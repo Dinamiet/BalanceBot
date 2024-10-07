@@ -1,4 +1,5 @@
 #include "drivers.h"
+#include "imu.h"
 #include "utilities.h"
 
 #include <avr/interrupt.h>
@@ -15,6 +16,8 @@ int main()
 
 	Setup_Scheduler();
 	Setup_CLI();
+
+	Setup_IMU();
 
 	SchedulerTask* task = NULL;
 	while (true)

@@ -4,7 +4,7 @@
 #include "cli.h"
 #include "scheduler.h"
 
-extern CLI* cli;
+extern CLI*       cmdLine;
 extern Scheduler* taskScheduler;
 
 void Setup_Scheduler();

@@ -10,14 +10,15 @@
 
 #define CMD(x) {#x, Cmd_##x, CmdHelp_##x}
 
-CLI* cli;
+CLI* cmdLine;
 
-static CLI           cmdLine;
+static CLI           cli;
 static SchedulerTask cliTask;
 
 static CLICommand commands[] = {
 		CMD(uptime),
 		CMD(scan),
+		CMD(imu),
 		{"?", CLI_Cmd, CLI_Help},
 		{  0,       0,        0}
 };
@@ -38,8 +39,8 @@ static size_t cliWrite(const char* str, va_list params)
 
 void Setup_CLI()
 {
-	cli = &cmdLine;
-	CLI_Init(cli, PROMPT, commands, cliRead, cliWrite);
+	cmdLine = &cli;
+	CLI_Init(cmdLine, PROMPT, commands, cliRead, cliWrite);
 
-	Scheduler_CreateRecurringTask(taskScheduler, &cliTask, CLI_TASK_ID, (Scheduler_TaskFunction)CLI_Process, cli, CLI_TASK_PERIOD);
+	Scheduler_CreateRecurringTask(taskScheduler, &cliTask, CLI_TASK_ID, (Scheduler_TaskFunction)CLI_Process, cmdLine, CLI_TASK_PERIOD);
 }

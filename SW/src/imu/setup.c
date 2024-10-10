@@ -7,6 +7,14 @@
 
 #define IMU_DEVICE_ADDRESS 0x68
 
+#define GYRO_OFFSET_X -45
+#define GYRO_OFFSET_Y -54
+#define GYRO_OFFSET_Z 28
+
+#define ACCEL_OFFSET_X -6982
+#define ACCEL_OFFSET_Y 4885
+#define ACCEL_OFFSET_Z 8439
+
 MPU* imu;
 
 static MPU           mpu6050;
@@ -36,7 +44,21 @@ static size_t mpuDMPFirmwareRead(void* data, const size_t offset, size_t size)
 	return size;
 }
 
-static void imuConfigure(MPU* mpu) { MPU_Configure(mpu, mpuDMPFirmwareRead); }
+static void imuConfigure(MPU* mpu)
+{
+	MPU_Configure(mpu, mpuDMPFirmwareRead);
+	MPUOffset offsets;
+
+	offsets.X = GYRO_OFFSET_X;
+	offsets.Y = GYRO_OFFSET_Y;
+	offsets.Z = GYRO_OFFSET_Z;
+	MPU_SetGyroOffset(imu, offsets);
+
+	offsets.X = ACCEL_OFFSET_X;
+	offsets.Y = ACCEL_OFFSET_Y;
+	offsets.Z = ACCEL_OFFSET_Z;
+	MPU_SetAccelOffset(imu, offsets);
+}
 
 void Setup_IMU()
 {

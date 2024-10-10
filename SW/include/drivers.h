@@ -12,6 +12,7 @@ extern Timer* systemTimer;
 void Setup_UART();
 void Setup_I2C();
 void Setup_SystemTime();
+void Setup_GPIO();
 
 uint32_t System_GetTime();
 

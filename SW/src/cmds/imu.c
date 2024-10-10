@@ -21,17 +21,14 @@ void Cmd_imu(const CLI* cli, const size_t argc, const char* argv[])
 	switch (argv[1][0])
 	{
 		case 'g':
-			MPU_Disable(imu);
 			CLI_Write(cli, "Calibrate Gyro: ");
 			MPU_CalibrateGyro(imu, transferBusy);
 			MPU_RequestGyroOffset(imu, NULL);
 			while (transferBusy(imu));
 			offset = MPU_GyroOffset(imu);
 			CLI_Write(cli, "%d %d %d\n\r", offset.X, offset.Y, offset.Z);
-			MPU_Enable(imu);
 			break;
 		case 'a':
-			MPU_Disable(imu);
 			CLI_Write(cli, "Calibrate Accel: ");
 			Vector g = Vector_Create(0, 0, 1);
 			MPU_CalibrateAccel(imu, g, transferBusy);
@@ -39,7 +36,26 @@ void Cmd_imu(const CLI* cli, const size_t argc, const char* argv[])
 			while (transferBusy(imu));
 			offset = MPU_AccelOffset(imu);
 			CLI_Write(cli, "%d %d %d\n\r", offset.X, offset.Y, offset.Z);
+			break;
+		case 'd':
+			MPU_Disable(imu);
+			CLI_Write(cli, "IMU disabled\n\r");
+			break;
+		case 'e':
 			MPU_Enable(imu);
+			CLI_Write(cli, "IMU enabled\n\r");
+			break;
+		case 'r':
+			CLI_Write(cli, "Gyro offset: ");
+			MPU_RequestGyroOffset(imu, NULL);
+			while (transferBusy(imu));
+			offset = MPU_GyroOffset(imu);
+			CLI_Write(cli, "%d %d %d\n\r", offset.X, offset.Y, offset.Z);
+			CLI_Write(cli, "Accel offset: ");
+			MPU_RequestAccelOffset(imu, NULL);
+			while (transferBusy(imu));
+			offset = MPU_AccelOffset(imu);
+			CLI_Write(cli, "%d %d %d\n\r", offset.X, offset.Y, offset.Z);
 			break;
 	};
 }

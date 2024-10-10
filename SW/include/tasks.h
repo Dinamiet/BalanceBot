@@ -7,4 +7,6 @@
 #define IMU_CONFIG_TASK 2
 #define IMU_TASK_DELAY  10 // ms
 
+#define IMU_PACKET_PROCESSING_TASK 3
+
 #endif

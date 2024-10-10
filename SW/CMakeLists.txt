@@ -88,6 +88,8 @@ target_link_libraries(
 		UART
 		Timer
 		I2C
+		GPIO
+
 		Scheduler
 		CLI
 		MPU6050

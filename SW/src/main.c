@@ -20,6 +20,8 @@ int main()
 
 	Setup_IMU();
 
+	CLI_Write(cmdLine, "\n\n\r\tWelcome\n\n\r");
+
 	SchedulerTask* task = NULL;
 	while (true)
 	{

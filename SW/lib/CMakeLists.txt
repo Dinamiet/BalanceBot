@@ -4,13 +4,13 @@ include(FetchContent)
 set(FETCHCONTENT_QUIET OFF)
 
 FetchContent_Declare(
-	ATmega328P
+	AVR
 	GIT_REPOSITORY
-		git@bitbucket.org:dinamiet/atmega328p.git
+		git@bitbucket.org:dinamiet/avr.git
 	GIT_TAG
 		development
 	SOURCE_DIR
-		${CMAKE_SOURCE_DIR}/lib/ATmega328P
+		${CMAKE_SOURCE_DIR}/lib/AVR
 )
 
 FetchContent_Declare(
@@ -44,7 +44,7 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(
-	ATmega328P
+	AVR
 	Scheduler
 	CLI
 	MPU6050

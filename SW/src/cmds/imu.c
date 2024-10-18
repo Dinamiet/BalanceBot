@@ -9,7 +9,7 @@ static bool transferBusy(const MPU* mpu);
 static bool transferBusy(const MPU* mpu)
 {
 	(void)mpu;
-	return I2C_IsBusy(i2c);
+	return I2C_IsBusy(&imuDevice);
 }
 
 void Cmd_imu(const CLI* cli, const size_t argc, const char* argv[])
@@ -64,5 +64,8 @@ const char* CmdHelp_imu[] = {
 		"IMU Calibration and data dump",
 		"g - calibrate gyro",
 		"a - calibrate accel",
+		"r - read offsets",
+		"e - enable IMU",
+		"d - disable IMU",
 		0,
 };

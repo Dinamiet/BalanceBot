@@ -20,6 +20,7 @@
 #define RAD_TO_DEG(x) (x * 180.0f / (float)M_PI)
 
 MPU* imu;
+I2CDevice imuDevice;
 
 static MPU           mpu6050;
 static SchedulerTask imuConfigTask;
@@ -36,24 +37,24 @@ static const uint8_t dmpFirmware[] PROGMEM = {
 };
 
 static size_t imuRead(void* data, const size_t size);
-static size_t imuWrite(const void* data, const size_t size);
-static bool   imuRequest(const MPU* mpu, const size_t size, const MPU_Complete complete);
+static bool   imuWrite(const uint8_t address, const void* data, const size_t size);
+static bool   imuRequest(const uint8_t address, size_t size, const MPU_Complete completed);
 static size_t mpuDMPFirmwareRead(void* data, const size_t offset, size_t size);
 static void   imuConfigure(MPU* mpu);
 static void   imuInterrupt();
-static void   imuPacketAvailable(const bool success, const MPU* mpu, const size_t size);
-static void   imuPacketDataReady(const bool success, const MPU* mpu, const size_t size);
+static void   imuPacketAvailable(const MPU* mpu, const bool success);
+static void   imuPacketDataReady(const MPU* mpu, const bool success);
 static void   imuInterruptTaskFunc(MPU* mpu);
 static void   imuPacketAvailableTaskFunc(MPU* mpu);
 static void   imuPacketDataReadyTaskFunc(MPU* mpu);
 
-static size_t imuRead(void* data, const size_t size) { return I2C_Read(i2c, data, size); }
+static size_t imuRead(void* data, const size_t size) { return I2C_Read(&imuDevice, data, size); }
 
-static size_t imuWrite(const void* data, const size_t size) { return I2C_Write(i2c, IMU_DEVICE_ADDRESS, data, size, NULL, NULL); }
+static bool imuWrite(const uint8_t address, const void* data, const size_t size) { return I2C_WriteMem(&imuDevice, address, data, size, NULL); }
 
-static bool imuRequest(const MPU* mpu, const size_t size, const MPU_Complete complete)
+static bool imuRequest(const uint8_t address, size_t size, const MPU_Complete completed)
 {
-	return I2C_Request(i2c, IMU_DEVICE_ADDRESS, size, (I2C_Complete)complete, mpu);
+	return I2C_RequestMem(&imuDevice, address, size, (I2C_Complete)completed);
 }
 
 static size_t mpuDMPFirmwareRead(void* data, const size_t offset, size_t size)
@@ -84,18 +85,16 @@ static void imuConfigure(MPU* mpu)
 
 static void imuInterrupt() { imuInterruptTriggered = true; }
 
-static void imuPacketAvailable(const bool success, const MPU* mpu, const size_t size)
+static void imuPacketAvailable(const MPU* mpu, const bool success)
 {
 	(void)mpu;
-	(void)size;
 	if (success)
 		imuPacketAvailableTriggered = true;
 }
 
-static void imuPacketDataReady(const bool success, const MPU* mpu, const size_t size)
+static void imuPacketDataReady(const MPU* mpu, const bool success)
 {
 	(void)mpu;
-	(void)size;
 	if (success)
 		imuPacketDataReadyTriggered = true;
 }
@@ -116,7 +115,7 @@ static void imuPacketAvailableTaskFunc(MPU* mpu)
 
 	imuPacketAvailableTriggered = false;
 	uint16_t numPackets         = MPU_AvailablePackets(mpu);
-	CLI_Write(cmdLine, "Available Packets: %d\n\r", numPackets);
+	// CLI_Write(cmdLine, "Available Packets: %d\n\r", numPackets);
 	if (numPackets)
 	{
 		MPU_RequestPacket(mpu, imuPacketDataReady);
@@ -133,18 +132,21 @@ static void imuPacketDataReadyTaskFunc(MPU* mpu)
 	Quaternion q = MPU_PacketQuaternion(mpu);
 	float      r, p, y;
 	Quaternion_YawPitchRoll(q, &y, &p, &r);
-	CLI_Write(cmdLine, "Y:%d P:%d R:%d\n\r", (int)RAD_TO_DEG(y), (int)RAD_TO_DEG(p), (int)RAD_TO_DEG(r));
+	// CLI_Write(cmdLine, "Y:%d P:%d R:%d\n\r", (int)RAD_TO_DEG(y), (int)RAD_TO_DEG(p), (int)RAD_TO_DEG(r));
 }
 
 void Setup_IMU()
 {
 	imu = &mpu6050;
+	imuDevice = I2C_BindDevice(imu, i2c, IMU_DEVICE_ADDRESS, I2C_ADDRESSING_8BIT);
 	MPU_Init(imu, imuRead, imuWrite, imuRequest);
 
 	Scheduler_CreateSingleTask(taskScheduler, &imuConfigTask, IMU_CONFIG_TASK, (Scheduler_TaskFunction)imuConfigure, imu, IMU_TASK_DELAY);
 	Scheduler_CreateRecurringTask(taskScheduler, &imuInterruptTask, IMU_INTERRUPT_TASK, (Scheduler_TaskFunction)imuInterruptTaskFunc, imu, 0);
 	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketAvailableTask, IMU_PACKET_AVAILABLE_TASK, (Scheduler_TaskFunction)imuPacketAvailableTaskFunc, imu, 0);
 	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketDataReadyTask, IMU_PACKET_READY_TASK, (Scheduler_TaskFunction)imuPacketDataReadyTaskFunc, imu, 0);
+
+	Scheduler_Deactivate(&imuConfigTask);
 
 	imuInterruptTriggered       = false;
 	imuPacketAvailableTriggered = false;

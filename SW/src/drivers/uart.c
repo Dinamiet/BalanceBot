@@ -14,6 +14,6 @@ void Setup_UART()
 	UART_Init(uart);
 	UART_AssignReceiveBuffer(uart, uartRxBuff, sizeof(uartRxBuff));
 	UART_AssignTransmitBuffer(uart, uartTxBuff, sizeof(uartTxBuff));
-	UART_SetBaud(uart, 19200);
+	UART_SetBaud(uart, 115200);
 	UART_SetFormat(uart, 8, UART_PARITY_NONE, 1);
 }

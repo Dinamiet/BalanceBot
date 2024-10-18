@@ -19,7 +19,7 @@
 
 #define RAD_TO_DEG(x) (x * 180.0f / (float)M_PI)
 
-MPU* imu;
+MPU*      imu;
 I2CDevice imuDevice;
 
 static MPU           mpu6050;
@@ -124,8 +124,7 @@ static void imuPacketAvailableTaskFunc(MPU* mpu)
 
 	imuPacketAvailableTriggered = false;
 	uint16_t numPackets         = MPU_AvailablePackets(mpu);
-	if (numPackets)
-		MPU_RequestPacket(mpu, imuPacketDataReady);
+	while (numPackets--) { MPU_RequestPacket(mpu, imuPacketDataReady); }
 }
 
 static void imuPacketDataReadyTaskFunc(MPU* mpu)
@@ -137,13 +136,12 @@ static void imuPacketDataReadyTaskFunc(MPU* mpu)
 
 	Quaternion q = MPU_PacketQuaternion(mpu);
 	float      r, p, y;
-	Quaternion_YawPitchRoll(q, &y, &p, &r);
-	// CLI_Write(cmdLine, "Y:%d P:%d R:%d\n\r", (int)RAD_TO_DEG(y), (int)RAD_TO_DEG(p), (int)RAD_TO_DEG(r));
+	CLI_Write(cmdLine, "%d %d %d\n\r", (int)RAD_TO_DEG(y), (int)RAD_TO_DEG(p), (int)RAD_TO_DEG(r));
 }
 
 void Setup_IMU()
 {
-	imu = &mpu6050;
+	imu       = &mpu6050;
 	imuDevice = I2C_BindDevice(imu, i2c, IMU_DEVICE_ADDRESS, I2C_ADDRESSING_8BIT);
 	MPU_Init(imu, imuRead, imuWrite, imuRequest);
 

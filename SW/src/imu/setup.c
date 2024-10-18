@@ -36,9 +36,9 @@ static const uint8_t dmpFirmware[] PROGMEM = {
 #include "mpu6050_dmpfw.txt"
 };
 
-static size_t imuRead(void* data, const size_t size);
-static bool   imuWrite(const uint8_t address, const void* data, const size_t size);
-static bool   imuRequest(const uint8_t address, size_t size, const MPU_Complete completed);
+static size_t imuRead(const MPU* mpu, void* data, const size_t size);
+static bool   imuWrite(const MPU* mpu, const uint8_t address, const void* data, const size_t size);
+static bool   imuRequest(const MPU* mpu, const uint8_t address, size_t size, const MPU_Complete completed);
 static size_t mpuDMPFirmwareRead(void* data, const size_t offset, size_t size);
 static void   imuConfigure(MPU* mpu);
 static void   imuInterrupt();
@@ -48,12 +48,21 @@ static void   imuInterruptTaskFunc(MPU* mpu);
 static void   imuPacketAvailableTaskFunc(MPU* mpu);
 static void   imuPacketDataReadyTaskFunc(MPU* mpu);
 
-static size_t imuRead(void* data, const size_t size) { return I2C_Read(&imuDevice, data, size); }
-
-static bool imuWrite(const uint8_t address, const void* data, const size_t size) { return I2C_WriteMem(&imuDevice, address, data, size, NULL); }
-
-static bool imuRequest(const uint8_t address, size_t size, const MPU_Complete completed)
+static size_t imuRead(const MPU* mpu, void* data, const size_t size)
 {
+	(void)mpu;
+	return I2C_Read(&imuDevice, data, size);
+}
+
+static bool imuWrite(const MPU* mpu, const uint8_t address, const void* data, const size_t size)
+{
+	(void)mpu;
+	return I2C_WriteMem(&imuDevice, address, data, size, NULL);
+}
+
+static bool imuRequest(const MPU* mpu, const uint8_t address, size_t size, const MPU_Complete completed)
+{
+	(void)mpu;
 	return I2C_RequestMem(&imuDevice, address, size, (I2C_Complete)completed);
 }
 
@@ -71,12 +80,12 @@ static void imuConfigure(MPU* mpu)
 	offsets.X = GYRO_OFFSET_X;
 	offsets.Y = GYRO_OFFSET_Y;
 	offsets.Z = GYRO_OFFSET_Z;
-	MPU_SetGyroOffset(imu, offsets);
+	while (!MPU_SetGyroOffset(imu, offsets));
 
 	offsets.X = ACCEL_OFFSET_X;
 	offsets.Y = ACCEL_OFFSET_Y;
 	offsets.Z = ACCEL_OFFSET_Z;
-	MPU_SetAccelOffset(imu, offsets);
+	while (!MPU_SetAccelOffset(imu, offsets));
 
 	GPIO_EnableIRQ(GPIO_ISR0, GPIO_INTERRUPT_TRIGGER_RISING, imuInterrupt);
 
@@ -115,11 +124,8 @@ static void imuPacketAvailableTaskFunc(MPU* mpu)
 
 	imuPacketAvailableTriggered = false;
 	uint16_t numPackets         = MPU_AvailablePackets(mpu);
-	// CLI_Write(cmdLine, "Available Packets: %d\n\r", numPackets);
 	if (numPackets)
-	{
 		MPU_RequestPacket(mpu, imuPacketDataReady);
-	}
 }
 
 static void imuPacketDataReadyTaskFunc(MPU* mpu)
@@ -145,8 +151,6 @@ void Setup_IMU()
 	Scheduler_CreateRecurringTask(taskScheduler, &imuInterruptTask, IMU_INTERRUPT_TASK, (Scheduler_TaskFunction)imuInterruptTaskFunc, imu, 0);
 	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketAvailableTask, IMU_PACKET_AVAILABLE_TASK, (Scheduler_TaskFunction)imuPacketAvailableTaskFunc, imu, 0);
 	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketDataReadyTask, IMU_PACKET_READY_TASK, (Scheduler_TaskFunction)imuPacketDataReadyTaskFunc, imu, 0);
-
-	Scheduler_Deactivate(&imuConfigTask);
 
 	imuInterruptTriggered       = false;
 	imuPacketAvailableTriggered = false;

@@ -1,6 +1,6 @@
 #include "drivers.h"
 
-#define UART_BUFFER_SIZE 32
+#define UART_BUFFER_SIZE 128
 
 UART* uart;
 

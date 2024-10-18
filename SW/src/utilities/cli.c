@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #define PROMPT            "=>"
-#define FORMATED_OUT_SIZE 64
+#define FORMATED_OUT_SIZE 32
 
 #define CMD(x) {#x, Cmd_##x, CmdHelp_##x}
 
@@ -32,7 +32,13 @@ static size_t cliWrite(const char* str, va_list params)
 {
 	char   cliBuff[FORMATED_OUT_SIZE];
 	int    size    = vsnprintf(cliBuff, FORMATED_OUT_SIZE, str, params);
-	return UART_Write(uart, cliBuff, size);
+	if (size > 0)
+	{
+		int sent = 0;
+		while (sent < size) { sent += UART_Write(uart, &cliBuff[sent], size - sent); }
+		return size;
+	}
+	return 0;
 }
 
 void Setup_CLI()

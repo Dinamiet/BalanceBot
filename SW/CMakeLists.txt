@@ -62,6 +62,7 @@ target_link_options(
 		"-Wl,--gc-sections" # Remove unwanted/unused sections
 		"-flto" # Link time optimization
 		"-fno-fat-lto-objects" # Link time optimization
+		"-Wl,-u,vfprintf"
 )
 
 target_include_directories(
@@ -93,6 +94,8 @@ target_link_libraries(
 		Scheduler
 		CLI
 		MPU6050
+
+		printf_flt
 )
 
 avr_upload_target(${PROJECT_NAME} atmega328p)

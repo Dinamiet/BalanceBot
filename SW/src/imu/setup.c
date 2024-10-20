@@ -129,14 +129,18 @@ static void imuPacketAvailableTaskFunc(MPU* mpu)
 
 static void imuPacketDataReadyTaskFunc(MPU* mpu)
 {
+	static uint8_t packetNum = 0;
 	if (!imuPacketDataReadyTriggered)
 		return;
 
 	imuPacketDataReadyTriggered = false;
 
 	Quaternion q = MPU_PacketQuaternion(mpu);
-	float      r, p, y;
-	CLI_Write(cmdLine, "%d %d %d\n\r", (int)RAD_TO_DEG(y), (int)RAD_TO_DEG(p), (int)RAD_TO_DEG(r));
+	float      y, p, r;
+	Quaternion_YawPitchRoll(q, &y, &p, &r);
+
+	if ((++packetNum % 50) == 0)
+		CLI_Write(cmdLine, "%8.2f %8.2f %8.2f\n\r", (double)RAD_TO_DEG(y), (double)RAD_TO_DEG(p), (double)RAD_TO_DEG(r));
 }
 
 void Setup_IMU()

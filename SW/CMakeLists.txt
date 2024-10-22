@@ -94,6 +94,7 @@ target_link_libraries(
 		Scheduler
 		CLI
 		MPU6050
+		Observer
 
 		printf_flt
 )

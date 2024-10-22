@@ -43,6 +43,17 @@ FetchContent_Declare(
 		${CMAKE_SOURCE_DIR}/lib/MPU6050
 )
 
+FetchContent_Declare(
+	Observer
+	GIT_REPOSITORY
+		git@bitbucket.org:dinamiet/observer.git
+	GIT_TAG
+		development
+	SOURCE_DIR
+		${CMAKE_SOURCE_DIR}/lib/Observer
+)
+
+
 FetchContent_MakeAvailable(
 	AVR
 	Scheduler

@@ -2,10 +2,10 @@
 #include "gpio.h"
 #include "imu.h"
 #include "tasks.h"
+#include "topics.h"
 #include "utilities.h"
 
 #include <avr/pgmspace.h>
-#include <math.h>
 
 #define IMU_DEVICE_ADDRESS 0x68
 
@@ -16,8 +16,6 @@
 #define ACCEL_OFFSET_X -6899
 #define ACCEL_OFFSET_Y 4904
 #define ACCEL_OFFSET_Z 8433
-
-#define RAD_TO_DEG(x) (x * 180.0f / (float)M_PI)
 
 MPU*      imu;
 I2CDevice imuDevice;
@@ -129,7 +127,6 @@ static void imuPacketAvailableTaskFunc(MPU* mpu)
 
 static void imuPacketDataReadyTaskFunc(MPU* mpu)
 {
-	static uint8_t packetNum = 0;
 	if (!imuPacketDataReadyTriggered)
 		return;
 
@@ -139,8 +136,7 @@ static void imuPacketDataReadyTaskFunc(MPU* mpu)
 	float      y, p, r;
 	Quaternion_YawPitchRoll(q, &y, &p, &r);
 
-	if ((++packetNum % 50) == 0)
-		CLI_Write(cmdLine, "%8.2f %8.2f %8.2f\n\r", (double)RAD_TO_DEG(y), (double)RAD_TO_DEG(p), (double)RAD_TO_DEG(r));
+	Observer_Publish(notifier, TOPIC_IMU_DATA, &r);
 }
 
 void Setup_IMU()

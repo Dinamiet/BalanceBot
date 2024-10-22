@@ -17,6 +17,7 @@ int main()
 
 	Setup_Scheduler();
 	Setup_CLI();
+	Setup_Notifier();
 
 	Setup_IMU();
 

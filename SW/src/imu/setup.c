@@ -145,10 +145,10 @@ void Setup_IMU()
 	imuDevice = I2C_BindDevice(imu, i2c, IMU_DEVICE_ADDRESS, I2C_ADDRESSING_8BIT);
 	MPU_Init(imu, imuRead, imuWrite, imuRequest);
 
-	Scheduler_CreateSingleTask(taskScheduler, &imuConfigTask, IMU_CONFIG_TASK, (Scheduler_TaskFunction)imuConfigure, imu, IMU_TASK_DELAY);
-	Scheduler_CreateRecurringTask(taskScheduler, &imuInterruptTask, IMU_INTERRUPT_TASK, (Scheduler_TaskFunction)imuInterruptTaskFunc, imu, 0);
-	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketAvailableTask, IMU_PACKET_AVAILABLE_TASK, (Scheduler_TaskFunction)imuPacketAvailableTaskFunc, imu, 0);
-	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketDataReadyTask, IMU_PACKET_READY_TASK, (Scheduler_TaskFunction)imuPacketDataReadyTaskFunc, imu, 0);
+	Scheduler_CreateSingleTask(taskScheduler, &imuConfigTask, TASK_IMU_CONFIG, (Scheduler_TaskFunction)imuConfigure, imu, TASK_DELAY_IMU_CONFIG);
+	Scheduler_CreateRecurringTask(taskScheduler, &imuInterruptTask, TASK_IMU_INTERRUPT, (Scheduler_TaskFunction)imuInterruptTaskFunc, imu, 0);
+	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketAvailableTask, TASK_IMU_PACKET_AVAILABLE, (Scheduler_TaskFunction)imuPacketAvailableTaskFunc, imu, 0);
+	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketDataReadyTask, TASK_IMU_PACKET_READY, (Scheduler_TaskFunction)imuPacketDataReadyTaskFunc, imu, 0);
 
 	imuInterruptTriggered       = false;
 	imuPacketAvailableTriggered = false;

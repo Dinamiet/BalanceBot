@@ -46,5 +46,5 @@ void Setup_CLI()
 	cmdLine = &cli;
 	CLI_Init(cmdLine, PROMPT, commands, cliRead, cliWrite);
 
-	Scheduler_CreateRecurringTask(taskScheduler, &cliTask, CLI_TASK_ID, (Scheduler_TaskFunction)CLI_Process, cmdLine, CLI_TASK_PERIOD);
+	Scheduler_CreateRecurringTask(taskScheduler, &cliTask, TASK_CLI, (Scheduler_TaskFunction)CLI_Process, cmdLine, TASK_PERIOD_CLI);
 }

@@ -1,14 +1,14 @@
 #ifndef _TASKS_H_
 #define _TASKS_H_
 
-#define CLI_TASK_ID     1
-#define CLI_TASK_PERIOD 50 // ms
+#define TASK_CLI        1
+#define TASK_PERIOD_CLI 50 // ms
 
-#define IMU_CONFIG_TASK 2
-#define IMU_TASK_DELAY  100 // ms
+#define TASK_IMU_CONFIG       2
+#define TASK_DELAY_IMU_CONFIG 100 // ms
 
-#define IMU_INTERRUPT_TASK        3
-#define IMU_PACKET_AVAILABLE_TASK 4
-#define IMU_PACKET_READY_TASK     5
+#define TASK_IMU_INTERRUPT        3
+#define TASK_IMU_PACKET_AVAILABLE 4
+#define TASK_IMU_PACKET_READY     5
 
 #endif

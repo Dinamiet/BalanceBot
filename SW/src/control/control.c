@@ -43,3 +43,21 @@ void Setup_Control()
 	PID_Init(&balanceControl, CONTROL_PROP, CONTROL_INTEGRAL, CONTROL_DERIVATIVE);
 	Observer_Subscribe(notifier, &balanceDataNotification, TOPIC_IMU_DATA, (Observer_Notify)controlData);
 }
+
+void Control_SetP(uint8_t value) { PID_SetProportional(&balanceControl, value); }
+
+void Control_SetI(uint8_t value) { PID_SetIntegral(&balanceControl, value); }
+
+void Control_SetD(uint8_t value) { PID_SetDerivative(&balanceControl, value); }
+
+void Control_SetActive(bool active)
+{
+	if (active & !Observer_HasSubscription(notifier, &balanceDataNotification))
+	{
+		Observer_Subscribe(notifier, &balanceDataNotification, TOPIC_IMU_DATA, (Observer_Notify)controlData);
+	}
+	else if (!active)
+	{
+		Observer_Unsubscribe(notifier, &balanceDataNotification);
+	}
+}

@@ -20,6 +20,7 @@ static CLICommand commands[] = {
 		CMD(scan),
 		CMD(imu),
 		CMD(motor),
+		CMD(control),
 		{"?", CLI_Cmd, CLI_Help},
 		{  0,       0,        0}
 };
@@ -31,8 +32,8 @@ static size_t cliRead(char* str, const size_t max) { return UART_Read(uart, str,
 
 static size_t cliWrite(const char* str, va_list params)
 {
-	char   cliBuff[FORMATED_OUT_SIZE];
-	int    size    = vsnprintf(cliBuff, FORMATED_OUT_SIZE, str, params);
+	char cliBuff[FORMATED_OUT_SIZE];
+	int  size = vsnprintf(cliBuff, FORMATED_OUT_SIZE, str, params);
 	if (size > 0)
 	{
 		int sent = 0;

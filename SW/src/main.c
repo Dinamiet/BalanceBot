@@ -1,3 +1,4 @@
+#include "control.h"
 #include "drivers.h"
 #include "imu.h"
 #include "motors.h"
@@ -22,6 +23,8 @@ int main()
 
 	Setup_IMU();
 	Setup_Motors();
+
+	Setup_Control();
 
 	CLI_Write(cmdLine, "\n\n\r\tWelcome\n\n\r");
 

@@ -95,6 +95,7 @@ target_link_libraries(
 		CLI
 		MPU6050
 		Observer
+		PID
 
 		printf_flt
 )

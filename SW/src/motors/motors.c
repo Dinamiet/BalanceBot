@@ -102,7 +102,7 @@ void Motors_GoTo(int16_t pos)
 	motors.Right.Desired = pos;
 }
 
-void Motor_SetPoisition(int16_t pos)
+void Motors_SetPosition(int16_t pos)
 {
 	motors.Left.Position  = pos;
 	motors.Right.Position = pos;

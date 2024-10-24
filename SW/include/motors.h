@@ -9,7 +9,7 @@ void Setup_Motors();
 void Motors_Init();
 void Motors_MoveBy(int16_t steps);
 void Motors_GoTo(int16_t pos);
-void Motors_SetPoisition(int16_t pos);
+void Motors_SetPosition(int16_t pos);
 bool Motors_IsEnabled();
 void Motors_Enable();
 void Motors_Disable();

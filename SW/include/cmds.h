@@ -12,4 +12,7 @@ extern const char* CmdHelp_scan[];
 void               Cmd_imu(const CLI* cli, const size_t argc, const char* argv[]);
 extern const char* CmdHelp_imu[];
 
+void               Cmd_motor(const CLI* cli, const size_t argc, const char* argv[]);
+extern const char* CmdHelp_motor[];
+
 #endif

@@ -1,5 +1,6 @@
 #include "drivers.h"
 #include "imu.h"
+#include "motors.h"
 #include "utilities.h"
 
 #include <avr/interrupt.h>
@@ -20,6 +21,7 @@ int main()
 	Setup_Notifier();
 
 	Setup_IMU();
+	Setup_Motors();
 
 	CLI_Write(cmdLine, "\n\n\r\tWelcome\n\n\r");
 

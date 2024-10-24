@@ -59,4 +59,5 @@ FetchContent_MakeAvailable(
 	Scheduler
 	CLI
 	MPU6050
+	Observer
 )

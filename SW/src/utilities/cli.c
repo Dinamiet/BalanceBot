@@ -19,6 +19,7 @@ static CLICommand commands[] = {
 		CMD(uptime),
 		CMD(scan),
 		CMD(imu),
+		CMD(motor),
 		{"?", CLI_Cmd, CLI_Help},
 		{  0,       0,        0}
 };

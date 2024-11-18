@@ -96,6 +96,8 @@ target_link_libraries(
 		MPU6050
 		Observer
 		PID
+		Stepper
+		DataPacket
 
 		printf_flt
 )

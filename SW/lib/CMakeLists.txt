@@ -63,6 +63,26 @@ FetchContent_Declare(
 		${CMAKE_SOURCE_DIR}/lib/PID
 )
 
+FetchContent_Declare(
+	Stepper
+	GIT_REPOSITORY
+		git@bitbucket.org:dinamiet/stepper.git
+	GIT_TAG
+		development
+	SOURCE_DIR
+		${CMAKE_SOURCE_DIR}/lib/Stepper
+)
+
+FetchContent_Declare(
+	DataPacket
+	GIT_REPOSITORY
+		git@bitbucket.org:dinamiet/datapacket.git
+	GIT_TAG
+		development
+	SOURCE_DIR
+		${CMAKE_SOURCE_DIR}/lib/DataPacket
+)
+
 FetchContent_MakeAvailable(
 	AVR
 	Scheduler
@@ -70,4 +90,6 @@ FetchContent_MakeAvailable(
 	MPU6050
 	Observer
 	PID
+	Stepper
+	DataPacket
 )

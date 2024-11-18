@@ -24,16 +24,6 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-	CLI
-	GIT_REPOSITORY
-		git@bitbucket.org:dinamiet/cli.git
-	GIT_TAG
-		development
-	SOURCE_DIR
-		${CMAKE_SOURCE_DIR}/lib/CLI
-)
-
-FetchContent_Declare(
 	MPU6050
 	GIT_REPOSITORY
 		git@bitbucket.org:dinamiet/mpu6050.git
@@ -86,7 +76,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(
 	AVR
 	Scheduler
-	CLI
 	MPU6050
 	Observer
 	PID

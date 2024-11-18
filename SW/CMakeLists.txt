@@ -92,7 +92,6 @@ target_link_libraries(
 		GPIO
 
 		Scheduler
-		CLI
 		MPU6050
 		Observer
 		PID

@@ -18,15 +18,12 @@ int main()
 	sei();
 
 	Setup_Scheduler();
-	Setup_CLI();
 	Setup_Notifier();
 
 	Setup_IMU();
 	Setup_Motors();
 
 	Setup_Control();
-
-	CLI_Write(cmdLine, "\n\n\r\tWelcome\n\n\r");
 
 	SchedulerTask* task = NULL;
 	while (true)

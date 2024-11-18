@@ -1,42 +1,39 @@
-#include "cmdlist.h"
-#include "heartbeat.h"
+#include "control.h"
+#include "drivers.h"
 #include "imu.h"
 #include "motors.h"
-#include "system.h"
-#include "task_scheduler.h"
-#include "control.h"
+#include "utilities.h"
 
 #include <avr/interrupt.h>
 #include <stdbool.h>
-
-extern TaskList taskList;
+#include <stdint.h>
 
 int main()
 {
-	Setup_Serial();
-	Setup_I2C();
 	Setup_SystemTime();
-	Setup_TaskScheduler();
-	Setup_Database();
+	Setup_UART();
+	Setup_I2C();
+	Setup_GPIO();
 
 	sei();
 
-	Setup_Heartbeat();
+	Setup_Scheduler();
 	Setup_CLI();
+	Setup_Notifier();
+
+	Setup_IMU();
+	Setup_Motors();
 
 	Setup_Control();
 
-	Setup_Motors();
-	Setup_IMU();
+	CLI_Write(cmdLine, "\n\n\r\tWelcome\n\n\r");
 
-
-	Task* activeTask = NULL;
-
+	SchedulerTask* task = NULL;
 	while (true)
 	{
-		activeTask = TaskScheduler_ReadyTask(&taskList);
-		TaskScheduler_ExecuteTask(activeTask);
-		TaskScheduler_QueueTask(&taskList, activeTask);
+		task = Scheduler_NextReady(taskScheduler);
+		Scheduler_Execute(task);
+		Scheduler_Queue(taskScheduler, task);
 	}
 
 	return 0;

@@ -1,15 +1,14 @@
 #ifndef _CONTROL_H_
 #define _CONTROL_H_
 
-#include "setup.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 void Setup_Control();
-
-DEFINE_CMD(control_p);
-DEFINE_CMD(control_i);
-DEFINE_CMD(control_d);
-DEFINE_CMD(sub);
-DEFINE_CMD(unsub);
-DEFINE_CMD(angle);
+void Control_SetP(int16_t value);
+void Control_SetI(int16_t value);
+void Control_SetD(int16_t value);
+void Control_SetActive(bool active);
+void Control_SetTarget(int16_t target);
 
 #endif

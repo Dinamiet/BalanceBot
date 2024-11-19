@@ -1,169 +1,105 @@
 #include "motors.h"
 
-#include "gpio.h"
+#include "drivers.h"
+#include "stepper.h"
 #include "tasks.h"
 #include "topics.h"
 #include "utilities.h"
-
-#include <stdbool.h>
-#include <stdlib.h>
 
 #define LEFT_MASK            0x0F
 #define RIGHT_MASK           0xF0
 #define STEP_SEQUENCE_LENGTH 8
 
-typedef struct _StepperMotor_
+#define MOTOR_SPEED 2
+
+static Stepper left;
+static Stepper right;
+
+static SchedulerTask updateMotorsTask;
+static SchedulerTask motorsCooldownTask;
+static const uint8_t stepSequence[STEP_SEQUENCE_LENGTH] = {0x02, 0x0A, 0x08, 0x09, 0x01, 0x05, 0x04, 0x06};
+
+static uint8_t stepIndexRight = 0;
+static uint8_t stepIndexLeft  = 0;
+
+static void stepLeft(bool forward);
+static void stepRight(bool forward);
+static void enableLeft(bool enable);
+static void enableRight(bool enable);
+static void updateMotorsFunc(void* _);
+static void cooldownMotorsFunc(void* _);
+
+static void stepLeft(bool forward)
 {
-	GPIO*   Port;
-	int16_t Position;
-	int16_t Desired;
-} StepperMotor;
+	stepIndexLeft += forward ? 1 : -1;
+	enableLeft(true);
+}
 
-typedef struct _Motors_
+static void stepRight(bool forward)
 {
-	StepperMotor Left;
-	StepperMotor Right;
-	bool         Enabled;
-} Motors;
+	stepIndexRight += forward ? 1 : -1;
+	enableRight(true);
+}
 
-static Motors        motors;
-static SchedulerTask stepMotorsTask;
-static SchedulerTask motorsCooldown;
-static const uint8_t step_sequence[STEP_SEQUENCE_LENGTH] = {0x02, 0x0A, 0x08, 0x09, 0x01, 0x05, 0x04, 0x06};
-
-static void setPinsLeft(GPIO* port, int8_t value);
-static void setPinsRight(GPIO* port, int8_t value);
-static void moveMotorsTask(void* _);
-static void cooldownMotorsTask(void* _);
-
-static void setPinsLeft(GPIO* port, int8_t value)
+static void enableLeft(bool enable)
 {
+	GPIO*   port         = GPIO_GetInstance(GPIO_D);
 	uint8_t currentValue = GPIO_Read(port) & LEFT_MASK;
+	uint8_t value        = 0;
+	if (enable)
+		value = stepSequence[stepIndexLeft % STEP_SEQUENCE_LENGTH];
 	currentValue |= value << 4;
 	GPIO_Write(port, currentValue);
 }
 
-static void setPinsRight(GPIO* port, int8_t value)
+static void enableRight(bool enable)
 {
+	GPIO*   port         = GPIO_GetInstance(GPIO_C);
 	uint8_t currentValue = GPIO_Read(port) & RIGHT_MASK;
+	uint8_t value        = 0;
+	if (enable)
+		value = stepSequence[stepIndexRight % STEP_SEQUENCE_LENGTH];
 	currentValue |= value;
 	GPIO_Write(port, currentValue);
 }
 
-static void moveMotorsTask(void* _)
+static void updateMotorsFunc(void* _)
 {
 	(void)_;
 
-	Motors_Step();
-	if (Motors_IsMoving())
-		Scheduler_Refresh(taskScheduler, &motorsCooldown);
+	Stepper_Run(&left, System_GetTime());
+	Stepper_Run(&right, System_GetTime());
+	if (Stepper_IsRunning(&left) || Stepper_IsRunning(&right))
+		Scheduler_Refresh(taskScheduler, &motorsCooldownTask);
 }
 
-static void cooldownMotorsTask(void* _)
+static void cooldownMotorsFunc(void* _)
 {
 	(void)_;
-	Motors_Disable();
+	Stepper_Disable(&left);
+	Stepper_Disable(&right);
 }
 
 void Setup_Motors()
 {
-	Motors_Init();
-	Scheduler_CreateRecurringTask(taskScheduler, &stepMotorsTask, TASK_MOTOR_STEP, &moveMotorsTask, NULL, TASK_MOTOR_STEP_PERIOD);
-	Scheduler_CreateRecurringTask(taskScheduler, &motorsCooldown, TASK_MOTORS_COOLDOWN, &cooldownMotorsTask, NULL, TASK_MOTORS_COOLDOWN_DELAY);
+	Stepper_Init(&left, stepLeft, enableLeft);
+	Stepper_Init(&right, stepRight, enableRight);
+
+	Stepper_SetSpeed(&left, MOTOR_SPEED);
+	Stepper_SetSpeed(&right, MOTOR_SPEED);
+
+	Scheduler_CreateRecurringTask(taskScheduler, &updateMotorsTask, TASK_MOTOR_STEP, &updateMotorsFunc, NULL, TASK_MOTOR_STEP_PERIOD);
+	Scheduler_CreateRecurringTask(taskScheduler, &motorsCooldownTask, TASK_MOTORS_COOLDOWN, &cooldownMotorsFunc, NULL, TASK_MOTORS_COOLDOWN_DELAY);
 }
 
-void Motors_Init()
+void Motors_MoveBy(int steps)
 {
-	motors.Left.Port     = GPIO_GetInstance(GPIO_D);
-	motors.Left.Position = 0;
-	motors.Left.Desired  = 0;
-
-	motors.Right.Port     = GPIO_GetInstance(GPIO_C);
-	motors.Right.Position = 0;
-	motors.Right.Desired  = 0;
-
-	motors.Enabled = false;
-
-	GPIO_SetMode(motors.Right.Port, 0x0F, GPIO_MODE_OUTPUT);
-	GPIO_SetMode(motors.Left.Port, 0xF0, GPIO_MODE_OUTPUT);
-
-	Motors_Disable();
+	Stepper_Move(&left, steps);
+	Stepper_Move(&right, steps);
 }
 
-void Motors_MoveBy(int16_t steps)
+void Motors_Reset()
 {
-	motors.Left.Desired += steps;
-	motors.Right.Desired += steps;
+	Stepper_SetPosition(&left, Stepper_TargetPosition(&left));
+	Stepper_SetPosition(&right, Stepper_TargetPosition(&right));
 }
-
-void Motors_GoTo(int16_t pos)
-{
-	motors.Left.Desired  = pos;
-	motors.Right.Desired = pos;
-}
-
-void Motors_SetPosition(int16_t pos)
-{
-	motors.Left.Position  = pos;
-	motors.Right.Position = pos;
-
-	motors.Left.Desired  = pos;
-	motors.Right.Desired = pos;
-}
-
-bool Motors_IsEnabled() { return motors.Enabled; }
-
-void Motors_Enable()
-{
-	motors.Enabled = true;
-	setPinsRight(motors.Right.Port, step_sequence[(uint16_t)motors.Right.Position % STEP_SEQUENCE_LENGTH]);
-	setPinsLeft(motors.Left.Port, step_sequence[(uint16_t)motors.Left.Position % STEP_SEQUENCE_LENGTH]);
-}
-
-void Motors_Disable()
-{
-	motors.Enabled = false;
-	setPinsRight(motors.Right.Port, 0);
-	setPinsLeft(motors.Left.Port, 0);
-}
-
-void Motors_Step()
-{
-	bool    shouldUpdate = false;
-	int16_t diff         = abs(motors.Left.Position - motors.Left.Desired);
-	if (motors.Left.Position > motors.Left.Desired)
-	{
-		if (diff > 1 && (motors.Left.Position & 0x01) == 0)
-			--motors.Left.Position;
-		--motors.Left.Position;
-		shouldUpdate = true;
-	}
-	else if (motors.Left.Position < motors.Left.Desired)
-	{
-		if (diff > 1 && (motors.Left.Position & 0x01) == 0)
-			++motors.Left.Position;
-		++motors.Left.Position;
-		shouldUpdate = true;
-	}
-
-	diff = abs(motors.Right.Position - motors.Right.Desired);
-	if (motors.Right.Position > motors.Right.Desired)
-	{
-		if (diff > 1 && (motors.Right.Position & 0x01) == 0)
-			--motors.Right.Position;
-		--motors.Right.Position;
-		shouldUpdate = true;
-	}
-	else if (motors.Right.Position < motors.Right.Desired)
-	{
-		if (diff > 1 && (motors.Right.Position & 0x01) == 0)
-			++motors.Right.Position;
-		++motors.Right.Position;
-		shouldUpdate = true;
-	}
-
-	if (shouldUpdate)
-		Motors_Enable();
-}
-
-bool Motors_IsMoving() { return motors.Left.Desired != motors.Left.Position || motors.Right.Desired != motors.Right.Position; }

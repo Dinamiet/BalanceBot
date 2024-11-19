@@ -10,7 +10,7 @@
 
 #define TASK_MOTOR_STEP            6
 #define TASK_MOTORS_COOLDOWN       7
-#define TASK_MOTOR_STEP_PERIOD     3   // ms
+#define TASK_MOTOR_STEP_PERIOD     0   // ms
 #define TASK_MOTORS_COOLDOWN_DELAY 200 // ms
 
 #define TASK_DELAY_CONTROL      8

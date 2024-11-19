@@ -1,6 +1,7 @@
 #ifndef _DRIVERS_H_
 #define _DRIVERS_H_
 
+#include "gpio.h"
 #include "i2c.h"
 #include "timer.h"
 #include "uart.h"

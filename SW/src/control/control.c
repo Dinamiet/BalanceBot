@@ -30,7 +30,7 @@ static void controlData(float* angle)
 
 	if (fabsf(*angle) > DEG_TO_RAD(SWITCH_OFF_ANGLE))
 	{
-		Motors_SetPosition(0);
+		Motors_Reset();
 		PID_ClearState(&balanceControl);
 		waitForAngle = *angle > 0 ? 1 : 2;
 	}

@@ -16,4 +16,10 @@
 #define TASK_DELAY_CONTROL      8
 #define TASK_DELAY_CONTROL_TIME 1000 // ms
 
+#define TASK_HEARTBEAT        9
+#define TASK_HEARTBEAT_PERIOD 500 // ms
+
+#define TASK_CONFIG_RECEIVE        10
+#define TASK_CONFIG_RECEIVE_PERIOD 10 // ms
+
 #endif

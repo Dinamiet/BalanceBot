@@ -1,3 +1,4 @@
+#include "config.h"
 #include "control.h"
 #include "drivers.h"
 #include "imu.h"
@@ -24,6 +25,8 @@ int main()
 	Setup_Motors();
 
 	Setup_Control();
+
+	Setup_Config();
 
 	SchedulerTask* task = NULL;
 	while (true)

@@ -12,6 +12,7 @@ static SchedulerTask     heartbeatTask;
 static SchedulerTask     configReceiveTask;
 static DataPacketMessage configMessages[] = {
 		{CONFIG_MESSAGE_OFFSET, offsetRequest_Handler},
+		{					0,				  NULL}
 };
 
 static size_t config_read(void* data, const size_t size);

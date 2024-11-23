@@ -1,24 +1,14 @@
-#include "setup.h"
-
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <unistd.h>
+#include "messages.h"
+#include "serialport.h"
 
 int main()
 {
 	printf("Hello, World!\n");
 
-	Setup_Serial("/dev/ttyUSB1");
+	Serial_Setup("/dev/ttyUSB1");
+	Messages_Setup();
 
-	while (true)
-	{
-		uint8_t buffer[512];
-		int     bytes_read = read(serialPort, buffer, sizeof(buffer));
-		for (int i = 0; i < bytes_read; i++) { printf("%02X ", buffer[i]); }
-		if (bytes_read > 0)
-			printf("\n");
-	}
+	while (true) { sleep(1000); }
 
 	return 0;
 }

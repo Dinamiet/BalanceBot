@@ -1,13 +1,11 @@
-#include "setup.h"
+#include "serialport.h"
 
-#include <fcntl.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 
 int serialPort;
 
-void Setup_Serial(char* deviceFile)
+void Serial_Setup(char* deviceFile)
 {
 	// Open the serial port
 	if ((serialPort = open(deviceFile, O_RDWR | O_NOCTTY)) < 0)

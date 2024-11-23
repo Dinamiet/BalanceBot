@@ -78,8 +78,7 @@ target_sources(
 add_subdirectory(lib)
 target_link_libraries(
 	${PROJECT_NAME}
-	PUBLIC
-		# Public link libraries
 	PRIVATE
-		# Private link libraries
+		DataPacket
+		pthread
 )

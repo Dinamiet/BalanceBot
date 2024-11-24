@@ -13,6 +13,18 @@ FetchContent_Declare(
 		${CMAKE_SOURCE_DIR}/lib/DataPacket
 )
 
+FetchContent_Declare(
+	CLI
+	GIT_REPOSITORY
+		git@bitbucket.org:dinamiet/cli.git
+	GIT_TAG
+		development
+	SOURCE_DIR
+		${CMAKE_SOURCE_DIR}/lib/CLI
+)
+
+
 FetchContent_MakeAvailable(
 	DataPacket
+	CLI
 )

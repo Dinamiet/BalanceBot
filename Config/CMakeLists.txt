@@ -79,6 +79,7 @@ add_subdirectory(lib)
 target_link_libraries(
 	${PROJECT_NAME}
 	PRIVATE
+		CLI
 		DataPacket
 		pthread
 )

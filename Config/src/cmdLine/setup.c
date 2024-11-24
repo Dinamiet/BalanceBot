@@ -1,0 +1,44 @@
+#include "cmdLine.h"
+
+#include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+
+#define PROMPT "->"
+
+CLI cmdLine;
+
+static size_t cmdLine_read(char* str, size_t max);
+static size_t cmdLine_write(const char* format, va_list params);
+
+static size_t cmdLine_read(char* str, size_t max)
+{
+	int bytesRead = read(STDIN_FILENO, str, max);
+	if (bytesRead < 0)
+		return 0;
+
+	return bytesRead;
+}
+
+static size_t cmdLine_write(const char* format, va_list params)
+{
+	int written = vprintf(format, params);
+	fflush(stdout);
+	return written;
+}
+
+CLICommand cmdList[] = {
+		{"help", CLI_Cmd, CLI_Help},
+		{     0,       0,        0}
+};
+
+void CommandLine_Setup()
+{
+	struct termios ctrl;
+	cfmakeraw(&ctrl);
+	ctrl.c_cc[VMIN]  = 1;
+	ctrl.c_cc[VTIME] = 50;
+	tcsetattr(STDIN_FILENO, TCSANOW, &ctrl);
+
+	CLI_Init(&cmdLine, PROMPT, cmdList, cmdLine_read, cmdLine_write);
+}

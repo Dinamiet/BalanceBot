@@ -5,12 +5,15 @@
 
 extern DataPacket messenger;
 
-enum
+typedef enum _MessageID_
 {
 	MESSAGE_HEARTBEAT = 0x01,
-	MESSAGE_OFFSET    = 0x10,
-};
+	MESSAGE_GYRO_CALIBRATION,
+	MESSAGE_ACCEL_CALIBRATION,
+	MESSAGE_SUBSCRIBE_IMU
+} MessageID;
 
 void Messages_Setup();
+void Message_Request(MessageID messageId, void* data, size_t size);
 
 #endif

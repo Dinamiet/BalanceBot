@@ -1,10 +1,12 @@
 #include "cmdLine.h"
+#include "cmds.h"
 
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
 
 #define PROMPT "->"
+#define CMD(x) {#x, x##_Cmd, x##_Help}
 
 CLI cmdLine;
 
@@ -28,6 +30,7 @@ static size_t cmdLine_write(const char* format, va_list params)
 }
 
 CLICommand cmdList[] = {
+		CMD(imu),
 		{"help", CLI_Cmd, CLI_Help},
 		{     0,       0,        0}
 };

@@ -1,5 +1,5 @@
-#ifndef _CMDS_H_
-#define _CMDS_H_
+#ifndef _CMDLINE_H_
+#define _CMDLINE_H_
 
 #include "cli.h"
 

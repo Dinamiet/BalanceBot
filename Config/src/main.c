@@ -4,8 +4,6 @@
 
 int main()
 {
-	printf("Hello, World!\n");
-
 	Serial_Setup("/dev/ttyUSB1");
 	Messages_Setup();
 	CommandLine_Setup();

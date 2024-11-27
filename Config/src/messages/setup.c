@@ -9,6 +9,7 @@ DataPacket messenger;
 static pthread_t         receive_thread;
 static DataPacketMessage messages[] = {
 		{MESSAGE_HEARTBEAT, heartbeat_handler},
+		{ MESSAGE_IMU_DATA,   imuData_handler},
 		{				0,			  NULL}
 };
 

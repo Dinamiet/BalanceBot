@@ -4,5 +4,6 @@
 #include "messages.h"
 
 void heartbeat_handler(const DataPacket* dp, const void* data, const size_t size);
+void imuData_handler(const DataPacket* dp, const void* data, const size_t size);
 
 #endif

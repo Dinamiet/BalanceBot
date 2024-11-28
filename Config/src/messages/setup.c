@@ -8,9 +8,14 @@ DataPacket messenger;
 
 static pthread_t         receive_thread;
 static DataPacketMessage messages[] = {
-		{MESSAGE_HEARTBEAT, heartbeat_handler},
-		{ MESSAGE_IMU_DATA,   imuData_handler},
-		{				0,			  NULL}
+		{      MESSAGE_ACKNOWLEDGE, acknowledge_handler},
+		{        MESSAGE_HEARTBEAT,   heartbeat_handler},
+		{ MESSAGE_GYRO_CALIBRATION, calibration_handler},
+		{      MESSAGE_GYRO_OFFSET,      offset_handler},
+		{MESSAGE_ACCEL_CALIBRATION, calibration_handler},
+		{     MESSAGE_ACCEL_OFFSET,      offset_handler},
+		{		 MESSAGE_IMU_DATA,     imuData_handler},
+		{						0,				NULL}
 };
 
 static size_t read_dp(void* data, const size_t size);

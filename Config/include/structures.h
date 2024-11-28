@@ -20,4 +20,11 @@ typedef struct _ControlValue_
 	int16_t Value;
 } ControlValue;
 
+typedef struct _OffsetValues_
+{
+	int16_t X;
+	int16_t Y;
+	int16_t Z;
+} OffsetValues;
+
 #endif

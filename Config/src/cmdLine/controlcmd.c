@@ -63,21 +63,21 @@ void control_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 		case cmdSetP:
 			CLI_Write(cli, "Setting Proportional gain to %f - ", value);
 			controlValue.ControlTerm = CONTROL_TERM_P;
-			controlValue.Value       = value / 100;
+			controlValue.Value       = value * 100;
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 
 		case cmdSetI:
 			CLI_Write(cli, "Setting Integral gain to %f - ", value);
 			controlValue.ControlTerm = CONTROL_TERM_I;
-			controlValue.Value       = value / 100;
+			controlValue.Value       = value * 100;
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 
 		case cmdSetD:
 			CLI_Write(cli, "Setting Derivative gain to %f - ", value);
 			controlValue.ControlTerm = CONTROL_TERM_D;
-			controlValue.Value       = value / 100;
+			controlValue.Value       = value * 100;
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 
@@ -89,7 +89,7 @@ void control_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 		case cmdSetTargetAngle:
 			CLI_Write(cli, "Setting target angle to %f - ", value);
 			controlValue.ControlTerm = CONTROL_TARGET_ANGLE;
-			controlValue.Value       = value / 100;
+			controlValue.Value       = value * 100;
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 

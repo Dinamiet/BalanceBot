@@ -3,11 +3,6 @@
 
 #include <stdint.h>
 
-typedef struct _IMUData_
-{
-	int16_t Angle;
-} IMUData;
-
 typedef struct _ControlValue_
 {
 	enum

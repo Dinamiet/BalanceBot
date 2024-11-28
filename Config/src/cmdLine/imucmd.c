@@ -2,36 +2,31 @@
 #include "messages.h"
 
 #include <getopt.h>
-#include <stdio.h>
 
 void imu_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 {
 	enum
 	{
-		cmdCalGyro,
-		cmdCalAccel,
 		cmdSubscribe,
+		cmdEnabled,
 		cmdUnknown
 	} cmd = cmdUnknown;
 
 	char c;
-	bool unsub;
+	bool flag;
 	optind = 1; // Reset getopt
-	while ((c = getopt(argc, argv, "gas:")) != -1)
+	while ((c = getopt(argc, argv, "s:e:")) != -1)
 	{
 		switch (c)
 		{
-			case 'g':
-				cmd = cmdCalGyro;
-				break;
-
-			case 'a':
-				cmd = cmdCalAccel;
-				break;
-
 			case 's':
 				cmd   = cmdSubscribe;
-				unsub = *optarg == '0';
+				flag  = (optarg[0] != '0');
+				break;
+
+			case 'e':
+				cmd  = cmdEnabled;
+				flag = (optarg[0] != '0');
 				break;
 
 			default:
@@ -42,22 +37,20 @@ void imu_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 
 	switch (cmd)
 	{
-		case cmdCalGyro:
-			printf("Calibrating gyroscope...\n\r");
-			Message_Request(MESSAGE_GYRO_CALIBRATION, NULL, 0);
-			break;
-
-		case cmdCalAccel:
-			printf("Calibrating accelerometer...\n\r");
-			Message_Request(MESSAGE_ACCEL_CALIBRATION, NULL, 0);
-			break;
-
 		case cmdSubscribe:
-			if (unsub)
-				printf("Unsubscribing from IMU data...\n\r");
+			if (flag)
+				CLI_Write(cli, "Subscribing to IMU data - ");
 			else
-				printf("Subscribing to IMU data...\n\r");
-			Message_Request(MESSAGE_SUBSCRIBE_IMU, &unsub, sizeof(unsub));
+				CLI_Write(cli, "Unsubscribing from IMU data - ");
+			Message_Request(MESSAGE_SUBSCRIBE_IMU, &flag, sizeof(flag));
+			break;
+
+		case cmdEnabled:
+			if (flag)
+				CLI_Write(cli, "Enabling IMU - ");
+			else
+				CLI_Write(cli, "Disabling IMU - ");
+			Message_Request(MESSAGE_IMU_ENABLED, &flag, sizeof(flag));
 			break;
 
 		default:
@@ -68,9 +61,7 @@ void imu_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 
 const char* const imu_Help[] = {
 		"IMU usage:",
-		"imu {gas}",
-		" -g Calibrate gyroscope",
-		" -a Calibrate accelerometer",
 		" -s {0/1} Subscribe/Unsubscribe to IMU data",
+		" -e {0/1} Enable/Disable IMU",
 		0,
 };

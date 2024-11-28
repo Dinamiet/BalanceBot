@@ -1,6 +1,5 @@
+#include "cmdLine.h"
 #include "messages.h"
-
-#include <stdio.h>
 
 void heartbeat_handler(const DataPacket* dp, const void* data, const size_t size)
 {
@@ -8,5 +7,5 @@ void heartbeat_handler(const DataPacket* dp, const void* data, const size_t size
 	(void)data;
 	(void)size;
 
-	printf("Heartbeat\n");
+	CLI_Write(&cmdLine, "Heartbeat\n");
 }

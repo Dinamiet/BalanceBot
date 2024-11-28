@@ -31,6 +31,9 @@ static size_t cmdLine_write(const char* format, va_list params)
 
 CLICommand cmdList[] = {
 		CMD(imu),
+		CMD(gyro),
+		CMD(accel),
+		CMD(control),
 		{"help", CLI_Cmd, CLI_Help},
 		{     0,       0,        0}
 };

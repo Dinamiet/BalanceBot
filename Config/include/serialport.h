@@ -1,5 +1,5 @@
-#ifndef _SETUP_H_
-#define _SETUP_H_
+#ifndef _SERIAL_PORT_H_
+#define _SERIAL_PORT_H_
 
 #include <fcntl.h>
 #include <stdio.h>

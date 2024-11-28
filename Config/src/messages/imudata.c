@@ -1,7 +1,6 @@
+#include "cmdLine.h"
 #include "messages.h"
 #include "structures.h"
-
-#include <stdio.h>
 
 void imuData_handler(const DataPacket* dp, const void* data, const size_t size)
 {
@@ -10,5 +9,5 @@ void imuData_handler(const DataPacket* dp, const void* data, const size_t size)
 
 	const IMUData* imu = data;
 
-	printf("Angle: %.1f\n\r", imu->Angle / 10.0);
+	CLI_Write(&cmdLine, "Angle: %.1f\n\r", imu->Angle / 10.0);
 }

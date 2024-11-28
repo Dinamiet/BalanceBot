@@ -34,7 +34,7 @@ target_compile_options(
 		"-Wpedantic" # Warn about non-standard code
 		"-Werror" # Warnings are treated as errors
 		"-Wshadow" # Warn about shadow variables
-		"-Wdouble-promotion" # Warn when promoting floats to doubles
+		# "-Wdouble-promotion" # Warn when promoting floats to doubles
 		"-Wformat=2" # printf and scanf warnings
 		"-Wformat-security" # printf and scanf warnings
 		"-Wformat-truncation" # printf and scanf warnings

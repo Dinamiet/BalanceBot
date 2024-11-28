@@ -47,7 +47,7 @@ static void controlData(float* angle)
 static void delayedControlClose(void* _)
 {
 	(void)_;
-	Observer_Subscribe(notifier, &balanceDataNotification, TOPIC_IMU_DATA, (Observer_Notify)controlData);
+	Observer_Subscribe(notifier, &balanceDataNotification, TOPIC_IMU_DATA, (Observer_NotifyHandler)controlData);
 }
 
 void Setup_Control()
@@ -57,11 +57,11 @@ void Setup_Control()
 	Scheduler_CreateSingleTask(taskScheduler, &delayControlNotify, TASK_DELAY_CONTROL, delayedControlClose, NULL, TASK_DELAY_CONTROL_TIME);
 }
 
-void Control_SetP(int16_t value) { PID_SetProportional(&balanceControl, value); }
+void Control_SetP(int16_t value) { PID_SetProportional(&balanceControl, value / 100.0f); }
 
-void Control_SetI(int16_t value) { PID_SetIntegral(&balanceControl, value); }
+void Control_SetI(int16_t value) { PID_SetIntegral(&balanceControl, value / 100.0f); }
 
-void Control_SetD(int16_t value) { PID_SetDerivative(&balanceControl, value); }
+void Control_SetD(int16_t value) { PID_SetDerivative(&balanceControl, value / 100.0f); }
 
 void Control_SetActive(bool active)
 {
@@ -77,6 +77,6 @@ void Control_SetActive(bool active)
 
 void Control_SetTarget(int16_t target)
 {
-	float angle = DEG_TO_RAD(((float)target) / 10.0f);
+	float angle = DEG_TO_RAD(((float)target) / 100.0f);
 	PID_Target(&balanceControl, angle);
 }

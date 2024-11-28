@@ -36,7 +36,7 @@ static const uint8_t dmpFirmware[] PROGMEM = {
 
 static size_t imuRead(const MPU* mpu, void* data, const size_t size);
 static bool   imuWrite(const MPU* mpu, const uint8_t address, const void* data, const size_t size);
-static bool   imuRequest(const MPU* mpu, const uint8_t address, size_t size, const MPU_Complete completed);
+static bool   imuRequest(const MPU* mpu, const uint8_t address, size_t size, const MPU_CompleteHandler complete_handler);
 static size_t mpuDMPFirmwareRead(void* data, const size_t offset, size_t size);
 static void   imuConfigure(MPU* mpu);
 static void   imuInterrupt();
@@ -58,10 +58,10 @@ static bool imuWrite(const MPU* mpu, const uint8_t address, const void* data, co
 	return I2C_WriteMem(&imuDevice, address, data, size, NULL);
 }
 
-static bool imuRequest(const MPU* mpu, const uint8_t address, size_t size, const MPU_Complete completed)
+static bool imuRequest(const MPU* mpu, const uint8_t address, size_t size, const MPU_CompleteHandler complete_handler)
 {
 	(void)mpu;
-	return I2C_RequestMem(&imuDevice, address, size, (I2C_Complete)completed);
+	return I2C_RequestMem(&imuDevice, address, size, (I2C_CompleteHandler)complete_handler);
 }
 
 static size_t mpuDMPFirmwareRead(void* data, const size_t offset, size_t size)
@@ -87,7 +87,7 @@ static void imuConfigure(MPU* mpu)
 
 	GPIO_EnableIRQ(GPIO_ISR0, GPIO_INTERRUPT_TRIGGER_RISING, imuInterrupt);
 
-	MPU_Enable(imu);
+	MPU_Enable(imu, true);
 }
 
 static void imuInterrupt() { imuInterruptTriggered = true; }
@@ -145,10 +145,10 @@ void Setup_IMU()
 	imuDevice = I2C_BindDevice(imu, i2c, IMU_DEVICE_ADDRESS, I2C_ADDRESSING_8BIT);
 	MPU_Init(imu, imuRead, imuWrite, imuRequest);
 
-	Scheduler_CreateSingleTask(taskScheduler, &imuConfigTask, TASK_IMU_CONFIG, (Scheduler_TaskFunction)imuConfigure, imu, TASK_DELAY_IMU_CONFIG);
-	Scheduler_CreateRecurringTask(taskScheduler, &imuInterruptTask, TASK_IMU_INTERRUPT, (Scheduler_TaskFunction)imuInterruptTaskFunc, imu, 0);
-	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketAvailableTask, TASK_IMU_PACKET_AVAILABLE, (Scheduler_TaskFunction)imuPacketAvailableTaskFunc, imu, 0);
-	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketDataReadyTask, TASK_IMU_PACKET_READY, (Scheduler_TaskFunction)imuPacketDataReadyTaskFunc, imu, 0);
+	Scheduler_CreateSingleTask(taskScheduler, &imuConfigTask, TASK_IMU_CONFIG, (Scheduler_TaskHandler)imuConfigure, imu, TASK_DELAY_IMU_CONFIG);
+	Scheduler_CreateRecurringTask(taskScheduler, &imuInterruptTask, TASK_IMU_INTERRUPT, (Scheduler_TaskHandler)imuInterruptTaskFunc, imu, 0);
+	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketAvailableTask, TASK_IMU_PACKET_AVAILABLE, (Scheduler_TaskHandler)imuPacketAvailableTaskFunc, imu, 0);
+	Scheduler_CreateRecurringTask(taskScheduler, &imuPacketDataReadyTask, TASK_IMU_PACKET_READY, (Scheduler_TaskHandler)imuPacketDataReadyTaskFunc, imu, 0);
 
 	imuInterruptTriggered       = false;
 	imuPacketAvailableTriggered = false;

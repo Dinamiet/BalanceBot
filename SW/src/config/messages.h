@@ -7,10 +7,26 @@ extern DataPacket* config;
 
 enum
 {
-	CONFIG_MESSAGE_HEARTBEAT = 0x01,
-	CONFIG_MESSAGE_OFFSET    = 0x10,
+	MESSAGE_ACKNOWLEDGE,
+	MESSAGE_HEARTBEAT,
+	MESSAGE_GYRO_CALIBRATION,
+	MESSAGE_GYRO_OFFSET,
+	MESSAGE_ACCEL_CALIBRATION,
+	MESSAGE_ACCEL_OFFSET,
+	MESSAGE_SUBSCRIBE_IMU,
+	MESSAGE_IMU_DATA,
+	MESSAGE_IMU_ENABLED,
+	MESSAGE_CONTROL_SET,
+	MESSAGE_CONTROL_ENABLE,
 };
 
-void offsetRequest_Handler(const DataPacket* dp, const void* data, const size_t size);
+void gyroCalibrationRequest_Handler(const DataPacket* dp, const void* data, const size_t size);
+void gyroOffsetRequest_Handler(const DataPacket* dp, const void* data, const size_t size);
+void accelCalibrationRequest_Handler(const DataPacket* dp, const void* data, const size_t size);
+void accelOffsetRequest_Handler(const DataPacket* dp, const void* data, const size_t size);
+void subscribeIMURequest_Handler(const DataPacket* dp, const void* data, const size_t size);
+void imuEnabled_Handler(const DataPacket* dp, const void* data, const size_t size);
+void controlSet_Handler(const DataPacket* dp, const void* data, const size_t size);
+void controlEnable_Handler(const DataPacket* dp, const void* data, const size_t size);
 
 #endif

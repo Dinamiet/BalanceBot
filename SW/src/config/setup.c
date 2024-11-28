@@ -11,8 +11,15 @@ static DataPacket        dp;
 static SchedulerTask     heartbeatTask;
 static SchedulerTask     configReceiveTask;
 static DataPacketMessage configMessages[] = {
-		{CONFIG_MESSAGE_OFFSET, offsetRequest_Handler},
-		{					0,				  NULL}
+		{ MESSAGE_GYRO_CALIBRATION,  gyroCalibrationRequest_Handler},
+		{      MESSAGE_GYRO_OFFSET,       gyroOffsetRequest_Handler},
+		{MESSAGE_ACCEL_CALIBRATION, accelCalibrationRequest_Handler},
+		{     MESSAGE_ACCEL_OFFSET,      accelOffsetRequest_Handler},
+		{    MESSAGE_SUBSCRIBE_IMU,     subscribeIMURequest_Handler},
+		{      MESSAGE_IMU_ENABLED,              imuEnabled_Handler},
+		{      MESSAGE_CONTROL_SET,              controlSet_Handler},
+		{   MESSAGE_CONTROL_ENABLE,           controlEnable_Handler},
+		{						0,							NULL}
 };
 
 static size_t config_read(void* data, const size_t size);
@@ -28,7 +35,7 @@ static void heartbeat_Function(void* _)
 {
 	(void)_;
 
-	DataPacket_Send(config, CONFIG_MESSAGE_HEARTBEAT, NULL, 0);
+	DataPacket_Send(config, MESSAGE_HEARTBEAT, NULL, 0);
 }
 
 static void configReceive_Function(void* _)

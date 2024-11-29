@@ -36,6 +36,7 @@ CLICommand cmdList[] = {
 		CMD(accel),
 		CMD(control),
 		CMD(exit),
+		CMD(motor),
 		{"help", CLI_Cmd, CLI_Help},
 		{     0,       0,        0}
 };

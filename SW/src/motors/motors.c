@@ -113,3 +113,25 @@ void Motors_Reset()
 	Stepper_SetPosition(&left, Stepper_TargetPosition(&left));
 	Stepper_SetPosition(&right, Stepper_TargetPosition(&right));
 }
+
+void Motors_Enabled(bool enabled)
+{
+	if (enabled)
+	{
+		Stepper_Enable(&left);
+		Stepper_Enable(&right);
+	}
+	else
+	{
+		Stepper_Disable(&left);
+		Stepper_Disable(&right);
+	}
+}
+
+void Motors_CooldownEnabled(bool enabled)
+{
+	if (enabled)
+		Scheduler_Activate(&motorsCooldownTask);
+	else
+		Scheduler_Deactivate(&motorsCooldownTask);
+}

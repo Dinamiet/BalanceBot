@@ -61,7 +61,7 @@ void imu_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 
 const char* const imu_Help[] = {
 		"IMU usage:",
-		" -s {0/1} Subscribe/Unsubscribe to IMU data",
-		" -e {0/1} Enable/Disable IMU",
+		" -s {1|0} Subscribe/Unsubscribe to IMU data",
+		" -e {1|0} Enable/Disable IMU",
 		0,
 };

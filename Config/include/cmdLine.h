@@ -6,5 +6,6 @@
 extern CLI cmdLine;
 
 void CommandLine_Setup();
+void CommandLine_Restore();
 
 #endif

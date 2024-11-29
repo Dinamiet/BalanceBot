@@ -35,17 +35,17 @@ void accel_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 	switch (cmd)
 	{
 		case cmdCalibrate:
-			CLI_Write(cli, "Accel calibration - ");
+			CLI_Write(cli, "Accel calibration...\n\r");
 			Message_Request(MESSAGE_ACCEL_CALIBRATION, NULL, 0);
 			break;
 
 		case cmdOffset:
-			CLI_Write(cli, "Accel offset - ");
+			CLI_Write(cli, "Accel offset...\n\r");
 			Message_Request(MESSAGE_ACCEL_OFFSET, NULL, 0);
 			break;
 
 		default:
-			CLI_Write(cli, "Unknown command\n");
+			CLI_Write(cli, "Unknown command\n\r");
 			break;
 	}
 }

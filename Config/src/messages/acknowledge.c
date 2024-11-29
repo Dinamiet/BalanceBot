@@ -7,5 +7,5 @@ void acknowledge_handler(const DataPacket* dp, const void* data, const size_t si
 	(void)size;
 	(void)data;
 
-	CLI_Write(&cmdLine, ANSI_COLOR_FG(GREEN) "OK\n" ANSI_COLOR_FG(COLOR_DEFAULT));
+	CLI_Write(&cmdLine, ANSI_COLOR_FG(COLOR_GREEN) "\rOK\n\r" ANSI_COLOR_FG(COLOR_DEFAULT));
 }

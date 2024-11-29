@@ -61,40 +61,40 @@ void control_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 	switch (cmd)
 	{
 		case cmdSetP:
-			CLI_Write(cli, "Setting Proportional gain to %f - ", value);
+			CLI_Write(cli, "Setting Proportional gain to %f...\n\r", value);
 			controlValue.ControlTerm = CONTROL_TERM_P;
 			controlValue.Value       = value * 100;
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 
 		case cmdSetI:
-			CLI_Write(cli, "Setting Integral gain to %f - ", value);
+			CLI_Write(cli, "Setting Integral gain to %f...\n\r", value);
 			controlValue.ControlTerm = CONTROL_TERM_I;
 			controlValue.Value       = value * 100;
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 
 		case cmdSetD:
-			CLI_Write(cli, "Setting Derivative gain to %f - ", value);
+			CLI_Write(cli, "Setting Derivative gain to %f...\n\r", value);
 			controlValue.ControlTerm = CONTROL_TERM_D;
 			controlValue.Value       = value * 100;
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 
 		case cmdEnableControl:
-			CLI_Write(cli, "Enabling control: %s - ", flag ? "true" : "false");
+			CLI_Write(cli, "Enabling control: %s...\n\r", flag ? "true" : "false");
 			Message_Request(MESSAGE_CONTROL_ENABLE, &flag, sizeof(flag));
 			break;
 
 		case cmdSetTargetAngle:
-			CLI_Write(cli, "Setting target angle to %f - ", value);
+			CLI_Write(cli, "Setting target angle to %f...\n\r", value);
 			controlValue.ControlTerm = CONTROL_TARGET_ANGLE;
 			controlValue.Value       = value * 100;
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 
 		default:
-			CLI_Write(cli, "Unknown command\n");
+			CLI_Write(cli, "Unknown command\n\r");
 			break;
 	}
 }

@@ -9,6 +9,7 @@
 #define CMD(x) {#x, x##_Cmd, x##_Help}
 
 CLI cmdLine;
+static struct termios original_settings;
 
 static size_t cmdLine_read(char* str, size_t max);
 static size_t cmdLine_write(const char* format, va_list params);
@@ -42,10 +43,14 @@ CLICommand cmdList[] = {
 void CommandLine_Setup()
 {
 	struct termios ctrl;
+	tcgetattr(STDIN_FILENO, &original_settings);
+
 	cfmakeraw(&ctrl);
 	ctrl.c_cc[VMIN]  = 1;
-	ctrl.c_cc[VTIME] = 50;
+	ctrl.c_cc[VTIME] = 1;
 	tcsetattr(STDIN_FILENO, TCSANOW, &ctrl);
 
 	CLI_Init(&cmdLine, PROMPT, cmdList, cmdLine_read, cmdLine_write);
 }
+
+void CommandLine_Restore() { tcsetattr(STDIN_FILENO, TCSANOW, &original_settings); }

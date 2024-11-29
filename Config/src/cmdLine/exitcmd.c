@@ -1,3 +1,4 @@
+#include "cmdLine.h"
 #include "cmds.h"
 
 #include <stdlib.h>
@@ -7,6 +8,8 @@ void exit_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 	(void)cli;
 	(void)argc;
 	(void)argv;
+
+	CommandLine_Restore();
 
 	exit(0);
 }

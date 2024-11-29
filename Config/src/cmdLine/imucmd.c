@@ -39,22 +39,22 @@ void imu_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 	{
 		case cmdSubscribe:
 			if (flag)
-				CLI_Write(cli, "Subscribing to IMU data - ");
+				CLI_Write(cli, "Subscribing to IMU data...\n\r");
 			else
-				CLI_Write(cli, "Unsubscribing from IMU data - ");
+				CLI_Write(cli, "Unsubscribing from IMU data...\n\r");
 			Message_Request(MESSAGE_SUBSCRIBE_IMU, &flag, sizeof(flag));
 			break;
 
 		case cmdEnabled:
 			if (flag)
-				CLI_Write(cli, "Enabling IMU - ");
+				CLI_Write(cli, "Enabling IMU...\n\r");
 			else
-				CLI_Write(cli, "Disabling IMU - ");
+				CLI_Write(cli, "Disabling IMU...\n\r");
 			Message_Request(MESSAGE_IMU_ENABLED, &flag, sizeof(flag));
 			break;
 
 		default:
-			CLI_Write(cli, "Unknown command.\n\r");
+			CLI_Write(cli, "Unknown command\n\r");
 			break;
 	}
 }

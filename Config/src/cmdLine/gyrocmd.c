@@ -35,17 +35,17 @@ void gyro_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 	switch (cmd)
 	{
 		case cmdCalibrate:
-			CLI_Write(cli, "Gyro calibration - ");
+			CLI_Write(cli, "Gyro calibration...\n\r");
 			Message_Request(MESSAGE_GYRO_CALIBRATION, NULL, 0);
 			break;
 
 		case cmdOffset:
-			CLI_Write(cli, "Gyro offset - ");
+			CLI_Write(cli, "Gyro offset...\n\r");
 			Message_Request(MESSAGE_GYRO_OFFSET, NULL, 0);
 			break;
 
 		case cmdUnknown:
-			CLI_Write(cli, "Unknown command\n");
+			CLI_Write(cli, "Unknown command\n\r");
 			break;
 	}
 }

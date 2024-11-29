@@ -16,11 +16,14 @@ void Serial_Setup(char* deviceFile)
 
 	// Get the current terminal settings
 	struct termios options;
-	tcgetattr(serialPort, &options);
+	cfmakeraw(&options);
 
 	// Set the baud rate and other parameters
 	cfsetispeed(&options, B115200); // Set baudrate to 115200
 	cfsetospeed(&options, B115200);
+
+	options.c_cc[VMIN]  = 1;
+	options.c_cc[VTIME] = 0;
 
 	// Apply the new settings to the serial port
 	tcsetattr(serialPort, TCSAFLUSH, &options);

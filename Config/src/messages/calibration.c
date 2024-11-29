@@ -7,5 +7,5 @@ void calibration_handler(const DataPacket* dp, const void* data, const size_t si
 	(void)data;
 	(void)size;
 
-	CLI_Write(&cmdLine, ANSI_COLOR_FG(COLOR_CYAN) "DONE\n" ANSI_COLOR_FG(DEFAULT_COLOR));
+	CLI_Write(&cmdLine, ANSI_COLOR_FG(COLOR_CYAN) "\rDONE\n\r" ANSI_COLOR_FG(DEFAULT_COLOR));
 }

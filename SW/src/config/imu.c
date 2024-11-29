@@ -29,6 +29,10 @@ void subscribeIMURequest_Handler(const DataPacket* dp, const void* data, const s
 		if (!Observer_HasSubscription(notifier, &imuDataSub))
 			Observer_Subscribe(notifier, &imuDataSub, TOPIC_IMU_DATA, (Observer_NotifyHandler)imuData);
 	}
+	else
+	{
+		Observer_Unsubscribe(notifier, &imuDataSub);
+	}
 
 	DataPacket_Send(dp, MESSAGE_ACKNOWLEDGE, NULL, 0);
 }

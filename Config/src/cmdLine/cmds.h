@@ -15,4 +15,7 @@ extern const char* const accel_Help[];
 void                     control_Cmd(const CLI* cli, const size_t argc, char* const argv[]);
 extern const char* const control_Help[];
 
+void                     exit_Cmd(const CLI* cli, const size_t argc, char* const argv[]);
+extern const char* const exit_Help[];
+
 #endif

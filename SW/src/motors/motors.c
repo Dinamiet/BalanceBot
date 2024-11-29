@@ -15,12 +15,13 @@
 #define STEP_MASK      (1 << STEP_PIN)
 #define LEFT_OFFSET    4
 
-#define MOTOR_SPEED 10
+#define MOTOR_SPEED 1
 
 static Stepper left;
 static Stepper right;
 
 static SchedulerTask updateMotorsTask;
+static SchedulerTask stepPinClearTask;
 static SchedulerTask motorsCooldownTask;
 
 static void stepLeft(bool forward);
@@ -28,20 +29,21 @@ static void stepRight(bool forward);
 static void enableLeft(bool enable);
 static void enableRight(bool enable);
 static void updateMotorsFunc(void* _);
+static void pinClearFunc(void* _);
 static void cooldownMotorsFunc(void* _);
 
 static void stepLeft(bool forward)
 {
 	GPIO* gpio = GPIO_GetInstance(GPIO_D);
 	GPIO_WritePin(gpio, DIRECTION_PIN + LEFT_OFFSET, forward);
-	GPIO_TogglePin(gpio, STEP_PIN + LEFT_OFFSET);
+	GPIO_WritePin(gpio, STEP_PIN + LEFT_OFFSET, 1);
 }
 
 static void stepRight(bool forward)
 {
 	GPIO* gpio = GPIO_GetInstance(GPIO_C);
 	GPIO_WritePin(gpio, DIRECTION_PIN, forward);
-	GPIO_TogglePin(gpio, STEP_PIN);
+	GPIO_WritePin(gpio, STEP_PIN, 1);
 }
 
 static void enableLeft(bool enable)
@@ -68,6 +70,21 @@ static void updateMotorsFunc(void* _)
 		Stepper_Enable(&right);
 		Scheduler_Refresh(taskScheduler, &motorsCooldownTask);
 	}
+}
+
+static void pinClearFunc(void* _)
+{
+	(void)_;
+
+	GPIO* gpio;
+
+	// Left
+	gpio = GPIO_GetInstance(GPIO_D);
+	GPIO_WritePin(gpio, STEP_PIN + LEFT_OFFSET, 0);
+
+	// Right
+	gpio = GPIO_GetInstance(GPIO_C);
+	GPIO_WritePin(gpio, STEP_PIN, 0);
 }
 
 static void cooldownMotorsFunc(void* _)
@@ -99,6 +116,7 @@ void Setup_Motors()
 	Stepper_SetSpeed(&right, MOTOR_SPEED);
 
 	Scheduler_CreateRecurringTask(taskScheduler, &updateMotorsTask, TASK_MOTOR_STEP, &updateMotorsFunc, NULL, TASK_MOTOR_STEP_PERIOD);
+	Scheduler_CreateRecurringTask(taskScheduler, &stepPinClearTask, TASK_STEP_PIN_CLEAR, &pinClearFunc, NULL, TASK_MOTOR_STEP_PERIOD);
 	Scheduler_CreateRecurringTask(taskScheduler, &motorsCooldownTask, TASK_MOTORS_COOLDOWN, &cooldownMotorsFunc, NULL, TASK_MOTORS_COOLDOWN_DELAY);
 }
 

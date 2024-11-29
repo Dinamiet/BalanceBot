@@ -22,4 +22,6 @@
 #define TASK_CONFIG_RECEIVE        10
 #define TASK_CONFIG_RECEIVE_PERIOD 10 // ms
 
+#define TASK_STEP_PIN_CLEAR 11
+
 #endif

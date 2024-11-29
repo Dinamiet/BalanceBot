@@ -6,21 +6,22 @@
 #include "topics.h"
 #include "utilities.h"
 
-#define LEFT_MASK            0x0F
-#define RIGHT_MASK           0xF0
-#define STEP_SEQUENCE_LENGTH 8
+#define ENABLE_PIN    0
+#define DIRECTION_PIN 1
+#define STEP_PIN      2
 
-#define MOTOR_SPEED 2
+#define ENABLE_MASK    (1 << ENABLE_PIN)
+#define DIRECTION_MASK (1 << DIRECTION_PIN)
+#define STEP_MASK      (1 << STEP_PIN)
+#define LEFT_OFFSET    4
+
+#define MOTOR_SPEED 10
 
 static Stepper left;
 static Stepper right;
 
 static SchedulerTask updateMotorsTask;
 static SchedulerTask motorsCooldownTask;
-static const uint8_t stepSequence[STEP_SEQUENCE_LENGTH] = {0x02, 0x0A, 0x08, 0x09, 0x01, 0x05, 0x04, 0x06};
-
-static uint8_t stepIndexRight = 0;
-static uint8_t stepIndexLeft  = 0;
 
 static void stepLeft(bool forward);
 static void stepRight(bool forward);
@@ -31,36 +32,28 @@ static void cooldownMotorsFunc(void* _);
 
 static void stepLeft(bool forward)
 {
-	stepIndexLeft += forward ? 1 : -1;
-	enableLeft(true);
+	GPIO* gpio = GPIO_GetInstance(GPIO_D);
+	GPIO_WritePin(gpio, DIRECTION_PIN + LEFT_OFFSET, forward);
+	GPIO_TogglePin(gpio, STEP_PIN + LEFT_OFFSET);
 }
 
 static void stepRight(bool forward)
 {
-	stepIndexRight += forward ? 1 : -1;
-	enableRight(true);
+	GPIO* gpio = GPIO_GetInstance(GPIO_C);
+	GPIO_WritePin(gpio, DIRECTION_PIN, forward);
+	GPIO_TogglePin(gpio, STEP_PIN);
 }
 
 static void enableLeft(bool enable)
 {
-	GPIO*   port         = GPIO_GetInstance(GPIO_D);
-	uint8_t currentValue = GPIO_Read(port) & LEFT_MASK;
-	uint8_t value        = 0;
-	if (enable)
-		value = stepSequence[stepIndexLeft % STEP_SEQUENCE_LENGTH];
-	currentValue |= value << 4;
-	GPIO_Write(port, currentValue);
+	GPIO* gpio = GPIO_GetInstance(GPIO_D);
+	GPIO_WritePin(gpio, ENABLE_PIN + LEFT_OFFSET, !enable);
 }
 
 static void enableRight(bool enable)
 {
-	GPIO*   port         = GPIO_GetInstance(GPIO_C);
-	uint8_t currentValue = GPIO_Read(port) & RIGHT_MASK;
-	uint8_t value        = 0;
-	if (enable)
-		value = stepSequence[stepIndexRight % STEP_SEQUENCE_LENGTH];
-	currentValue |= value;
-	GPIO_Write(port, currentValue);
+	GPIO* gpio = GPIO_GetInstance(GPIO_C);
+	GPIO_WritePin(gpio, ENABLE_PIN, !enable);
 }
 
 static void updateMotorsFunc(void* _)
@@ -70,7 +63,11 @@ static void updateMotorsFunc(void* _)
 	Stepper_Run(&left, System_GetTime());
 	Stepper_Run(&right, System_GetTime());
 	if (Stepper_IsRunning(&left) || Stepper_IsRunning(&right))
+	{
+		Stepper_Enable(&left);
+		Stepper_Enable(&right);
 		Scheduler_Refresh(taskScheduler, &motorsCooldownTask);
+	}
 }
 
 static void cooldownMotorsFunc(void* _)
@@ -82,6 +79,19 @@ static void cooldownMotorsFunc(void* _)
 
 void Setup_Motors()
 {
+	const uint8_t modeMask = ENABLE_MASK | DIRECTION_MASK | STEP_MASK;
+	GPIO*         gpio     = NULL;
+
+	// Right
+	gpio = GPIO_GetInstance(GPIO_C);
+	GPIO_SetMode(gpio, modeMask, GPIO_MODE_OUTPUT);
+	GPIO_Write(gpio, 0);
+
+	// Left
+	gpio = GPIO_GetInstance(GPIO_D);
+	GPIO_SetMode(gpio, modeMask << LEFT_OFFSET, GPIO_MODE_OUTPUT);
+	GPIO_Write(gpio, 0);
+
 	Stepper_Init(&left, stepLeft, enableLeft);
 	Stepper_Init(&right, stepRight, enableRight);
 

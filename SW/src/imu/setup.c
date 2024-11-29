@@ -7,6 +7,7 @@
 
 #include <avr/pgmspace.h>
 
+#define IMU_INTERRUPT_PIN  2
 #define IMU_DEVICE_ADDRESS 0x68
 
 #define GYRO_OFFSET_X -52
@@ -143,6 +144,10 @@ void Setup_IMU()
 {
 	imu       = &mpu6050;
 	imuDevice = I2C_BindDevice(imu, i2c, IMU_DEVICE_ADDRESS, I2C_ADDRESSING_8BIT);
+
+	GPIO* gpio = GPIO_GetInstance(GPIO_D);
+	GPIO_SetModePin(gpio, IMU_INTERRUPT_PIN, GPIO_MODE_INPUT);
+
 	MPU_Init(imu, imuRead, imuWrite, imuRequest);
 
 	Scheduler_CreateSingleTask(taskScheduler, &imuConfigTask, TASK_IMU_CONFIG, (Scheduler_TaskHandler)imuConfigure, imu, TASK_DELAY_IMU_CONFIG);

@@ -54,6 +54,7 @@ void Setup_Control()
 {
 	PID_Init(&balanceControl, CONTROL_PROP, CONTROL_INTEGRAL, CONTROL_DERIVATIVE);
 	PID_Target(&balanceControl, DEG_TO_RAD(CONTROL_TARGET));
+	PID_WindupPrevention(&balanceControl, true, 0.10f);
 	Scheduler_CreateSingleTask(taskScheduler, &delayControlNotify, TASK_DELAY_CONTROL, delayedControlClose, NULL, TASK_DELAY_CONTROL_TIME);
 }
 

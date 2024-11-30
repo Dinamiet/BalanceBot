@@ -88,7 +88,7 @@ static void imuConfigure(MPU* mpu)
 
 	GPIO_EnableIRQ(GPIO_ISR0, GPIO_INTERRUPT_TRIGGER_RISING, imuInterrupt);
 
-	MPU_Enable(imu, true);
+	MPU_Enable(imu);
 }
 
 static void imuInterrupt() { imuInterruptTriggered = true; }

@@ -21,6 +21,7 @@ enum
 	MESSAGE_MOTORS_MOVE,
 	MESSAGE_MOTORS_COOLDOWN,
 	MESSAGE_MOTORS_ENABLE,
+	MESSAGE_MOTORS_SMALLSTEP,
 };
 
 void gyroCalibrationRequest_Handler(const DataPacket* dp, const void* data, const size_t size);
@@ -34,5 +35,6 @@ void controlEnable_Handler(const DataPacket* dp, const void* data, const size_t 
 void motorsMove_Handler(const DataPacket* dp, const void* data, const size_t size);
 void motorsCooldown_Handler(const DataPacket* dp, const void* data, const size_t size);
 void motorsEnable_Handler(const DataPacket* dp, const void* data, const size_t size);
+void motorsSmallStep_Handler(const DataPacket* dp, const void* data, const size_t size);
 
 #endif

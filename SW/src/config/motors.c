@@ -34,3 +34,13 @@ void motorsEnable_Handler(const DataPacket* dp, const void* data, const size_t s
 
 	DataPacket_Send(dp, MESSAGE_ACKNOWLEDGE, NULL, 0);
 }
+
+void motorsSmallStep_Handler(const DataPacket* dp, const void* data, const size_t size)
+{
+	(void)size;
+	bool flag = *(bool*)data;
+
+	Motors_StepSize(flag);
+
+	DataPacket_Send(dp, MESSAGE_ACKNOWLEDGE, NULL, 0);
+}

@@ -11,6 +11,7 @@ void motor_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 		cmdEnable,
 		cmdCooldown,
 		cmdMove,
+		cmdStepSize,
 		cmdUnknown
 	} cmd = cmdUnknown;
 
@@ -18,7 +19,7 @@ void motor_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 	bool    flag;
 	int16_t steps;
 	optind = 1;
-	while ((c = getopt(argc, argv, "e:c:m:")) != -1)
+	while ((c = getopt(argc, argv, "e:c:m:s:")) != -1)
 	{
 		switch (c)
 		{
@@ -35,6 +36,11 @@ void motor_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 			case 'm':
 				cmd = cmdMove;
 				sscanf(optarg, "%hd", &steps);
+				break;
+
+			case 's':
+				cmd  = cmdStepSize;
+				flag = (optarg[0] != '0');
 				break;
 
 			default:
@@ -58,6 +64,11 @@ void motor_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 		case cmdMove:
 			CLI_Write(cli, "Motor move: %d\n\r", steps);
 			Message_Request(MESSAGE_MOTORS_MOVE, &steps, sizeof(steps));
+			break;
+
+		case cmdStepSize:
+			CLI_Write(cli, "Motor Small steps: %s\n\r", flag ? "Enabled" : "Disabled");
+			Message_Request(MESSAGE_MOTORS_SMALLSTEP, &flag, sizeof(flag));
 			break;
 
 		default:

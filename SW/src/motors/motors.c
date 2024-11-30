@@ -158,3 +158,13 @@ void Motors_CooldownEnabled(bool enabled)
 	else
 		Scheduler_Deactivate(&motorsCooldownTask);
 }
+
+void Motors_StepSize(bool smallStep)
+{
+	GPIO* gpio;
+	gpio = GPIO_GetInstance(RIGHT_GPIO);
+	GPIO_WritePin(gpio, RIGHT_SPEED_PIN, smallStep);
+
+	gpio = GPIO_GetInstance(LEFT_GPIO);
+	GPIO_WritePin(gpio, LEFT_SPEED_PIN, smallStep);
+}

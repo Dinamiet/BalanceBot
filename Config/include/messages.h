@@ -21,6 +21,7 @@ typedef enum _MessageID_
 	MESSAGE_MOTORS_MOVE,
 	MESSAGE_MOTORS_COOLDOWN,
 	MESSAGE_MOTORS_ENABLE,
+	MESSAGE_MOTORS_SMALLSTEP,
 } MessageID;
 
 void Messages_Setup();

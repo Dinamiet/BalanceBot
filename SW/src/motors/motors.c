@@ -6,14 +6,17 @@
 #include "topics.h"
 #include "utilities.h"
 
-#define ENABLE_PIN    0
-#define DIRECTION_PIN 1
-#define STEP_PIN      2
+#define RIGHT_GPIO          GPIO_C
+#define RIGHT_ENABLE_PIN    3
+#define RIGHT_SPEED_PIN     2
+#define RIGHT_STEP_PIN      1
+#define RIGHT_DIRECTION_PIN 0
 
-#define ENABLE_MASK    (1 << ENABLE_PIN)
-#define DIRECTION_MASK (1 << DIRECTION_PIN)
-#define STEP_MASK      (1 << STEP_PIN)
-#define LEFT_OFFSET    4
+#define LEFT_GPIO          GPIO_D
+#define LEFT_ENABLE_PIN    4
+#define LEFT_SPEED_PIN     5
+#define LEFT_STEP_PIN      6
+#define LEFT_DIRECTION_PIN 7
 
 #define MOTOR_SPEED 1
 
@@ -34,28 +37,28 @@ static void cooldownMotorsFunc(void* _);
 
 static void stepLeft(bool forward)
 {
-	GPIO* gpio = GPIO_GetInstance(GPIO_D);
-	GPIO_WritePin(gpio, DIRECTION_PIN + LEFT_OFFSET, forward);
-	GPIO_WritePin(gpio, STEP_PIN + LEFT_OFFSET, 1);
+	GPIO* gpio = GPIO_GetInstance(LEFT_GPIO);
+	GPIO_WritePin(gpio, LEFT_DIRECTION_PIN, forward);
+	GPIO_WritePin(gpio, LEFT_STEP_PIN, 1);
 }
 
 static void stepRight(bool forward)
 {
-	GPIO* gpio = GPIO_GetInstance(GPIO_C);
-	GPIO_WritePin(gpio, DIRECTION_PIN, forward);
-	GPIO_WritePin(gpio, STEP_PIN, 1);
+	GPIO* gpio = GPIO_GetInstance(RIGHT_GPIO);
+	GPIO_WritePin(gpio, RIGHT_DIRECTION_PIN, forward);
+	GPIO_WritePin(gpio, RIGHT_STEP_PIN, 1);
 }
 
 static void enableLeft(bool enable)
 {
-	GPIO* gpio = GPIO_GetInstance(GPIO_D);
-	GPIO_WritePin(gpio, ENABLE_PIN + LEFT_OFFSET, !enable);
+	GPIO* gpio = GPIO_GetInstance(LEFT_GPIO);
+	GPIO_WritePin(gpio, LEFT_ENABLE_PIN, !enable);
 }
 
 static void enableRight(bool enable)
 {
-	GPIO* gpio = GPIO_GetInstance(GPIO_C);
-	GPIO_WritePin(gpio, ENABLE_PIN, !enable);
+	GPIO* gpio = GPIO_GetInstance(RIGHT_GPIO);
+	GPIO_WritePin(gpio, RIGHT_ENABLE_PIN, !enable);
 }
 
 static void updateMotorsFunc(void* _)
@@ -79,12 +82,12 @@ static void pinClearFunc(void* _)
 	GPIO* gpio;
 
 	// Left
-	gpio = GPIO_GetInstance(GPIO_D);
-	GPIO_WritePin(gpio, STEP_PIN + LEFT_OFFSET, 0);
+	gpio = GPIO_GetInstance(LEFT_GPIO);
+	GPIO_WritePin(gpio, LEFT_STEP_PIN, 0);
 
 	// Right
-	gpio = GPIO_GetInstance(GPIO_C);
-	GPIO_WritePin(gpio, STEP_PIN, 0);
+	gpio = GPIO_GetInstance(RIGHT_GPIO);
+	GPIO_WritePin(gpio, RIGHT_STEP_PIN, 0);
 }
 
 static void cooldownMotorsFunc(void* _)
@@ -96,18 +99,20 @@ static void cooldownMotorsFunc(void* _)
 
 void Setup_Motors()
 {
-	const uint8_t modeMask = ENABLE_MASK | DIRECTION_MASK | STEP_MASK;
-	GPIO*         gpio     = NULL;
+	uint8_t modeMask = 0;
+	GPIO*   gpio     = NULL;
 
 	// Right
-	gpio = GPIO_GetInstance(GPIO_C);
+	modeMask = (1 << RIGHT_DIRECTION_PIN | 1 << RIGHT_ENABLE_PIN | 1 << RIGHT_STEP_PIN | 1 << RIGHT_SPEED_PIN);
+	gpio     = GPIO_GetInstance(GPIO_C);
 	GPIO_SetMode(gpio, modeMask, GPIO_MODE_OUTPUT);
-	GPIO_Write(gpio, 0);
+	GPIO_Write(gpio, 1 << RIGHT_SPEED_PIN | 1 << RIGHT_ENABLE_PIN); // Set small step and disabled
 
 	// Left
-	gpio = GPIO_GetInstance(GPIO_D);
-	GPIO_SetMode(gpio, modeMask << LEFT_OFFSET, GPIO_MODE_OUTPUT);
-	GPIO_Write(gpio, 0);
+	modeMask = (1 << LEFT_DIRECTION_PIN | 1 << LEFT_ENABLE_PIN | 1 << LEFT_STEP_PIN | 1 << LEFT_SPEED_PIN);
+	gpio     = GPIO_GetInstance(GPIO_D);
+	GPIO_SetMode(gpio, modeMask, GPIO_MODE_OUTPUT);
+	GPIO_Write(gpio, 1 << LEFT_SPEED_PIN | 1 << LEFT_ENABLE_PIN); // Set small step and disabled
 
 	Stepper_Init(&left, stepLeft, enableLeft);
 	Stepper_Init(&right, stepRight, enableRight);

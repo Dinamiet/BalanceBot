@@ -10,13 +10,13 @@
 #define IMU_INTERRUPT_PIN  2
 #define IMU_DEVICE_ADDRESS 0x68
 
-#define GYRO_OFFSET_X -52
-#define GYRO_OFFSET_Y -68
-#define GYRO_OFFSET_Z 33
+#define GYRO_OFFSET_X -55
+#define GYRO_OFFSET_Y -64
+#define GYRO_OFFSET_Z 36
 
-#define ACCEL_OFFSET_X -6899
-#define ACCEL_OFFSET_Y 4904
-#define ACCEL_OFFSET_Z 8433
+#define ACCEL_OFFSET_X -6995
+#define ACCEL_OFFSET_Y 4922
+#define ACCEL_OFFSET_Z 8443
 
 MPU*      imu;
 I2CDevice imuDevice;

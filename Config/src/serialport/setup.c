@@ -23,8 +23,8 @@ void Serial_Setup(char* deviceFile)
 	cfsetispeed(&options, B115200); // Set baudrate to 115200
 	cfsetospeed(&options, B115200);
 
-	options.c_cc[VMIN]  = 1;
-	options.c_cc[VTIME] = 0;
+	options.c_cc[VMIN]  = 0;
+	options.c_cc[VTIME] = 1;
 
 	// Apply the new settings to the serial port
 	tcsetattr(serialPort, TCSAFLUSH, &options);

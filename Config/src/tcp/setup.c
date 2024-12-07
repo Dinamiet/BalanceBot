@@ -12,6 +12,11 @@ void TCP_Setup(const char* host)
 		exit(1);
 	}
 
+	struct timeval tv;
+	tv.tv_sec  = 0;
+	tv.tv_usec = 100 * 1000; // 100 ms
+	setsockopt(tcpSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
+
 	struct sockaddr_in serverAddres;
 
 	serverAddres.sin_family = AF_INET;

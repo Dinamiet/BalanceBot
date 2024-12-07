@@ -58,11 +58,11 @@ void Setup_Control()
 	Scheduler_CreateSingleTask(taskScheduler, &delayControlNotify, TASK_DELAY_CONTROL, delayedControlClose, NULL, TASK_DELAY_CONTROL_TIME);
 }
 
-void Control_SetP(int16_t value) { PID_SetProportional(&balanceControl, value / 100.0f); }
+void Control_SetP(int16_t value) { PID_SetProportional(&balanceControl, (float)value); }
 
-void Control_SetI(int16_t value) { PID_SetIntegral(&balanceControl, value / 100.0f); }
+void Control_SetI(int16_t value) { PID_SetIntegral(&balanceControl, (float)value); }
 
-void Control_SetD(int16_t value) { PID_SetDerivative(&balanceControl, value / 100.0f); }
+void Control_SetD(int16_t value) { PID_SetDerivative(&balanceControl, (float)value); }
 
 void Control_SetActive(bool active)
 {

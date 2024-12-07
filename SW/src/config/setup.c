@@ -19,6 +19,10 @@ static DataPacketMessage configMessages[] = {
 		{      MESSAGE_IMU_ENABLED,              imuEnabled_Handler},
 		{      MESSAGE_CONTROL_SET,              controlSet_Handler},
 		{   MESSAGE_CONTROL_ENABLE,           controlEnable_Handler},
+		{      MESSAGE_MOTORS_MOVE,              motorsMove_Handler},
+		{  MESSAGE_MOTORS_COOLDOWN,          motorsCooldown_Handler},
+		{    MESSAGE_MOTORS_ENABLE,            motorsEnable_Handler},
+		{ MESSAGE_MOTORS_SMALLSTEP,         motorsSmallStep_Handler},
 		{						0,							NULL}
 };
 

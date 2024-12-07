@@ -24,7 +24,13 @@ typedef enum _MessageID_
 	MESSAGE_MOTORS_SMALLSTEP,
 } MessageID;
 
-void Messages_Setup();
+typedef enum _MessageInterface_
+{
+	MESSAGE_INTERFACE_SERIAL,
+	MESSAGE_INTERFACE_TCP,
+} MessageInterface;
+
+void Messages_Setup(MessageInterface interface);
 void Message_Request(MessageID messageId, void* data, size_t size);
 
 #endif

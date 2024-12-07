@@ -1,3 +1,4 @@
+#include "private.h"
 #include "serialport.h"
 
 #include <stdlib.h>
@@ -30,4 +31,6 @@ void Serial_Setup(char* deviceFile)
 
 	// Initialize the serial port for reading
 	tcdrain(serialPort);
+
+	printf("Connected to %s\n", deviceFile);
 }

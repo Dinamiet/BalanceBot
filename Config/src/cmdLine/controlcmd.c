@@ -19,7 +19,8 @@ void control_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 
 	char c;
 	optind = 1; // Reset getopt
-	float value;
+	int16_t value;
+	float   angle;
 	bool  flag;
 	while ((c = getopt(argc, argv, "p:i:d:a:t:")) != -1)
 	{
@@ -27,17 +28,17 @@ void control_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 		{
 			case 'p':
 				cmd = cmdSetP;
-				sscanf(optarg, "%f", &value);
+				sscanf(optarg, "%hd", &value);
 				break;
 
 			case 'i':
 				cmd = cmdSetI;
-				sscanf(optarg, "%f", &value);
+				sscanf(optarg, "%hd", &value);
 				break;
 
 			case 'd':
 				cmd = cmdSetD;
-				sscanf(optarg, "%f", &value);
+				sscanf(optarg, "%hd", &value);
 				break;
 
 			case 'a':
@@ -47,7 +48,7 @@ void control_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 
 			case 't':
 				cmd = cmdSetTargetAngle;
-				sscanf(optarg, "%f", &value);
+				sscanf(optarg, "%f", &angle);
 				break;
 
 			default:
@@ -61,35 +62,35 @@ void control_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 	switch (cmd)
 	{
 		case cmdSetP:
-			CLI_Write(cli, "Setting Proportional gain to %f...\n\r", value);
-			controlValue.ControlTerm = CONTROL_TERM_P;
-			controlValue.Value       = value * 100;
+			controlValue.Term  = CONTROL_TERM_P;
+			controlValue.Value = value;
+			CLI_Write(cli, "Setting Proportional gain to %d\n\r", controlValue.Value);
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 
 		case cmdSetI:
-			CLI_Write(cli, "Setting Integral gain to %f...\n\r", value);
-			controlValue.ControlTerm = CONTROL_TERM_I;
-			controlValue.Value       = value * 100;
+			controlValue.Term  = CONTROL_TERM_I;
+			controlValue.Value = value;
+			CLI_Write(cli, "Setting Integral gain to %d\n\r", controlValue.Value);
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 
 		case cmdSetD:
-			CLI_Write(cli, "Setting Derivative gain to %f...\n\r", value);
-			controlValue.ControlTerm = CONTROL_TERM_D;
-			controlValue.Value       = value * 100;
+			controlValue.Term  = CONTROL_TERM_D;
+			controlValue.Value = value;
+			CLI_Write(cli, "Setting Derivative gain to %d\n\r", controlValue.Value);
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 
 		case cmdEnableControl:
-			CLI_Write(cli, "Enabling control: %s...\n\r", flag ? "true" : "false");
+			CLI_Write(cli, "Enabling control: %s\n\r", flag ? "true" : "false");
 			Message_Request(MESSAGE_CONTROL_ENABLE, &flag, sizeof(flag));
 			break;
 
 		case cmdSetTargetAngle:
-			CLI_Write(cli, "Setting target angle to %f...\n\r", value);
-			controlValue.ControlTerm = CONTROL_TARGET_ANGLE;
-			controlValue.Value       = value * 100;
+			CLI_Write(cli, "Setting target angle to %f\n\r", angle);
+			controlValue.Term  = CONTROL_TARGET_ANGLE;
+			controlValue.Value = angle * 100.0f;
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;
 

@@ -3,16 +3,18 @@
 
 #include <stdint.h>
 
+typedef enum _ControlTerm_
+{
+	CONTROL_TERM_P,
+	CONTROL_TERM_I,
+	CONTROL_TERM_D,
+	CONTROL_TARGET_ANGLE,
+} ControlTerm;
+
 typedef struct _ControlValue_
 {
-	enum
-	{
-		CONTROL_TERM_P,
-		CONTROL_TERM_I,
-		CONTROL_TERM_D,
-		CONTROL_TARGET_ANGLE,
-	} ControlTerm;
-	int16_t Value;
+	uint16_t Term;
+	int16_t  Value;
 } ControlValue;
 
 typedef struct _OffsetValues_

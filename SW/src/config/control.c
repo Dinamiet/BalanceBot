@@ -2,16 +2,18 @@
 
 #include "messages.h"
 
+typedef enum _ControlTerm_
+{
+	CONTROL_TERM_P,
+	CONTROL_TERM_I,
+	CONTROL_TERM_D,
+	CONTROL_TARGET_ANGLE,
+} ControlTerm;
+
 typedef struct _ControlValue_
 {
-	enum
-	{
-		CONTROL_TERM_P,
-		CONTROL_TERM_I,
-		CONTROL_TERM_D,
-		CONTROL_TARGET_ANGLE,
-	} ControlTerm;
-	int16_t Value;
+	uint16_t Term;
+	int16_t  Value;
 } ControlValue;
 
 void controlSet_Handler(const DataPacket* dp, const void* data, const size_t size)
@@ -19,7 +21,7 @@ void controlSet_Handler(const DataPacket* dp, const void* data, const size_t siz
 	(void)size;
 	const ControlValue* controlValue = data;
 
-	switch (controlValue->ControlTerm)
+	switch (controlValue->Term)
 	{
 		case CONTROL_TERM_P:
 			Control_SetP(controlValue->Value);

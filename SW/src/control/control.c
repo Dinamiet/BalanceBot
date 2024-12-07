@@ -8,8 +8,8 @@
 
 #include <math.h>
 
-#define CONTROL_PROP       50
-#define CONTROL_INTEGRAL   8
+#define CONTROL_PROP       0
+#define CONTROL_INTEGRAL   0
 #define CONTROL_DERIVATIVE 0
 
 #define DEG_TO_RAD(x) (x * (float)M_PI / 180.0f)

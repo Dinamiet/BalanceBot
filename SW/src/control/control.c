@@ -8,14 +8,14 @@
 
 #include <math.h>
 
-#define CONTROL_PROP       50
-#define CONTROL_INTEGRAL   8
-#define CONTROL_DERIVATIVE 0
+#define CONTROL_PROP       125
+#define CONTROL_INTEGRAL   25
+#define CONTROL_DERIVATIVE 10
 
 #define DEG_TO_RAD(x) (x * (float)M_PI / 180.0f)
 
 #define SWITCH_OFF_ANGLE (15.0f)
-#define CONTROL_TARGET   (2.0f)
+#define CONTROL_TARGET   (0.0f)
 
 PID                  balanceControl;
 ObserverSubscription balanceDataNotification;

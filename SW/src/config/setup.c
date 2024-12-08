@@ -23,6 +23,7 @@ static DataPacketMessage configMessages[] = {
 		{  MESSAGE_MOTORS_COOLDOWN,          motorsCooldown_Handler},
 		{    MESSAGE_MOTORS_ENABLE,            motorsEnable_Handler},
 		{ MESSAGE_MOTORS_SMALLSTEP,         motorsSmallStep_Handler},
+		{MESSAGE_HEARTBEAT_ENABLED,          heartbeatEnable_Hander},
 		{						0,							NULL}
 };
 
@@ -55,4 +56,12 @@ void Setup_Config()
 	DataPacket_Init(config, configMessages, config_read, config_write);
 	Scheduler_CreateRecurringTask(taskScheduler, &heartbeatTask, TASK_HEARTBEAT, heartbeat_Function, NULL, TASK_HEARTBEAT_PERIOD);
 	Scheduler_CreateRecurringTask(taskScheduler, &configReceiveTask, TASK_CONFIG_RECEIVE, configReceive_Function, NULL, TASK_CONFIG_RECEIVE_PERIOD);
+}
+
+void Heartbeat_Enabled(bool enable)
+{
+	if (enable)
+		Scheduler_Activate(&heartbeatTask);
+	else
+		Scheduler_Deactivate(&heartbeatTask);
 }

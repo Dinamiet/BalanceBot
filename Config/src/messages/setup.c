@@ -3,6 +3,7 @@
 #include "messages.h"
 #include "pthread.h"
 #include "serialport.h"
+#include "tcp.h"
 
 DataPacket messenger;
 
@@ -18,13 +19,7 @@ static DataPacketMessage messages[] = {
 		{						0,				NULL}
 };
 
-static size_t read_dp(void* data, const size_t size);
-static size_t write_dp(const void* data, const size_t size);
 static void*  message_receive(void* arg);
-
-static size_t read_dp(void* data, const size_t size) { return read(serialPort, data, size); }
-
-static size_t write_dp(const void* data, const size_t size) { return write(serialPort, data, size); }
 
 static void* message_receive(void* arg)
 {
@@ -33,8 +28,25 @@ static void* message_receive(void* arg)
 	return NULL;
 }
 
-void Messages_Setup()
+void Messages_Setup(MessageInterface interface)
 {
-	DataPacket_Init(&messenger, messages, read_dp, write_dp);
+	DataPacket_ReadInterface  dp_read;
+	DataPacket_WriteInterface dp_write;
+	switch (interface)
+	{
+		case MESSAGE_INTERFACE_SERIAL:
+			dp_read  = Serial_Read;
+			dp_write = Serial_Write;
+			break;
+
+		case MESSAGE_INTERFACE_TCP:
+			dp_read  = TCP_Read;
+			dp_write = TCP_Write;
+			break;
+
+			// No default - all options has to be handled by switch
+	}
+
+	DataPacket_Init(&messenger, messages, dp_read, dp_write);
 	pthread_create(&receive_thread, NULL, message_receive, NULL);
 }

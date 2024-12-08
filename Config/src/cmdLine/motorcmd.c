@@ -82,5 +82,6 @@ const char* const motor_Help[] = {
 		" -e {1|0} Enable/Disable motor",
 		" -c {1|0} Enable/Disable motor cooldown",
 		" -m {steps} Move motor by specified steps",
+		" -s {1|0} Small or big step size",
 		0,
 };

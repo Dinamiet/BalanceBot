@@ -1,19 +1,13 @@
-#ifndef _STEPPER_H_
-#define _STEPPER_H_
+#ifndef _MOTORS_H_
+#define _MOTORS_H_
 
 #include <stdbool.h>
-#include <stdint.h>
 
 void Setup_Motors();
-
-void Motors_Init();
-void Motors_MoveBy(int16_t steps);
-void Motors_GoTo(int16_t pos);
-void Motors_SetPosition(int16_t pos);
-bool Motors_IsEnabled();
-void Motors_Enable();
-void Motors_Disable();
-void Motors_Step();
-bool Motors_IsMoving();
+void Motors_MoveBy(int steps);
+void Motors_Reset();
+void Motors_Enabled(bool enabled);
+void Motors_CooldownEnabled(bool enabled);
+void Motors_StepSize(bool smallStep);
 
 #endif

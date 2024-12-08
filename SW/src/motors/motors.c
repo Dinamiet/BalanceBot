@@ -1,169 +1,170 @@
 #include "motors.h"
 
-#include "gpio.h"
+#include "drivers.h"
+#include "stepper.h"
 #include "tasks.h"
 #include "topics.h"
 #include "utilities.h"
 
-#include <stdbool.h>
-#include <stdlib.h>
+#define RIGHT_GPIO          GPIO_C
+#define RIGHT_ENABLE_PIN    3
+#define RIGHT_SPEED_PIN     2
+#define RIGHT_STEP_PIN      1
+#define RIGHT_DIRECTION_PIN 0
 
-#define LEFT_MASK            0x0F
-#define RIGHT_MASK           0xF0
-#define STEP_SEQUENCE_LENGTH 8
+#define LEFT_GPIO          GPIO_D
+#define LEFT_ENABLE_PIN    4
+#define LEFT_SPEED_PIN     5
+#define LEFT_STEP_PIN      6
+#define LEFT_DIRECTION_PIN 7
 
-typedef struct _StepperMotor_
+#define MOTOR_SPEED 1
+
+static Stepper left;
+static Stepper right;
+
+static SchedulerTask updateMotorsTask;
+static SchedulerTask stepPinClearTask;
+static SchedulerTask motorsCooldownTask;
+
+static void stepLeft(bool forward);
+static void stepRight(bool forward);
+static void enableLeft(bool enable);
+static void enableRight(bool enable);
+static void updateMotorsFunc(void* _);
+static void pinClearFunc(void* _);
+static void cooldownMotorsFunc(void* _);
+
+static void stepLeft(bool forward)
 {
-	GPIO*   Port;
-	int16_t Position;
-	int16_t Desired;
-} StepperMotor;
-
-typedef struct _Motors_
-{
-	StepperMotor Left;
-	StepperMotor Right;
-	bool         Enabled;
-} Motors;
-
-static Motors        motors;
-static SchedulerTask stepMotorsTask;
-static SchedulerTask motorsCooldown;
-static const uint8_t step_sequence[STEP_SEQUENCE_LENGTH] = {0x02, 0x0A, 0x08, 0x09, 0x01, 0x05, 0x04, 0x06};
-
-static void setPinsLeft(GPIO* port, int8_t value);
-static void setPinsRight(GPIO* port, int8_t value);
-static void moveMotorsTask(void* _);
-static void cooldownMotorsTask(void* _);
-
-static void setPinsLeft(GPIO* port, int8_t value)
-{
-	uint8_t currentValue = GPIO_Read(port) & LEFT_MASK;
-	currentValue |= value << 4;
-	GPIO_Write(port, currentValue);
+	GPIO* gpio = GPIO_GetInstance(LEFT_GPIO);
+	GPIO_WritePin(gpio, LEFT_DIRECTION_PIN, forward);
+	GPIO_WritePin(gpio, LEFT_STEP_PIN, 1);
 }
 
-static void setPinsRight(GPIO* port, int8_t value)
+static void stepRight(bool forward)
 {
-	uint8_t currentValue = GPIO_Read(port) & RIGHT_MASK;
-	currentValue |= value;
-	GPIO_Write(port, currentValue);
+	GPIO* gpio = GPIO_GetInstance(RIGHT_GPIO);
+	GPIO_WritePin(gpio, RIGHT_DIRECTION_PIN, forward);
+	GPIO_WritePin(gpio, RIGHT_STEP_PIN, 1);
 }
 
-static void moveMotorsTask(void* _)
+static void enableLeft(bool enable)
+{
+	GPIO* gpio = GPIO_GetInstance(LEFT_GPIO);
+	GPIO_WritePin(gpio, LEFT_ENABLE_PIN, !enable);
+}
+
+static void enableRight(bool enable)
+{
+	GPIO* gpio = GPIO_GetInstance(RIGHT_GPIO);
+	GPIO_WritePin(gpio, RIGHT_ENABLE_PIN, !enable);
+}
+
+static void updateMotorsFunc(void* _)
 {
 	(void)_;
 
-	Motors_Step();
-	if (Motors_IsMoving())
-		Scheduler_Refresh(taskScheduler, &motorsCooldown);
+	Stepper_Run(&left, System_GetTime());
+	Stepper_Run(&right, System_GetTime());
+	if (Stepper_IsRunning(&left) || Stepper_IsRunning(&right))
+	{
+		Stepper_Enable(&left);
+		Stepper_Enable(&right);
+		Scheduler_Refresh(taskScheduler, &motorsCooldownTask);
+	}
 }
 
-static void cooldownMotorsTask(void* _)
+static void pinClearFunc(void* _)
 {
 	(void)_;
-	Motors_Disable();
+
+	GPIO* gpio;
+
+	// Left
+	gpio = GPIO_GetInstance(LEFT_GPIO);
+	GPIO_WritePin(gpio, LEFT_STEP_PIN, 0);
+
+	// Right
+	gpio = GPIO_GetInstance(RIGHT_GPIO);
+	GPIO_WritePin(gpio, RIGHT_STEP_PIN, 0);
+}
+
+static void cooldownMotorsFunc(void* _)
+{
+	(void)_;
+	Stepper_Disable(&left);
+	Stepper_Disable(&right);
 }
 
 void Setup_Motors()
 {
-	Motors_Init();
-	Scheduler_CreateRecurringTask(taskScheduler, &stepMotorsTask, TASK_MOTOR_STEP, &moveMotorsTask, NULL, TASK_MOTOR_STEP_PERIOD);
-	Scheduler_CreateRecurringTask(taskScheduler, &motorsCooldown, TASK_MOTORS_COOLDOWN, &cooldownMotorsTask, NULL, TASK_MOTORS_COOLDOWN_DELAY);
+	uint8_t modeMask = 0;
+	GPIO*   gpio     = NULL;
+
+	// Right
+	modeMask = (1 << RIGHT_DIRECTION_PIN | 1 << RIGHT_ENABLE_PIN | 1 << RIGHT_STEP_PIN | 1 << RIGHT_SPEED_PIN);
+	gpio     = GPIO_GetInstance(GPIO_C);
+	GPIO_SetMode(gpio, modeMask, GPIO_MODE_OUTPUT);
+	GPIO_Write(gpio, 1 << RIGHT_SPEED_PIN | 1 << RIGHT_ENABLE_PIN); // Set small step and disabled
+
+	// Left
+	modeMask = (1 << LEFT_DIRECTION_PIN | 1 << LEFT_ENABLE_PIN | 1 << LEFT_STEP_PIN | 1 << LEFT_SPEED_PIN);
+	gpio     = GPIO_GetInstance(GPIO_D);
+	GPIO_SetMode(gpio, modeMask, GPIO_MODE_OUTPUT);
+	GPIO_Write(gpio, 1 << LEFT_SPEED_PIN | 1 << LEFT_ENABLE_PIN); // Set small step and disabled
+
+	Stepper_Init(&left, stepLeft, enableLeft);
+	Stepper_Init(&right, stepRight, enableRight);
+
+	Stepper_SetSpeed(&left, MOTOR_SPEED);
+	Stepper_SetSpeed(&right, MOTOR_SPEED);
+
+	Scheduler_CreateRecurringTask(taskScheduler, &updateMotorsTask, TASK_MOTOR_STEP, &updateMotorsFunc, NULL, TASK_MOTOR_STEP_PERIOD);
+	Scheduler_CreateRecurringTask(taskScheduler, &stepPinClearTask, TASK_STEP_PIN_CLEAR, &pinClearFunc, NULL, TASK_MOTOR_STEP_PERIOD);
+	Scheduler_CreateRecurringTask(taskScheduler, &motorsCooldownTask, TASK_MOTORS_COOLDOWN, &cooldownMotorsFunc, NULL, TASK_MOTORS_COOLDOWN_DELAY);
 }
 
-void Motors_Init()
+void Motors_MoveBy(int steps)
 {
-	motors.Left.Port     = GPIO_GetInstance(GPIO_D);
-	motors.Left.Position = 0;
-	motors.Left.Desired  = 0;
-
-	motors.Right.Port     = GPIO_GetInstance(GPIO_C);
-	motors.Right.Position = 0;
-	motors.Right.Desired  = 0;
-
-	motors.Enabled = false;
-
-	GPIO_SetMode(motors.Right.Port, 0x0F, GPIO_MODE_OUTPUT);
-	GPIO_SetMode(motors.Left.Port, 0xF0, GPIO_MODE_OUTPUT);
-
-	Motors_Disable();
+	Stepper_Move(&left, steps);
+	Stepper_Move(&right, steps);
 }
 
-void Motors_MoveBy(int16_t steps)
+void Motors_Reset()
 {
-	motors.Left.Desired += steps;
-	motors.Right.Desired += steps;
+	Stepper_SetPosition(&left, Stepper_TargetPosition(&left));
+	Stepper_SetPosition(&right, Stepper_TargetPosition(&right));
 }
 
-void Motors_GoTo(int16_t pos)
+void Motors_Enabled(bool enabled)
 {
-	motors.Left.Desired  = pos;
-	motors.Right.Desired = pos;
-}
-
-void Motors_SetPosition(int16_t pos)
-{
-	motors.Left.Position  = pos;
-	motors.Right.Position = pos;
-
-	motors.Left.Desired  = pos;
-	motors.Right.Desired = pos;
-}
-
-bool Motors_IsEnabled() { return motors.Enabled; }
-
-void Motors_Enable()
-{
-	motors.Enabled = true;
-	setPinsRight(motors.Right.Port, step_sequence[(uint16_t)motors.Right.Position % STEP_SEQUENCE_LENGTH]);
-	setPinsLeft(motors.Left.Port, step_sequence[(uint16_t)motors.Left.Position % STEP_SEQUENCE_LENGTH]);
-}
-
-void Motors_Disable()
-{
-	motors.Enabled = false;
-	setPinsRight(motors.Right.Port, 0);
-	setPinsLeft(motors.Left.Port, 0);
-}
-
-void Motors_Step()
-{
-	bool    shouldUpdate = false;
-	int16_t diff         = abs(motors.Left.Position - motors.Left.Desired);
-	if (motors.Left.Position > motors.Left.Desired)
+	if (enabled)
 	{
-		if (diff > 1 && (motors.Left.Position & 0x01) == 0)
-			--motors.Left.Position;
-		--motors.Left.Position;
-		shouldUpdate = true;
+		Stepper_Enable(&left);
+		Stepper_Enable(&right);
 	}
-	else if (motors.Left.Position < motors.Left.Desired)
+	else
 	{
-		if (diff > 1 && (motors.Left.Position & 0x01) == 0)
-			++motors.Left.Position;
-		++motors.Left.Position;
-		shouldUpdate = true;
+		Stepper_Disable(&left);
+		Stepper_Disable(&right);
 	}
-
-	diff = abs(motors.Right.Position - motors.Right.Desired);
-	if (motors.Right.Position > motors.Right.Desired)
-	{
-		if (diff > 1 && (motors.Right.Position & 0x01) == 0)
-			--motors.Right.Position;
-		--motors.Right.Position;
-		shouldUpdate = true;
-	}
-	else if (motors.Right.Position < motors.Right.Desired)
-	{
-		if (diff > 1 && (motors.Right.Position & 0x01) == 0)
-			++motors.Right.Position;
-		++motors.Right.Position;
-		shouldUpdate = true;
-	}
-
-	if (shouldUpdate)
-		Motors_Enable();
 }
 
-bool Motors_IsMoving() { return motors.Left.Desired != motors.Left.Position || motors.Right.Desired != motors.Right.Position; }
+void Motors_CooldownEnabled(bool enabled)
+{
+	if (enabled)
+		Scheduler_Activate(&motorsCooldownTask);
+	else
+		Scheduler_Deactivate(&motorsCooldownTask);
+}
+
+void Motors_StepSize(bool smallStep)
+{
+	GPIO* gpio;
+	gpio = GPIO_GetInstance(RIGHT_GPIO);
+	GPIO_WritePin(gpio, RIGHT_SPEED_PIN, smallStep);
+
+	gpio = GPIO_GetInstance(LEFT_GPIO);
+	GPIO_WritePin(gpio, LEFT_SPEED_PIN, smallStep);
+}

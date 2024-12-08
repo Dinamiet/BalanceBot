@@ -1,3 +1,4 @@
+#include "config.h"
 #include "control.h"
 #include "drivers.h"
 #include "imu.h"
@@ -13,12 +14,10 @@ int main()
 	Setup_SystemTime();
 	Setup_UART();
 	Setup_I2C();
-	Setup_GPIO();
 
 	sei();
 
 	Setup_Scheduler();
-	Setup_CLI();
 	Setup_Notifier();
 
 	Setup_IMU();
@@ -26,7 +25,7 @@ int main()
 
 	Setup_Control();
 
-	CLI_Write(cmdLine, "\n\n\r\tWelcome\n\n\r");
+	Setup_Config();
 
 	SchedulerTask* task = NULL;
 	while (true)

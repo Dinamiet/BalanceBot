@@ -1,12 +1,6 @@
-cmake_minimum_required(VERSION 3.20.0)
+cmake_minimum_required(VERSION 3.20)
 
-include(Toolchain/avr-gcc.cmake)
-
-project(
-	BalanceBot
-)
-
-avr_project_configure(atmega328p 12000000)
+project(BalanceBotConfig)
 
 add_executable(
 	${PROJECT_NAME}
@@ -40,7 +34,7 @@ target_compile_options(
 		"-Wpedantic" # Warn about non-standard code
 		"-Werror" # Warnings are treated as errors
 		"-Wshadow" # Warn about shadow variables
-		"-Wdouble-promotion" # Warn when promoting floats to doubles
+		# "-Wdouble-promotion" # Warn when promoting floats to doubles
 		"-Wformat=2" # printf and scanf warnings
 		"-Wformat-security" # printf and scanf warnings
 		"-Wformat-truncation" # printf and scanf warnings
@@ -85,17 +79,7 @@ add_subdirectory(lib)
 target_link_libraries(
 	${PROJECT_NAME}
 	PRIVATE
-		UART
-		Timer
-		I2C
-		GPIO
-
-		Scheduler
-		MPU6050
-		Observer
-		PID
-		Stepper
+		CLI
 		DataPacket
+		pthread
 )
-
-avr_upload_target(${PROJECT_NAME} atmega328p)

@@ -8,14 +8,14 @@
 
 #include <math.h>
 
-#define CONTROL_PROP       50
-#define CONTROL_INTEGRAL   8
-#define CONTROL_DERIVATIVE 0
+#define CONTROL_PROP       125
+#define CONTROL_INTEGRAL   25
+#define CONTROL_DERIVATIVE 10
 
 #define DEG_TO_RAD(x) (x * (float)M_PI / 180.0f)
 
 #define SWITCH_OFF_ANGLE (15.0f)
-#define CONTROL_TARGET   (2.0f)
+#define CONTROL_TARGET   (0.0f)
 
 PID                  balanceControl;
 ObserverSubscription balanceDataNotification;
@@ -30,7 +30,7 @@ static void controlData(float* angle)
 
 	if (fabsf(*angle) > DEG_TO_RAD(SWITCH_OFF_ANGLE))
 	{
-		Motors_SetPosition(0);
+		Motors_Reset();
 		PID_ClearState(&balanceControl);
 		waitForAngle = *angle > 0 ? 1 : 2;
 	}
@@ -47,21 +47,22 @@ static void controlData(float* angle)
 static void delayedControlClose(void* _)
 {
 	(void)_;
-	Observer_Subscribe(notifier, &balanceDataNotification, TOPIC_IMU_DATA, (Observer_Notify)controlData);
+	Observer_Subscribe(notifier, &balanceDataNotification, TOPIC_IMU_DATA, (Observer_NotifyHandler)controlData);
 }
 
 void Setup_Control()
 {
 	PID_Init(&balanceControl, CONTROL_PROP, CONTROL_INTEGRAL, CONTROL_DERIVATIVE);
 	PID_Target(&balanceControl, DEG_TO_RAD(CONTROL_TARGET));
+	PID_WindupPrevention(&balanceControl, true, 0.10f);
 	Scheduler_CreateSingleTask(taskScheduler, &delayControlNotify, TASK_DELAY_CONTROL, delayedControlClose, NULL, TASK_DELAY_CONTROL_TIME);
 }
 
-void Control_SetP(int16_t value) { PID_SetProportional(&balanceControl, value); }
+void Control_SetP(int16_t value) { PID_SetProportional(&balanceControl, (float)value); }
 
-void Control_SetI(int16_t value) { PID_SetIntegral(&balanceControl, value); }
+void Control_SetI(int16_t value) { PID_SetIntegral(&balanceControl, (float)value); }
 
-void Control_SetD(int16_t value) { PID_SetDerivative(&balanceControl, value); }
+void Control_SetD(int16_t value) { PID_SetDerivative(&balanceControl, (float)value); }
 
 void Control_SetActive(bool active)
 {
@@ -77,6 +78,6 @@ void Control_SetActive(bool active)
 
 void Control_SetTarget(int16_t target)
 {
-	float angle = DEG_TO_RAD(((float)target) / 10.0f);
+	float angle = DEG_TO_RAD(((float)target) / 100.0f);
 	PID_Target(&balanceControl, angle);
 }

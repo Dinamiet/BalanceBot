@@ -89,7 +89,7 @@ void control_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 
 		case cmdSetTargetAngle:
 			CLI_Write(cli, "Setting target angle to %f\n\r", angle);
-			controlValue.Term  = CONTROL_TARGET_ANGLE;
+			controlValue.Term  = CONTROL_TARGET;
 			controlValue.Value = angle * 100.0f;
 			Message_Request(MESSAGE_CONTROL_SET, &controlValue, sizeof(controlValue));
 			break;

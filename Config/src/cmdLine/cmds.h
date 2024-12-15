@@ -21,6 +21,9 @@ extern const char* const motor_Help[];
 void                     heartbeat_Cmd(const CLI* cli, const size_t argc, char* const argv[]);
 extern const char* const heartbeat_Help[];
 
+void                     pos_Cmd(const CLI* cli, const size_t argc, char* const argv[]);
+extern const char* const pos_Help[];
+
 void                     exit_Cmd(const CLI* cli, const size_t argc, char* const argv[]);
 extern const char* const exit_Help[];
 

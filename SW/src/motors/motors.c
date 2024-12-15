@@ -131,6 +131,8 @@ void Motors_MoveBy(int steps)
 	Stepper_Move(&right, steps);
 }
 
+int32_t Motors_CurrentPosition() { return (Stepper_CurrentPosition(&left) + Stepper_CurrentPosition(&right)) / 2; }
+
 void Motors_Reset()
 {
 	Stepper_SetPosition(&left, Stepper_TargetPosition(&left));

@@ -24,6 +24,7 @@ typedef enum _MessageID_
 	MESSAGE_MOTORS_ENABLE,
 	MESSAGE_MOTORS_SMALLSTEP,
 	MESSAGE_HEARTBEAT_ENABLED,
+	MESSAGE_POSITION_SET,
 } MessageID;
 
 typedef enum _MessageInterface_

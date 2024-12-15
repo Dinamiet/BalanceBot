@@ -24,6 +24,7 @@ enum
 	MESSAGE_MOTORS_ENABLE,
 	MESSAGE_MOTORS_SMALLSTEP,
 	MESSAGE_HEARTBEAT_ENABLED,
+	MESSAGE_POSITION_SET,
 };
 
 void gyroCalibrationRequest_Handler(const DataPacket* dp, const void* data, const size_t size);
@@ -40,5 +41,6 @@ void motorsEnable_Handler(const DataPacket* dp, const void* data, const size_t s
 void motorsSmallStep_Handler(const DataPacket* dp, const void* data, const size_t size);
 void motorsSpeed_Handler(const DataPacket* dp, const void* data, const size_t size);
 void heartbeatEnable_Hander(const DataPacket* dp, const void* data, const size_t size);
+void positionSet_Handler(const DataPacket* dp, const void* data, const size_t size);
 
 #endif

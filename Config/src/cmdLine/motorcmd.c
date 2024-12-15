@@ -12,14 +12,16 @@ void motor_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 		cmdCooldown,
 		cmdMove,
 		cmdStepSize,
+		cmdSpeed,
 		cmdUnknown
 	} cmd = cmdUnknown;
 
 	char    c;
 	bool    flag;
 	int16_t steps;
+	uint32_t speed;
 	optind = 1;
-	while ((c = getopt(argc, argv, "e:c:m:s:")) != -1)
+	while ((c = getopt(argc, argv, "e:c:m:s:a:")) != -1)
 	{
 		switch (c)
 		{
@@ -41,6 +43,11 @@ void motor_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 			case 's':
 				cmd  = cmdStepSize;
 				flag = (optarg[0] != '0');
+				break;
+
+			case 'a':
+				cmd = cmdSpeed;
+				sscanf(optarg, "%u", &speed);
 				break;
 
 			default:
@@ -71,6 +78,11 @@ void motor_Cmd(const CLI* cli, const size_t argc, char* const argv[])
 			Message_Request(MESSAGE_MOTORS_SMALLSTEP, &flag, sizeof(flag));
 			break;
 
+		case cmdSpeed:
+			CLI_Write(cli, "Motor speed: %u\n\r", speed);
+			Message_Request(MESSAGE_MOTORS_SPEED, &speed, sizeof(speed));
+			break;
+
 		default:
 			CLI_Write(cli, "Unknown command\n\r");
 			break;
@@ -83,5 +95,6 @@ const char* const motor_Help[] = {
 		" -c {1|0} Enable/Disable motor cooldown",
 		" -m {steps} Move motor by specified steps",
 		" -s {1|0} Small or big step size",
+		" -a {speed} Set motor speed",
 		0,
 };

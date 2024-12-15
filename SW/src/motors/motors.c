@@ -168,3 +168,9 @@ void Motors_StepSize(bool smallStep)
 	gpio = GPIO_GetInstance(LEFT_GPIO);
 	GPIO_WritePin(gpio, LEFT_SPEED_PIN, smallStep);
 }
+
+void Motors_Speed(uint32_t speed)
+{
+	Stepper_SetSpeed(&left, speed);
+	Stepper_SetSpeed(&right, speed);
+}

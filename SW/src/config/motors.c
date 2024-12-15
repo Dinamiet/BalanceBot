@@ -44,3 +44,13 @@ void motorsSmallStep_Handler(const DataPacket* dp, const void* data, const size_
 
 	DataPacket_Send(dp, MESSAGE_ACKNOWLEDGE, NULL, 0);
 }
+
+void motorsSpeed_Handler(const DataPacket* dp, const void* data, const size_t size)
+{
+	(void)size;
+	uint32_t speed = *(uint32_t*)data;
+
+	Motors_Speed(speed);
+
+	DataPacket_Send(dp, MESSAGE_ACKNOWLEDGE, NULL, 0);
+}

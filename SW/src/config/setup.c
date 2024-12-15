@@ -23,6 +23,7 @@ static DataPacketMessage configMessages[] = {
 		{  MESSAGE_MOTORS_COOLDOWN,          motorsCooldown_Handler},
 		{    MESSAGE_MOTORS_ENABLE,            motorsEnable_Handler},
 		{ MESSAGE_MOTORS_SMALLSTEP,         motorsSmallStep_Handler},
+		{     MESSAGE_MOTORS_SPEED,             motorsSpeed_Handler},
 		{MESSAGE_HEARTBEAT_ENABLED,          heartbeatEnable_Hander},
 		{						0,							NULL}
 };

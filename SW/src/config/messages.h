@@ -43,5 +43,6 @@ void motorsSmallStep_Handler(const DataPacket* dp, const void* data, const size_
 void motorsSpeed_Handler(const DataPacket* dp, const void* data, const size_t size);
 void heartbeatEnable_Hander(const DataPacket* dp, const void* data, const size_t size);
 void positionSet_Handler(const DataPacket* dp, const void* data, const size_t size);
+void debug_Handler(const DataPacket* dp, const void* data, const size_t size);
 
 #endif

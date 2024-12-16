@@ -86,6 +86,7 @@ void Setup_Control()
 
 	Scheduler_CreateSingleTask(taskScheduler, &delayControlNotify, TASK_DELAY_CONTROL, delayedControlClose, NULL, TASK_DELAY_CONTROL_TIME);
 	Scheduler_CreateRecurringTask(taskScheduler, &debugTask, TASK_DEBUG, debug, NULL, TASK_DEBUG_PERIOD);
+	Scheduler_Deactivate(&debugTask);
 }
 
 void Control_SetP(int16_t value) { PID_SetProportional(&balanceControl, (float)value); }
@@ -119,3 +120,11 @@ void Position_SetI(int16_t value) { PID_SetIntegral(&positionControl, (float)val
 void Position_SetD(int16_t value) { PID_SetDerivative(&positionControl, (float)value); }
 
 void Position_SetTarget(int16_t target) { PID_Target(&positionControl, target); }
+
+void Control_DebugEnable(bool enabled)
+{
+	if (enabled)
+		Scheduler_Activate(&debugTask);
+	else
+		Scheduler_Deactivate(&debugTask);
+}

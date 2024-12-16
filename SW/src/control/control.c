@@ -12,45 +12,52 @@
 #define CONTROL_INTEGRAL_BALANCE   25
 #define CONTROL_DERIVATIVE_BALANCE 10
 
-#define CONTROL_PROP_POS       DEG_TO_RAD(-0.1f)
-#define CONTROL_INTEGRAL_POS   0
-#define CONTROL_DERIVATIVE_POS 0
+#define CONTROL_PROP_POS       DEG_TO_RAD(0.00f)
+#define CONTROL_INTEGRAL_POS   DEG_TO_RAD(0.00f)
+#define CONTROL_DERIVATIVE_POS DEG_TO_RAD(0.00f)
 
 #define DEG_TO_RAD(x) (x * (float)M_PI / 180.0f)
 
-#define SWITCH_OFF_ANGLE     (15.0f)
+#define SWITCH_OFF_ANGLE     (30.0f)
 #define CONTROL_TARGET_ANGLE (0.0f)
 #define CONTROL_TARGET_POS   (0.0f)
 
-PID                  balanceControl;
-PID                  positionControl;
-ObserverSubscription balanceDataNotification;
-SchedulerTask        delayControlNotify;
+static PID                  balanceControl;
+static PID                  positionControl;
+static ObserverSubscription balanceDataNotification;
+static SchedulerTask        delayControlNotify;
+static SchedulerTask        debugTask;
+static int32_t              currentPosition;
+static float                currentAngle;
+static float                targetAngle;
 
 static void controlData(float* angle);
 static void delayedControlClose(void* _);
+static void debug(void* _);
 
 static void controlData(float* angle)
 {
 	static uint8_t waitForAngle = 1;
 
-	if (fabsf(*angle) > DEG_TO_RAD(SWITCH_OFF_ANGLE))
+	currentAngle = *angle;
+
+	if (fabsf(currentAngle) > DEG_TO_RAD(SWITCH_OFF_ANGLE))
 	{
 		Motors_Reset();
 		PID_ClearState(&balanceControl);
 		PID_ClearState(&positionControl);
-		waitForAngle = *angle > 0 ? 1 : 2;
+		waitForAngle = currentAngle > 0 ? 1 : 2;
 	}
 
-	waitForAngle = ((waitForAngle == 2 && *angle > 0) || (waitForAngle == 1 && *angle < 0)) ? 0 : waitForAngle;
+	waitForAngle = ((waitForAngle == 2 && currentAngle > 0) || (waitForAngle == 1 && currentAngle < 0)) ? 0 : waitForAngle;
 
 	if (waitForAngle == 0)
 	{
-		float output;
-		output = PID_Output(&positionControl, Motors_CurrentPosition(), 1);
-		PID_Target(&balanceControl, output);
+		currentPosition = Motors_CurrentPosition();
+		targetAngle     = PID_Output(&positionControl, currentPosition, 1);
+		PID_Target(&balanceControl, targetAngle);
 
-		output = PID_Output(&balanceControl, *angle, 1);
+		float output = PID_Output(&balanceControl, currentAngle, 1);
 		Motors_MoveBy(output);
 	}
 }
@@ -59,6 +66,12 @@ static void delayedControlClose(void* _)
 {
 	(void)_;
 	Observer_Subscribe(notifier, &balanceDataNotification, TOPIC_IMU_DATA, (Observer_NotifyHandler)controlData);
+}
+
+static void debug(void* _)
+{
+	(void)_;
+	Control_Debug(currentPosition, currentAngle, targetAngle);
 }
 
 void Setup_Control()
@@ -72,6 +85,7 @@ void Setup_Control()
 	PID_WindupPrevention(&positionControl, true, DEG_TO_RAD(1.0f));
 
 	Scheduler_CreateSingleTask(taskScheduler, &delayControlNotify, TASK_DELAY_CONTROL, delayedControlClose, NULL, TASK_DELAY_CONTROL_TIME);
+	Scheduler_CreateRecurringTask(taskScheduler, &debugTask, TASK_DEBUG, debug, NULL, TASK_DEBUG_PERIOD);
 }
 
 void Control_SetP(int16_t value) { PID_SetProportional(&balanceControl, (float)value); }

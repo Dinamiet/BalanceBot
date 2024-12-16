@@ -30,4 +30,6 @@ void Position_SetI(int16_t value);
 void Position_SetD(int16_t value);
 void Position_SetTarget(int16_t target);
 
+void Control_Debug(int32_t currPos, float currAngle, float targetAngle);
+
 #endif

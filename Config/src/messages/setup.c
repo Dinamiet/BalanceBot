@@ -16,6 +16,7 @@ static DataPacketMessage messages[] = {
 		{MESSAGE_ACCEL_CALIBRATION, calibration_handler},
 		{     MESSAGE_ACCEL_OFFSET,      offset_handler},
 		{		 MESSAGE_IMU_DATA,     imuData_handler},
+		{			MESSAGE_DEBUG,       debug_handler},
 		{						0,				NULL}
 };
 

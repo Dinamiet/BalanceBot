@@ -25,6 +25,7 @@ enum
 	MESSAGE_MOTORS_SMALLSTEP,
 	MESSAGE_HEARTBEAT_ENABLED,
 	MESSAGE_POSITION_SET,
+	MESSAGE_DEBUG,
 };
 
 void gyroCalibrationRequest_Handler(const DataPacket* dp, const void* data, const size_t size);

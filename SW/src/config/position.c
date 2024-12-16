@@ -9,13 +9,13 @@ void positionSet_Handler(const DataPacket* dp, const void* data, const size_t si
 	switch (controlValue->Term)
 	{
 		case CONTROL_TERM_P:
-			Position_SetP(controlValue->Value);
+			Position_SetP(((float)controlValue->Value) / 1000.0f);
 			break;
 		case CONTROL_TERM_I:
-			Position_SetI(controlValue->Value);
+			Position_SetI(((float)controlValue->Value) / 1000.0f);
 			break;
 		case CONTROL_TERM_D:
-			Position_SetD(controlValue->Value);
+			Position_SetD(((float)controlValue->Value) / 1000.0f);
 			break;
 		case CONTROL_TARGET:
 			Position_SetTarget(controlValue->Value);

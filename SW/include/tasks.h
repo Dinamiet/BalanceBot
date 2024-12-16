@@ -24,4 +24,7 @@
 
 #define TASK_STEP_PIN_CLEAR 11
 
+#define TASK_DEBUG        13
+#define TASK_DEBUG_PERIOD 500 // ms
+
 #endif

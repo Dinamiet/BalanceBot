@@ -135,8 +135,11 @@ int32_t Motors_CurrentPosition() { return (Stepper_CurrentPosition(&left) + Step
 
 void Motors_Reset()
 {
-	Stepper_SetPosition(&left, Stepper_TargetPosition(&left));
-	Stepper_SetPosition(&right, Stepper_TargetPosition(&right));
+	Stepper_SetPosition(&left, 0);
+	Stepper_SetPosition(&right, 0);
+
+	Stepper_MoveTo(&left, 0);
+	Stepper_MoveTo(&right, 0);
 }
 
 void Motors_Enabled(bool enabled)

@@ -2,20 +2,6 @@
 
 #include "messages.h"
 
-typedef enum _ControlTerm_
-{
-	CONTROL_TERM_P,
-	CONTROL_TERM_I,
-	CONTROL_TERM_D,
-	CONTROL_TARGET_ANGLE,
-} ControlTerm;
-
-typedef struct _ControlValue_
-{
-	uint16_t Term;
-	int16_t  Value;
-} ControlValue;
-
 void controlSet_Handler(const DataPacket* dp, const void* data, const size_t size)
 {
 	(void)size;
@@ -32,8 +18,9 @@ void controlSet_Handler(const DataPacket* dp, const void* data, const size_t siz
 		case CONTROL_TERM_D:
 			Control_SetD(controlValue->Value);
 			break;
-		case CONTROL_TARGET_ANGLE:
+		case CONTROL_TARGET:
 			Control_SetTarget(controlValue->Value);
+			break;
 	}
 
 	DataPacket_Send(dp, MESSAGE_ACKNOWLEDGE, NULL, 0);

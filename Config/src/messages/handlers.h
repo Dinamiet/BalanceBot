@@ -8,5 +8,6 @@ void heartbeat_handler(const DataPacket* dp, const void* data, const size_t size
 void calibration_handler(const DataPacket* dp, const void* data, const size_t size);
 void offset_handler(const DataPacket* dp, const void* data, const size_t size);
 void imuData_handler(const DataPacket* dp, const void* data, const size_t size);
+void debug_handler(const DataPacket* dp, const void* data, const size_t size);
 
 #endif

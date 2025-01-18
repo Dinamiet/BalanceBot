@@ -8,7 +8,7 @@ typedef enum _ControlTerm_
 	CONTROL_TERM_P,
 	CONTROL_TERM_I,
 	CONTROL_TERM_D,
-	CONTROL_TARGET_ANGLE,
+	CONTROL_TARGET,
 } ControlTerm;
 
 typedef struct _ControlValue_

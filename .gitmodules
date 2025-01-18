@@ -1,3 +1,3 @@
 [submodule "SW/Toolchain"]
 	path = SW/Toolchain
-	url = git@bitbucket.org:dinamiet/avrchain.git
+	url = git@github.com:Dinamiet/AVRToolchain.git

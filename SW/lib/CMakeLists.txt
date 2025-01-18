@@ -6,9 +6,9 @@ set(FETCHCONTENT_QUIET OFF)
 FetchContent_Declare(
 	AVR
 	GIT_REPOSITORY
-		git@bitbucket.org:dinamiet/avr.git
+		git@github.com:Dinamiet/AVR.git
 	GIT_TAG
-		development
+		main
 	SOURCE_DIR
 		${CMAKE_SOURCE_DIR}/lib/AVR
 )
@@ -16,9 +16,9 @@ FetchContent_Declare(
 FetchContent_Declare(
 	Scheduler
 	GIT_REPOSITORY
-		git@bitbucket.org:dinamiet/scheduler.git
+		git@github.com:Dinamiet/Scheduler.git
 	GIT_TAG
-		development
+		main
 	SOURCE_DIR
 		${CMAKE_SOURCE_DIR}/lib/Scheduler
 )
@@ -26,9 +26,9 @@ FetchContent_Declare(
 FetchContent_Declare(
 	MPU6050
 	GIT_REPOSITORY
-		git@bitbucket.org:dinamiet/mpu6050.git
+		git@github.com:Dinamiet/MPU6050.git
 	GIT_TAG
-		development
+		main
 	SOURCE_DIR
 		${CMAKE_SOURCE_DIR}/lib/MPU6050
 )
@@ -36,9 +36,9 @@ FetchContent_Declare(
 FetchContent_Declare(
 	Observer
 	GIT_REPOSITORY
-		git@bitbucket.org:dinamiet/observer.git
+		git@github.com:Dinamiet/Observer.git
 	GIT_TAG
-		development
+		main
 	SOURCE_DIR
 		${CMAKE_SOURCE_DIR}/lib/Observer
 )
@@ -46,9 +46,9 @@ FetchContent_Declare(
 FetchContent_Declare(
 	PID
 	GIT_REPOSITORY
-		git@bitbucket.org:dinamiet/pid.git
+		git@github.com:Dinamiet/PID.git
 	GIT_TAG
-		development
+		main
 	SOURCE_DIR
 		${CMAKE_SOURCE_DIR}/lib/PID
 )
@@ -56,9 +56,9 @@ FetchContent_Declare(
 FetchContent_Declare(
 	Stepper
 	GIT_REPOSITORY
-		git@bitbucket.org:dinamiet/stepper.git
+		git@github.com:Dinamiet/Stepper.git
 	GIT_TAG
-		development
+		main
 	SOURCE_DIR
 		${CMAKE_SOURCE_DIR}/lib/Stepper
 )
@@ -66,9 +66,9 @@ FetchContent_Declare(
 FetchContent_Declare(
 	DataPacket
 	GIT_REPOSITORY
-		git@bitbucket.org:dinamiet/datapacket.git
+		git@github.com:Dinamiet/DataPacket.git
 	GIT_TAG
-		development
+		main
 	SOURCE_DIR
 		${CMAKE_SOURCE_DIR}/lib/DataPacket
 )

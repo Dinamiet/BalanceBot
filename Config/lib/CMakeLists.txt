@@ -6,9 +6,9 @@ set(FETCHCONTENT_QUIET OFF)
 FetchContent_Declare(
 	DataPacket
 	GIT_REPOSITORY
-		git@bitbucket.org:dinamiet/datapacket.git
+		git@github.com:Dinamiet/DataPacket.git
 	GIT_TAG
-		development
+		main
 	SOURCE_DIR
 		${CMAKE_SOURCE_DIR}/lib/DataPacket
 )
@@ -16,9 +16,9 @@ FetchContent_Declare(
 FetchContent_Declare(
 	CLI
 	GIT_REPOSITORY
-		git@bitbucket.org:dinamiet/cli.git
+		git@github.com:Dinamiet/CLI.git
 	GIT_TAG
-		development
+		main
 	SOURCE_DIR
 		${CMAKE_SOURCE_DIR}/lib/CLI
 )
